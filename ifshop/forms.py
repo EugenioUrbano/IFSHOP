@@ -34,7 +34,6 @@ class CamisetaForm(forms.ModelForm):
         max_length=100,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Digite o titulo da camisa',
         })
     )
     imagens = forms.ImageField(
@@ -46,13 +45,11 @@ class CamisetaForm(forms.ModelForm):
         widget=forms.TextInput(attrs={
             'class': 'form-control',
             'rows': 5,
-            'placeholder': 'Digite as cores. Ex.: Azul, Roxo, Vermelho',
         })
     )
     preco = forms.DecimalField(
         widget=forms.NumberInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Digite o preço da camiseta',
         })
     )
     cursos = forms.ChoiceField(

@@ -39,6 +39,14 @@
                         <label for="id_data_para_entrega">Data que sera feita a entrega</label>
                     </div>
                     <div class="form-floating col-md-6">
+                        {{ form.turnos }}
+                        <label for="id_cursos">Turno da turma</label>
+                    </div>
+                    <div class="form-floating col-md-6">
+                        {{ form.cursos }}
+                        <label for="id_cursos">Curso da turma</label>
+                    </div>
+                    <div class="form-floating col-md-6">
                         <div class="row">
                             <label for="id_tamanhos" class="form-label">Tamanhos disponiveis:</label>
                             <div>
@@ -72,7 +80,6 @@
                             </div>
                         </div>
                     </div>
-                    
                     <a>
                         <button type="submit" class="btn botoes shadow-lg rounded px-3 d-flex justify-content-center">Cadastrar Camiseta</button>
                     </a>
