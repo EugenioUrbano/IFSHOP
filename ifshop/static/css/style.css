@@ -1,0 +1,51 @@
+.custom-header {
+  background-color:#012145;
+  color: white;
+}
+.custom-footer {
+  position: relative;
+}
+.botoes {
+  background-color: #134276;
+  color: white
+}
+.filtros-fundo {
+  background-color: #E9E2E2;
+  color : #134276;
+}
+.texto-filtro {
+  color:#134276
+}
+.botao-selecionado {
+  background-color: #367AC6 !important;
+  color: white !important;
+}
+
+.botao-login{
+  background-color: white;
+  color: #134276;
+}
+.espaco-colorido {
+  height: 25px; /* Altura do espaço */
+  background-color: #E9E2E2; /* Cor de fundo */
+}
+
+.error {
+  color: red;
+  display: none;
+}
+
+footer {
+  text-align: center;
+  padding: 10px;
+  position: fixed ;
+}
+
+html, body {
+  height: 100%;
+}
+
+.paddind-posts {
+  padding-bottom: 10px;
+  padding-top: 10px;
+}

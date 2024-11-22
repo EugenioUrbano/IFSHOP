@@ -1,1 +1,9 @@
 # IFSHOP-PROJETO_FINAL
+
+Site para ajudar na venda, compra e divulgação de camisas dos 4° anos
+
+PARTICIPANTES:
+
+- EUGENIO URBANO DE MEDEIROS FILHO
+- HELLOAR LAVINIA SILVA COSTA 
+- MILLENY JAMILY DE LIMA VIEIRA

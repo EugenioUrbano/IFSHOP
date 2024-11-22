@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Carrinho{% endblock %}
+{% block filtro%} {% endblock %}
+
+{%block content%}
+<h1>Seu Carrinho</h1>
+
+<ul style="list-style-type: none; padding: 0;">
+    {% for pedido in pedidos %}
+        <li style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; display: flex; align-items: center;">
+            {% if pedido.camiseta.imagens %}
+                <img src="{{ pedido.camiseta.imagens.url }}" alt="Imagem de {{ pedido.camiseta.titulo }}" style="width: 100px; height: 100px; margin-right: 20px;">
+            {% endif %}
+            <div>
+                <strong>{{ pedido.camiseta.titulo }}</strong><br>
+                Nome: {{ pedido.nome_estampa }}<br>
+                Número: {{ pedido.numero_estampa }}<br>
+                Tamanho: {{ pedido.tamanho }}<br>
+                Estilo: {{ pedido.tipo }}<br>
+                Preço: R$ {{ pedido.camiseta.preco }}
+            </div>
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}
