@@ -37,14 +37,15 @@ def camiseta(request, camiseta_id):
 
 def adicionar_pro(request):
     if request.method == 'POST':
-        form = CamisetaForm(request.POST, request.FILES)
-        if form.is_valid():
-            camiseta = form.save(commit=False)
-            camiseta.tamanhos = ', '.join(form.cleaned_data['tamanhos'])
-            camiseta.estilos = ', '.join(form.cleaned_data['estilos'])
+        camiseta_form = CamisetaForm(request.POST, request.FILES)
+
+        if camiseta_form.is_valid():
+            camiseta = camiseta_form.save(commit=False)
+            camiseta.tamanhos = ', '.join(camiseta_form.cleaned_data['tamanhos'])
+            camiseta.estilos = ', '.join(camiseta_form.cleaned_data['estilos'])
             camiseta.save()
             return redirect('index')
-        
+            
     else:
-        form = CamisetaForm()
-    return render(request, 'adicionar_pro.html', {'form': form})
+        camiseta_form = CamisetaForm()
+    return render(request, 'adicionar_pro.html', {'camiseta_form': camiseta_form})

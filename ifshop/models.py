@@ -1,7 +1,15 @@
 from django.contrib.auth.models import User
 from django.db import models
 
+####################################################################################################
 
+class Cor(models.Model):
+    nome = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.nome
+    
+####################################################################################################
 
 class Camiseta(models.Model):
     TAMANHOS_OPCOES = [
@@ -32,22 +40,24 @@ class Camiseta(models.Model):
     preco = models.DecimalField(max_digits=10, decimal_places=2)
     data_limite_pedidos = models.DateField()
     data_para_entrega = models.DateField()
-    cores = models.CharField(max_length=200) 
+    cores = models.ManyToManyField(Cor, blank=True) 
     tamanhos = models.CharField(max_length=50) 
     turnos = models.CharField(max_length=50)
     cursos = models.CharField(max_length=50)
+    imagem = models.ImageField(blank=True)
     estilos = models.CharField(max_length=50, default="" )  
-    imagens = models.ImageField(upload_to="imagens_camisetas/", blank=True, null=True)
 
     def __str__(self):
         return self.titulo
 
 ####################################################################################################
 
+
+
 class Pedido(models.Model):
     camiseta = models.ForeignKey(Camiseta, on_delete=models.CASCADE)
     nome_estampa = models.CharField(max_length=50)
-    numero_estampa = models.IntegerField()
+    numero_estampa = models.CharField(max_length=50)
     cor = models.CharField(max_length=20)
     tamanho = models.CharField(max_length=10)
     estilo = models.CharField(max_length=20, default="")

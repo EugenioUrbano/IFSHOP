@@ -26,14 +26,16 @@
                     {% csrf_token %}
                     
                     <div class="form-floating col-md-6">
-                        <p class="card-text mb-auto" style="padding-bottom: 5%">Nome na estampa: {{ form.nome_estampa }}</p>
-                        <p class="card-text mb-auto">Numero na estampa: {{ form.numero_estampa }}</p>
+                        <p class="card-text mb-auto" style="padding-bottom: 5%">Nome na camisa: {{ form.nome_estampa }}</p>
+                        <p class="card-text mb-auto">Numero na camisa: {{ form.numero_estampa }}</p>
                     </div>
                     <div class="form-floating col-md-6">
                         <p class="card-text mb-auto" style="padding-bottom: 5%">Escolha o estilo da camisa: {{ form.estilo }}</p>
                         <p class="card-text mb-auto">Escolha o tamanho da camisa: {{ form.tamanho}}</p>
                     </div>
-                    
+                    <div class="form-floating col-md-6">
+                        <p class="card-text mb-auto">Escolha a cor da camiseta: {{ form.cor}}</p>
+                    </div>
                     <a>
                         <button type="submit" class="btn botoes shadow-lg rounded px-3 d-flex justify-content-center">Adicionar ao Carrinho</button>
                     </a>

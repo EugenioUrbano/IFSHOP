@@ -14,8 +14,8 @@
         {% for camiseta in camisetas %}
         <div class="col ">
             <div class="card shadow-sm ">
-                {% if camiseta.imagens %}
-                    <img src="{{ camiseta.imagens.url }}" alt="Imagem de {{ camiseta.titulo }}" style="width: 100%; height: 428px; object-fit: cover;" class="img-thumbnail">
+                {% if camiseta.imagem %}
+                    <img src="{{ camiseta.imagem.url }}" alt="Imagem de {{ camiseta.titulo }}" style="width: 100%; height: 428px; object-fit: cover;" class="img-thumbnail">
                 {% else %}
                     <p>Sem imagem</p>
                 {% endif %}
