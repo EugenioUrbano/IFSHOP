@@ -71,7 +71,8 @@ def adicionar_pro(request):
             camiseta.estilos = ', '.join(camiseta_form.cleaned_data['estilos'])
             camiseta.save()
             return redirect('index')
-            
+          
+    
     else:
         camiseta_form = CamisetaForm()
     return render(request, 'adicionar_pro.html', {'camiseta_form': camiseta_form})
