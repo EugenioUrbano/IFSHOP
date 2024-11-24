@@ -110,6 +110,8 @@ STATIC_URL = 'static/'
 MEDIA_ROOT = BASE_DIR / 'media/' # pasta onde django armazena os arquivos
 MEDIA_URL = 'media/'
 
+AUTH_USER_MODEL = 'ifshop.UsuarioCustom'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 

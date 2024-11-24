@@ -3,7 +3,7 @@
 {% block title%}Cadastro{% endblock %}
 {% block filtro%} {% endblock %}
 
-{%block content%}
+{% block content %}
 
 <div class="card-body py-5 px-md-5 ">
 
@@ -11,44 +11,37 @@
         <div class="col-lg-8 border rounded-3 py-4 shadow mx-md-n5 ">
             <div class="container">
                 <h2 class="fw-bold mb-5">Cadastro</h2>
-                <form class="row g-3" onsubmit="return verificarSenhas(event)">
+                <form class="row g-3" method="post">
+                    {% csrf_token %}
                     <div class="form-floating col-12">
-                        <input type="text" class="form-control rounded-3" id="nome" name="nome" maxlength="100" required="">
-                        <label for="floatingInput">Nome</label>
+                        {{ form.username }}
+                        <label for="id_nome">Nome</label>
                     </div>
                     <div class="form-floating col-md-6">
-                        <input type="password" id="senha" name="senha" class="form-control rounded-3" minlength="8" maxlength="20" required="">
-                        <label for="floatingPassword">Senha</label>
+                        {{ form.senha }}
+                        <label for="id_senha">Senha</label>
                         <input type="checkbox" id="mostrarSenha" onclick="mostrarOcultarSenha()"> Mostrar
                     </div>
                     <div class="form-floating col-md-6">
-                        <input type="password" id="repitaSenha" class="form-control rounded-3" minlength="8" maxlength="20" required="">
-                        <label for="floatingPassword">Repita a Senha</label>
+                        {{ form.confirmacao_senha}}
+                        <label for="id_confirmacao_senha">Repita a Senha</label>
                         <input type="checkbox" id="mostrarSenhaRep" onclick="mostrarOcultarSenhaRep()"> Mostrar
                     </div>
-                    
-                    <span id="erroSenha" class="error">As senhas não coincidem!</span>
-                    
                     <div class="form-floating col-md-6">
-                        <input type="email" class="form-control rounded-3" id="email" name="email" maxlength="100"  required="">
-                        <label for="floatingEmail">Email</label>
+                        {{ form.email }}
+                        <label for="id_email">Email</label>
                     </div>
                     <div class="form-floating col-md-6">
-                        <input type="tel" class="form-control rounded-3" id="telefone" maxlength="15" name="telefone"  required="">
-                        <label for="floatingTel">Telefone</label>
+                        {{ form.telefone }}
+                        <label for="id_telefone">Telefone</label>
                     </div>
                     <div class="form-floating col-md-6">
-                        <input type="text" id="matricula_cpf" name="matricula_cpf" inputmode="numeric" class="form-control rounded-3" title="Digite Sua Matricula ou CPF"  required="" minlength="7" maxlength="14">
-                        <label for="floatingNumber">Matricula | CPF</label>
+                        {{ form.matricula_cpf }}
+                        <label for="id_matricula_cpf">Matricula | CPF</label>
                     </div>
                     <div class="form-floating col-md-6">
-                        <select id="curso" class="form-select" required="">
-                            <option>InfoWeb</option>
-                            <option>Edific</option>
-                            <option>Mamb</option>
-                            <option>Outros</option>
-                        </select>
-                        <label for="imputCurso" class="form-label">Curso</label>
+                        {{ form.cursos_user }}
+                        <label for="id_cursos_user" class="form-label">Curso</label>
                     </div>
 
                     <button class="btn botoes shadow-lg rounded-pill px-3 " type="submit">Realizar Cadastro</button>
@@ -70,46 +63,28 @@
 <script>  
     // senhas //
     function mostrarOcultarSenha() {
-        var senha = document.getElementById("senha");
+        var id_senha = document.getElementById("id_senha");
         var checkbox = document.getElementById("mostrarSenha");
         if (checkbox.checked) {
-            senha.type = "text";  
+            id_senha.type = "text";  
         } else {
-            senha.type = "password";  
+            id_senha.type = "password";  
         }
     }
     function mostrarOcultarSenhaRep() {
-        var senha2 = document.getElementById("repitaSenha");
+        var id_confirmacao_senha = document.getElementById("id_confirmacao_senha");
         var checkbox = document.getElementById("mostrarSenhaRep");
         if (checkbox.checked) {
-            senha2.type = "text";  
+            id_confirmacao_senha.type = "text";  
         } else {
-            senha2.type = "password";  
+            id_confirmacao_senha.type = "password";  
         }
     }
-    // verificar senhas //
-    function verificarSenhas(event) {
-        event.preventDefault();
-
-        var senha = document.getElementById("senha").value;
-        var repitaSenha = document.getElementById("repitaSenha").value;
-
-        if (senha !== repitaSenha) {
-            document.getElementById("erroSenha").style.display = "inline";
-            return false;
-        } else {
-            document.getElementById("erroSenha").style.display = "none";
-            alert("Cadastro realizado com sucesso!");
-
-            window.location.href = "{% url 'index' %}";
-
-            return true;
-        }
-    }
+    
     // senhas //
 
     // telefone //
-    document.getElementById('telefone').addEventListener('input', function (e) {
+    document.getElementById('id_telefone').addEventListener('input', function (e) {
         let telefone = e.target.value;
         
         telefone = telefone.replace(/\D/g, "");

@@ -1,21 +1,45 @@
 from django.shortcuts import render, redirect
-from .models import Camiseta, Pedido
-from .forms import CamisetaForm, PedidoForm
+from django.contrib.auth import login
+from .models import Camiseta, Pedido, UsuarioCustom
+from .forms import CamisetaForm, PedidoForm, CustomUserCreationForm
 
 def index(request):
     camisetas = Camiseta.objects.all()
     return render(request, 'index.html', {'camisetas': camisetas})
 
+####################################################################################################
+
 def login(request):
     return render(request, "login.html")
 
+####################################################################################################
+
+def perfil(request):
+    UsuarioCustom = UsuarioCustom.objects.all()
+    return render(request, "perfil.html", {'UsuarioCustom': UsuarioCustom})
+
+####################################################################################################
+
 def cadastro(request):
-    
-    return render(request, "cadastro.html")
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['senha'])
+            user.save()
+            login(request, user)  # Faz login automático após o cadastro
+            return redirect('perfil')  # Substitua 'home' pela página desejada
+    else:
+        form = CustomUserCreationForm()
+    return render(request, 'cadastro.html', {'form': form})
+
+####################################################################################################
 
 def carrinho(request):
     pedidos = Pedido.objects.all()
     return render(request, "carrinho.html", {'pedidos': pedidos})
+
+####################################################################################################
 
 def camiseta(request, camiseta_id):
     camiseta = Camiseta.objects.get(id=camiseta_id)
@@ -35,6 +59,8 @@ def camiseta(request, camiseta_id):
 
     return render(request, 'camiseta.html', {'camiseta': camiseta, 'form': form})
 
+####################################################################################################
+
 def adicionar_pro(request):
     if request.method == 'POST':
         camiseta_form = CamisetaForm(request.POST, request.FILES)
@@ -49,3 +75,5 @@ def adicionar_pro(request):
     else:
         camiseta_form = CamisetaForm()
     return render(request, 'adicionar_pro.html', {'camiseta_form': camiseta_form})
+
+####################################################################################################

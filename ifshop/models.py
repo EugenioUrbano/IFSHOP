@@ -1,5 +1,28 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.db import models
+
+
+
+class UsuarioCustom(AbstractUser):
+    CURSOS_USER_OPCOES = [
+        ('infoweb', 'InfoWeb'),
+        ('edific', 'Edific'),
+        ('mamb', 'Mamb'),
+        ('outros','Outros')
+    ]
+    
+    email = models.EmailField(unique=True, verbose_name="E-mail")
+    telefone = models.CharField(max_length=15, verbose_name="Telefone")
+    matricula_cpf = models.CharField(max_length=14, unique=True, verbose_name="Matricula|CPF")
+    cursos_user = models.CharField(max_length=20,verbose_name="Curso")
+    
+    USERNAME_FIELD = 'email'  # Define o e-mail como campo de login
+    REQUIRED_FIELDS = ['nome', 'telefone', 'matricula_cpf', 'cursos']  # Campos obrigatórios além do e-mail
+
+    def __str__(self):
+        return (self.username)-(self.matricula_cpf)
+
+
 
 ####################################################################################################
 
