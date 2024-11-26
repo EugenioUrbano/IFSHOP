@@ -43,7 +43,13 @@
                         {{ form.cursos_user }}
                         <label for="id_cursos_user" class="form-label">Curso</label>
                     </div>
-
+                    {% if form.errors %}
+                        <ul>
+                            {% for field, errors in form.errors.items %}
+                                <li>{{ field }}: {{ errors|join:", " }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
                     <button class="btn botoes shadow-lg rounded-pill px-3 " type="submit">Realizar Cadastro</button>
                     </button>
                     <div>

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
-from .models import Camiseta, Pedido, UsuarioCustom
+from .models import Camiseta, Pedido
 from .forms import CamisetaForm, PedidoForm, CustomUserCreationForm
 
 def index(request):
@@ -29,6 +29,8 @@ def cadastro(request):
             user.save()
             login(request, user)  # Faz login automático após o cadastro
             return redirect('perfil')  # Substitua 'home' pela página desejada
+        if not form.is_valid():
+            print(form.errors)  # Mostra os erros no console
     else:
         form = CustomUserCreationForm()
     return render(request, 'cadastro.html', {'form': form})

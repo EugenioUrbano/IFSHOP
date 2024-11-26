@@ -17,7 +17,7 @@ class UsuarioCustom(AbstractUser):
     cursos_user = models.CharField(max_length=20,verbose_name="Curso")
     
     USERNAME_FIELD = 'email'  # Define o e-mail como campo de login
-    REQUIRED_FIELDS = ['nome', 'telefone', 'matricula_cpf', 'cursos']  # Campos obrigatórios além do e-mail
+    REQUIRED_FIELDS = ['username', 'telefone', 'matricula_cpf', 'cursos_user']  # Campos obrigatórios além do e-mail
 
     def __str__(self):
         return (self.username)-(self.matricula_cpf)
