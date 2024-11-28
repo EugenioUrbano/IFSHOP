@@ -39,6 +39,12 @@ def cadastro(request):
 
 def carrinho(request):
     pedidos = Pedido.objects.all()
+    if request.method == "POST" and 'deletar' in request.POST:
+        pedido_id = request.POST.get('pedido_id')
+        pedido = Pedido.objects.get(id=pedido_id)
+        pedido.delete()
+        return redirect('carrinho')
+    
     return render(request, "carrinho.html", {'pedidos': pedidos})
 
 ####################################################################################################
