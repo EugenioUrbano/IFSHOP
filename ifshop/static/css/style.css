@@ -35,14 +35,24 @@
   display: none;
 }
 
-footer {
-  text-align: center;
-  padding: 10px;
-  position: fixed ;
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Garante que o body ocupe toda a altura da janela */
+  font-family: Arial, sans-serif;
 }
 
-html, body {
-  height: 100%;
+main {
+  flex: 1; /* Faz o conteúdo principal expandir para empurrar o footer para baixo */
+  padding: 20px;
+  background: #f4f4f4;
+}
+
+footer {
+  background: #333;
+  color: white;
+  text-align: center;
+  padding: 10px 0;
 }
 
 .paddind-posts {

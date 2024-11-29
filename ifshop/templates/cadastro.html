@@ -11,45 +11,45 @@
         <div class="col-lg-8 border rounded-3 py-4 shadow mx-md-n5 ">
             <div class="container">
                 <h2 class="fw-bold mb-5">Cadastro</h2>
-                <form class="row g-3" method="post">
-                    {% csrf_token %}
-                    <div class="form-floating col-12">
-                        {{ form.username }}
-                        <label for="id_nome">Nome</label>
+                <form class="row g-3" onsubmit="return verificarSenhas(event)">
+                    <div class=" col-12">
+                        <label for="floatingInput">Nome:</label>
+                        <input type="text" class="form-control rounded-3" id="nome" name="nome" maxlength="100" required="">
                     </div>
-                    <div class="form-floating col-md-6">
-                        {{ form.senha }}
-                        <label for="id_senha">Senha</label>
+                    <div class=" col-md-6">
+                        <label for="floatingPassword">Senha:</label>
+                        <input type="password" id="senha" name="senha" class="form-control rounded-3" minlength="8" maxlength="20" required="">
                         <input type="checkbox" id="mostrarSenha" onclick="mostrarOcultarSenha()"> Mostrar
                     </div>
-                    <div class="form-floating col-md-6">
-                        {{ form.confirmacao_senha}}
-                        <label for="id_confirmacao_senha">Repita a Senha</label>
+                    <div class=" col-md-6">
+                        <label for="floatingPassword">Repita a Senha:</label>
+                        <input type="password" id="repitaSenha" class="form-control rounded-3" minlength="8" maxlength="20" required="">
                         <input type="checkbox" id="mostrarSenhaRep" onclick="mostrarOcultarSenhaRep()"> Mostrar
                     </div>
-                    <div class="form-floating col-md-6">
-                        {{ form.email }}
-                        <label for="id_email">Email</label>
+                    
+                    <span id="erroSenha" class="error">As senhas não coincidem!</span>
+                    
+                    <div class=" col-md-6">
+                        <label for="floatingEmail">Email:</label>
+                        <input type="email" class="form-control rounded-3" id="email" name="email" maxlength="100"  required="">
                     </div>
-                    <div class="form-floating col-md-6">
-                        {{ form.telefone }}
-                        <label for="id_telefone">Telefone</label>
+                    <div class=" col-md-6">
+                        <label for="floatingTel">Telefone:</label>
+                        <input type="tel" class="form-control rounded-3" id="telefone" maxlength="15" name="telefone"  required="">
                     </div>
-                    <div class="form-floating col-md-6">
-                        {{ form.matricula_cpf }}
-                        <label for="id_matricula_cpf">Matricula | CPF</label>
+                    <div class=" col-md-6">
+                        <label for="floatingNumber">Matricula | CPF:</label>
+                        <input type="text" id="matricula_cpf" name="matricula_cpf" inputmode="numeric" class="form-control rounded-3" title="Digite Sua Matricula ou CPF"  required="" minlength="7" maxlength="14">
                     </div>
-                    <div class="form-floating col-md-6">
-                        {{ form.cursos_user }}
-                        <label for="id_cursos_user" class="form-label">Curso</label>
+                    <div class="col-md-6">
+                        <label for="imputCurso" >Curso:</label>
+                        <select id="curso" class="form-select" required="">
+                            <option>InfoWeb</option>
+                            <option>Edific</option>
+                            <option>Mamb</option>
+                            <option>Outros</option>
+                        </select>
                     </div>
-                    {% if form.errors %}
-                        <ul>
-                            {% for field, errors in form.errors.items %}
-                                <li>{{ field }}: {{ errors|join:", " }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
                     <button class="btn botoes shadow-lg rounded-pill px-3 " type="submit">Realizar Cadastro</button>
                     </button>
                     <div>
@@ -57,7 +57,6 @@
                             <a href="{% url 'login' %}">Faça login</a>
                         </a>  
                     </div>
-                    
                 </form>
             </div>
         </div>
@@ -66,31 +65,49 @@
 
 
 
-<script>  
+  <script>  
     // senhas //
     function mostrarOcultarSenha() {
-        var id_senha = document.getElementById("id_senha");
+        var senha = document.getElementById("senha");
         var checkbox = document.getElementById("mostrarSenha");
         if (checkbox.checked) {
-            id_senha.type = "text";  
+            senha.type = "text";  
         } else {
-            id_senha.type = "password";  
+            senha.type = "password";  
         }
     }
     function mostrarOcultarSenhaRep() {
-        var id_confirmacao_senha = document.getElementById("id_confirmacao_senha");
+        var senha2 = document.getElementById("repitaSenha");
         var checkbox = document.getElementById("mostrarSenhaRep");
         if (checkbox.checked) {
-            id_confirmacao_senha.type = "text";  
+            senha2.type = "text";  
         } else {
-            id_confirmacao_senha.type = "password";  
+            senha2.type = "password";  
         }
     }
-    
+    // verificar senhas //
+    function verificarSenhas(event) {
+        event.preventDefault();
+
+        var senha = document.getElementById("senha").value;
+        var repitaSenha = document.getElementById("repitaSenha").value;
+
+        if (senha !== repitaSenha) {
+            document.getElementById("erroSenha").style.display = "inline";
+            return false;
+        } else {
+            document.getElementById("erroSenha").style.display = "none";
+            alert("Cadastro realizado com sucesso!");
+
+            window.location.href = "{% url 'index' %}";
+
+            return true;
+        }
+    }
     // senhas //
 
     // telefone //
-    document.getElementById('id_telefone').addEventListener('input', function (e) {
+    document.getElementById('telefone').addEventListener('input', function (e) {
         let telefone = e.target.value;
         
         telefone = telefone.replace(/\D/g, "");
