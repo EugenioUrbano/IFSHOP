@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from .models import Camiseta, Pedido
-from .forms import CamisetaForm, PedidoForm, CustomUserCreationForm
+from .forms import CamisetaForm, PedidoForm
 
 def index(request):
     camisetas = Camiseta.objects.all()

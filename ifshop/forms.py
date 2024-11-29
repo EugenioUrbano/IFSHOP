@@ -1,72 +1,7 @@
 from django import forms
-from .models import Camiseta, Pedido, Cor, UsuarioCustom
+from .models import Camiseta, Pedido, Cor
 
-class CustomUserCreationForm(forms.ModelForm):
-    senha = forms.CharField(
-        widget=forms.PasswordInput(attrs={
-            'class': 'form-control rounded-3',
-            'minlength': '8',
-            'maxlength': '20',
-            'type': 'password'
-        })
-    )
-    confirmacao_senha = forms.CharField(
-        widget=forms.PasswordInput(attrs={
-            'class': 'form-control rounded-3',
-            'minlength': '8',
-            'maxlength': '20',
-            'type': 'password'
-        })
-    )
-    username = forms.CharField(
-        widget=forms.TextInput(attrs={
-            'class': 'form-control rounded-3',
-        })
-    )
-    email = forms.EmailField(
-        widget=forms.EmailInput(attrs={
-            'class': 'form-control rounded-3',
-        })
-    )
-    telefone = forms.CharField(
-        widget=forms.TextInput(attrs={
-            'class': 'form-control rounded-3',
-            'type': 'tel',
-            'maxlength': '15',
-        })
-    )
-    matricula_cpf = forms.CharField(
-        widget=forms.TextInput(attrs={
-            'class': 'form-control rounded-3',
-            'type': 'text',
-            'minlength': '7',
-            'maxlength': '14',
-            'inputmode': 'numeric'
-        })
-    )
-    cursos_user = forms.ChoiceField(
-        choices=UsuarioCustom.CURSOS_USER_OPCOES,
-        widget=forms.Select(attrs={
-            'class': 'form-select',
-        })
-    )
-    
-
-    class Meta:
-        model = UsuarioCustom
-        fields = ['username', 'email', 'telefone', 'matricula_cpf', 'cursos_user', 'senha']
-
-    def clean(self):
-        cleaned_data = super().clean()
-        senha = cleaned_data.get('senha')
-        confirmacao_senha = cleaned_data.get('confirmacao_senha ')
-
-        if senha != confirmacao_senha:
-            raise forms.ValidationError("As senhas não coincidem.")
-
-        return cleaned_data
-    
-#################################################################################################### 
+ 
 
 class CamisetaForm(forms.ModelForm):
     tamanhos = forms.MultipleChoiceField(
