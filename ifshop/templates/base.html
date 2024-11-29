@@ -21,7 +21,7 @@
       <!-- botões -->
         <div class="col-md-3 p-3 text-end">
           {% block botoes_header %}
-          <button type="button" class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'adicionar_pro' %}" class="nav-link">Adicionar Produto</a></button>
+          <!--<button type="button" class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'adicionar_pro' %}" class="nav-link">Adicionar Produto</a></button>-->
           <button type="button" class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'login' %}" class="nav-link">Login</a></button>
           <button type="button" class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'cadastro' %}" class="nav-link">Cadastro</a></button>
           <button type="button" class="btn botoes shadow-lg rounded-pill px-3 "><a href="{% url 'carrinho' %}" class="nav-link">
@@ -43,26 +43,30 @@
       
       </header>
     <!-- header -->
+      {% block carrosel %}{% endblock %}
       <!-- filtros -->
       {% block filtro %}
       <div class="espaco-colorido"></div>
       <section class="b-example-divider filtros-fundo ">
-      
+        
         <div class="d-flex justify-content-center filtros-fundo ">
           <div class="container filtros-fundo justify-content-between"></div>
             <select class="form-select form-select-sm d-inline p-2" aria-label="Small select example">
-              <option selected>Filtrar por Turno</option>
+              <option selected disabled>Filtrar por Turno</option>
               <option value="1">Matutino</option>
               <option value="2">Vespertino</option>
             </select>
           <div class="container filtros-fundo justify-content-end" ></div>
             <select class="form-select form-select-sm d-inline p-2 " aria-label="Small select example">
-              <option selected>Filtrar por Curso</option>
+              <option selected disabled>Filtrar por Curso</option>
               <option value="1">Informatica Para Internet</option>
               <option value="2">Edificações</option>
               <option value="3">Meio Ambiente</option>
             </select>
           <div class="container filtros-fundo justify-content-end" ></div>
+        </div>  
+        <div>
+          
         </div>
         
       </section>
