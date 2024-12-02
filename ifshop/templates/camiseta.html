@@ -24,7 +24,6 @@
                 <div class="mb-1 text-body-secondary">Preço: R$ {{ camiseta.preco }}</div>
                 <form method="post" class="row g-3">
                     {% csrf_token %}
-                    
                     <div class="form-floating col-md-6">
                         <p class="card-text mb-auto" style="padding-bottom: 5%">Nome na camisa: {{ form.nome_estampa }}</p>
                         <p class="card-text mb-auto">Numero na camisa: {{ form.numero_estampa }}</p>

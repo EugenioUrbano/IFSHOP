@@ -6,6 +6,7 @@ from .models import Camiseta, Pedido, Cor
 class CamisetaForm(forms.ModelForm):
     tamanhos = forms.MultipleChoiceField(
         choices=Camiseta.TAMANHOS_OPCOES,
+        label= 'Tamanhos',
         widget=forms.CheckboxSelectMultiple(attrs={
             'class': 'd-inline-block form-check-input'
         }),
@@ -13,6 +14,7 @@ class CamisetaForm(forms.ModelForm):
     )
     estilos = forms.MultipleChoiceField(
         choices=Camiseta.ESTILOS_OPCOES,
+        label= 'Estilos' ,
         widget=forms.CheckboxSelectMultiple(attrs={
             'class': 'd-inline-block form-check-input '
         }),
@@ -21,14 +23,14 @@ class CamisetaForm(forms.ModelForm):
     data_limite_pedidos = forms.DateField(
         widget=forms.DateInput(attrs={
             'type': 'date',  # Usa o calendário do navegador
-            'class': 'form-control rounded-3',
+            'class': 'form-control rounded-3 ',
         }),
         required=True
     )
     data_para_entrega = forms.DateField(
         widget=forms.DateInput(attrs={
             'type': 'date',  # Usa o calendário do navegador
-            'class': 'form-control rounded-3',
+            'class': 'form-control rounded-3 ',
         }),
         required=True
     )
@@ -36,17 +38,22 @@ class CamisetaForm(forms.ModelForm):
         max_length=100,
         widget=forms.TextInput(attrs={
             'class': 'form-control rounded-3',
+            'placeholder': 'Ex.: Camisa De InfoWeb4M...'
         })
     )
     cores_input = forms.CharField(
         max_length=400,
+        label="Cores",
         widget=forms.TextInput(attrs={
             'class': 'form-control rounded-3',
+            'placeholder': 'Ex.: Vermelho, Azul, Roxo...'
+            
         })
     )
     preco = forms.DecimalField(
         widget=forms.NumberInput(attrs={
             'class': 'form-control rounded-3',
+            'placeholder': 'Ex.: 00,00'
         })
     )
     cursos = forms.ChoiceField(
@@ -68,7 +75,7 @@ class CamisetaForm(forms.ModelForm):
     )
     class Meta:
         model = Camiseta
-        fields = ['titulo', 'preco', 'data_limite_pedidos', 'data_para_entrega', 'tamanhos', 'estilos', 'imagem', 'turnos', 'cursos']
+        fields = ['titulo', 'preco', 'data_limite_pedidos', 'data_para_entrega', 'cores_input', 'imagem', 'turnos', 'cursos', 'tamanhos', 'estilos']
 
     def save(self, commit=True):
         camiseta = super().save(commit=False)

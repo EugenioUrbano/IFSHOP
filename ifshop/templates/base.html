@@ -15,13 +15,17 @@
     <!-- header -->
     <header class="custom-header d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
       <!-- logo -->
-      <a href="{% url 'index' %}" class="nav-link"><img src="{% static 'img/logo.png' %}" alt="logo ifshop" class="rounded float-start" width="135" height="117"></a>
+      <a href="{% url 'index' %}" class="nav-link p-1"><img src="{% static 'img/logo.png' %}" alt="logo ifshop" class="rounded float-start" width="135" height="117"></a>
       <!-- logo -->
 
       <!-- botões -->
-        <div class="col-md-3 text-end">
+        <div class="col-md-3 p-3 text-end">
           {% block botoes_header %}
+<<<<<<< HEAD
           
+=======
+          <button type="button" class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'adicionar_pro' %}" class="nav-link">Adicionar Produto</a></button>
+>>>>>>> 9647f3ea99a79ed8a2185155c266f6413aad0454
           <button type="button" class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'login' %}" class="nav-link">Login</a></button>
           <button type="button" class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'cadastro' %}" class="nav-link">Cadastro</a></button>
           <button type="button" class="btn botoes shadow-lg rounded-pill px-3 "><a href="{% url 'carrinho' %}" class="nav-link">
