@@ -65,6 +65,8 @@ def adicionar_pro(request):
             camiseta.estilos = ', '.join(form.cleaned_data['estilos'])
             camiseta.save()
             return redirect('index')
+        else:
+            print(form.errors)
           
     
     else:

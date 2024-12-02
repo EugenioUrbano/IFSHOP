@@ -13,37 +13,48 @@
                 <h2 class="fw-bold mb-5">Cadastrar Camiseta</h2>
                 <form class="row g-3" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <div class="form-floating col-md-6">
-                        {{ form.titulo }}
+                    <div class=" col-md-6">
                         <label for="id_titulo">Titulo</label>
+                        {{ form.titulo }}
                     </div>
 
-                    <div class="form-floating col-md-6">
-                        {{ form.preco }}
+                    <div class=" col-md-6">
                         <label for="id_preco">Preço</label>
+                        {{ form.preco }}
                     </div>
 
-                    <div class="form-floating col-md-6">
-                        {{ form.cores_input }}
+                    <div class=" col-md-6">
                         <label for="id_cores">Cores</label>
+                        {{ form.cores_input }}
                     </div>
 
-                    <div class="form-floating col-md-6">
-                        {{ form.imagem }}
+                    <div class=" col-md-6">
                         <label for="id_imagens">Imagem da Camiseta</label>
+                        {{ form.imagem }}
                     </div>
 
-                    <div class="form-floating col-md-6">
-                        {{ form.data_limite_pedidos }}
+                    <div class="col-md-6">
                         <label for="id_data_limite_pedidos">Data limite para pedidos</label>
+                        {{ form.data_limite_pedidos }}
                     </div>
 
-                    <div class="form-floating col-md-6">
-                        {{ form.data_para_entrega }}
+                    <div class=" col-md-6">
                         <label for="id_data_para_entrega">Data que sera feita a entrega</label>
+                        {{ form.data_para_entrega }}
+                        
                     </div>
 
-                    <div class="form-floating col-md-6">
+                    <div class=" col-md-6">
+                        <label for="id_cursos">Curso</label>
+                        {{ form.cursos }}
+                    </div>
+
+                    <div class=" col-md-6">
+                        <label for="id_turnos">Turno</label>
+                        {{ form.turnos }}
+                    </div>
+
+                    <div class=" col-md-6">
                         <div class="row">
                             <label for="id_tamanhos" class="form-label">Tamanhos disponiveis:</label>
                             <div>
@@ -61,7 +72,7 @@
                         </div>
                     </div>
 
-                    <div class="form-floating col-md-6">
+                    <div class=" col-md-6">
                         <div class="row">
                             <label for="id_estilos" class="form-label">Estilos disponiveis:</label>
                             <div>
