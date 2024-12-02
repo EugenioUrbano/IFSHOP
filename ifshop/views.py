@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login
 from .models import Camiseta, Pedido
 from .forms import CamisetaForm, PedidoForm
 
@@ -15,25 +14,12 @@ def login(request):
 ####################################################################################################
 
 def perfil(request):
-    UsuarioCustom = UsuarioCustom.objects.all()
-    return render(request, "perfil.html", {'UsuarioCustom': UsuarioCustom})
+    return render(request, "perfil.html")
 
 ####################################################################################################
 
 def cadastro(request):
-    if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.set_password(form.cleaned_data['senha'])
-            user.save()
-            login(request, user)  # Faz login automático após o cadastro
-            return redirect('perfil')  # Substitua 'home' pela página desejada
-        if not form.is_valid():
-            print(form.errors)  # Mostra os erros no console
-    else:
-        form = CustomUserCreationForm()
-    return render(request, 'cadastro.html', {'form': form})
+    return render(request, 'cadastro.html')
 
 ####################################################################################################
 

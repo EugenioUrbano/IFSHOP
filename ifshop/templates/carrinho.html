@@ -5,12 +5,12 @@
 
 {%block content%}
 <h1>Seu Carrinho</h1>
-
-<ul style="list-style-type: none; padding: 0;">
+<ul style="list-style: none; padding: 0;">
     {% for pedido in pedidos %}
-        <li style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; display: flex; align-items: center;" class=" justify-content-md-between">
+    <li style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 20px;">
             {% if pedido.camiseta.imagem %}
-                <img src="{{ pedido.camiseta.imagem.url }}" alt="Imagem de {{ pedido.camiseta.titulo }}" style="width: 100px; height: 100px; margin-right: 20px;">
+                <img src="{{ pedido.camiseta.imagem.url }}" alt="Imagem de {{ pedido.camiseta.titulo }}" style="width: 100px; height: 100px; object-fit: cover;">
             {% endif %}
             <div>
                 <strong>{{ pedido.camiseta.titulo }}</strong><br>
@@ -20,16 +20,18 @@
                 Estilo: {{ pedido.estilo }}<br>
                 Preço: R$ {{ pedido.camiseta.preco }}
             </div>
-            <div class="text-end">
-                <form method="post" style="display: inline;">
-                    {% csrf_token %}
-                    <input type="hidden" name="pedido_id" value="{{ pedido.id }}">
-                    <button class="btn btn-danger rounded-pill px-3" type="submit" name="deletar">Cancelar Pedido</button>
-                </form>
-                <button>Pagar</button>
-            </div>
-        </li>
-        
+        </div>
+        <div style="text-align: right;">
+            <form method="post" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="pedido_id" value="{{ pedido.id }}">
+                <button class="btn btn-danger rounded-pill px-3" type="submit" name="deletar">Cancelar Pedido</button>
+            </form>
+            <button class="btn botoes shadow-lg rounded-pill px-3">Pagar</button>
+        </div>
+    </li>
     {% endfor %}
 </ul>
+
+
 {% endblock %}
