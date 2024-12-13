@@ -30,7 +30,7 @@ class CamisetaForm(forms.ModelForm):
     data_para_entrega = forms.DateField(
         widget=forms.DateInput(attrs={
             'type': 'date',  # Usa o calendário do navegador
-            'class': 'form-control rounded-3 ',
+            'class': 'form-control rounded-3',
         }),
         required=True
     )
@@ -108,7 +108,7 @@ class PedidoForm(forms.ModelForm):
     nome_estampa = forms.CharField(
         max_length=100,
         widget=forms.TextInput(attrs={
-            'class': 'form-control',
+            'class': 'form-control ',
         }))
     numero_estampa = forms.CharField(
         max_length=100,

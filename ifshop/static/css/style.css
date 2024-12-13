@@ -2,9 +2,7 @@
   background-color:#012145;
   color: white;
 }
-.custom-footer {
-  position: relative;
-}
+
 .botoes {
   background-color: #134276;
   color: white
@@ -35,27 +33,16 @@
   display: none;
 }
 
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh; /* Garante que o body ocupe toda a altura da janela */
-  font-family: Arial, sans-serif;
+div.body-content{
+  /** Essa margem vai evitar que o conteudo fique por baixo do rodapé **/
+  margin-bottom: 40px;
 }
 
-main {
-  flex: 1; /* Faz o conteúdo principal expandir para empurrar o footer para baixo */
-  padding: 20px;
-  background: #f4f4f4;
-}
-
-footer {
-  background: #333;
-  color: white;
-  text-align: center;
-  padding: 10px 0;
-}
-
-.paddind-posts {
-  padding-bottom: 10px;
-  padding-top: 10px;
+footer.fixar-rodape{
+  border-top: 1px solid #333;
+  bottom: 0;
+  left: 0;
+  height: 40px;
+  position: fixed;
+  width: 100%;
 }

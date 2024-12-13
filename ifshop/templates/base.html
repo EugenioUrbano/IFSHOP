@@ -15,7 +15,7 @@
     <!-- header -->
     <header class="custom-header d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
       <!-- logo -->
-      <a href="{% url 'index' %}" class="nav-link p-1"><img src="{% static 'img/logo.png' %}" alt="logo ifshop" class="rounded float-start" width="135" height="117"></a>
+      <a href="{% url 'index' %}" class="nav-link p-1"><img src="{% static 'img/logo.png' %}" alt="logo ifshop" class="rounded float-start" width="75" height="75"></a>
       <!-- logo -->
 
       <!-- botões -->
@@ -73,13 +73,14 @@
       {% endblock %}
       <!-- filtros -->   
     </div>
-    {% block content %}
-    
-    {% endblock %}
-
+    <div class="container body-content">
+      {% block content %}
+      
+      {% endblock %}
+    </div>
     
    
-    <footer class="custom-header custom-footer d-flex flex-wrap align-items-center justify-content-center justify-content-md-between"></header>
+    <footer class="custom-header fixar-rodape d-flex flex-wrap align-items-center justify-content-center justify-content-md-between"></header>
       
       <div class="col-md-4 d-flex align-items-center">
         <a href="{% url 'index' %}" class="nav-link"><img src="{% static 'img/logo.png' %}" alt="logo ifshop" class="rounded float-start" width="40" height="34"></a>

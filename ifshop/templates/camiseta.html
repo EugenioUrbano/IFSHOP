@@ -4,11 +4,6 @@
 {% block filtro%} {% endblock %}
 
 {% block content %}
-
-
-
-
-
     
     <div class=" d-flex justify-content-center " style="padding: 5%">
         <div class="col-lg-8 border rounded-3 shadow mx-md-n5" style="padding-top: 5%; padding-bottom: 5%">
@@ -24,6 +19,7 @@
                 <div class="mb-1 text-body-secondary">Preço: R$ {{ camiseta.preco }}</div>
                 <form method="post" class="row g-3">
                     {% csrf_token %}
+                    {{ form.as_p }}
                     <div class="form-floating col-md-6">
                         <p class="card-text mb-auto" style="padding-bottom: 5%">Nome na camisa: {{ form.nome_estampa }}</p>
                         <p class="card-text mb-auto">Numero na camisa: {{ form.numero_estampa }}</p>
