@@ -1,4 +1,5 @@
 {% extends "base.html"%}
+{% load static crispy_forms_tags %}
 
 {% block title%}Pagina Teste{% endblock %}
 {% block filtro%} {% endblock %}
@@ -19,17 +20,21 @@
                 <div class="mb-1 text-body-secondary">Preço: R$ {{ camiseta.preco }}</div>
                 <form method="post" class="row g-3">
                     {% csrf_token %}
-                    {{ form.as_p }}
-                    <div class="form-floating col-md-6">
-                        <p class="card-text mb-auto" style="padding-bottom: 5%">Nome na camisa: {{ form.nome_estampa }}</p>
-                        <p class="card-text mb-auto">Numero na camisa: {{ form.numero_estampa }}</p>
+                    <div class=" col-md-6">
+                        {{ form.nome_estampa }}
                     </div>
-                    <div class="form-floating col-md-6">
-                        <p class="card-text mb-auto" style="padding-bottom: 5%">Escolha o estilo da camisa: {{ form.estilo }}</p>
-                        <p class="card-text mb-auto">Escolha o tamanho da camisa: {{ form.tamanho}}</p>
+                    <div class=" col-md-6">
+                        {{ form.numero_estampa }}
                     </div>
+                    <div class=" col-md-6">
+                        {{ form.estilo }}
+                    </div>
+                    <div class=" col-md-6">
+                        {{ form.tamanho }}
+                    </div>
+                    
                     <div class="form-floating col-md-6">
-                        <p class="card-text mb-auto">Escolha a cor da camiseta: {{ form.cor}}</p>
+                        {{ form.cor }}
                     </div>
                     <a>
                         <button type="submit" class="btn botoes shadow-lg rounded px-3 d-flex justify-content-center">Adicionar ao Carrinho</button>

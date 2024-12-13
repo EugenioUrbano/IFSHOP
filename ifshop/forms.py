@@ -75,7 +75,7 @@ class CamisetaForm(forms.ModelForm):
     )
     class Meta:
         model = Camiseta
-        fields = ['titulo', 'preco', 'data_limite_pedidos', 'data_para_entrega', 'cores_input', 'imagem', 'turnos', 'cursos', 'tamanhos', 'estilos']
+        fields = ['titulo', 'preco', 'cores_input', 'imagem', 'data_limite_pedidos', 'data_para_entrega', 'cursos', 'turnos', 'tamanhos', 'estilos']
 
     def save(self, commit=True):
         camiseta = super().save(commit=False)
@@ -108,27 +108,27 @@ class PedidoForm(forms.ModelForm):
     nome_estampa = forms.CharField(
         max_length=100,
         widget=forms.TextInput(attrs={
-            'class': 'form-control ',
+            'class': 'card-text mb-auto form-control',
         }))
     numero_estampa = forms.CharField(
         max_length=100,
         widget=forms.TextInput(attrs={
-            'class': 'form-control',
+            'class': 'card-text mb-auto form-control',
         }))
     tamanho = forms.ChoiceField(
         widget=forms.Select(attrs={
-            'class': 'form-select',
+            'class': 'card-text mb-auto form-select',
         })
     )
     estilo = forms.ChoiceField(
         widget=forms.Select(attrs={
-            'class': 'form-select',
+            'class': 'card-text mb-auto form-select',
         })
     )
     cor = forms.ModelChoiceField(
         queryset=Cor.objects.all(),
         widget=forms.Select(attrs={
-            'class': 'form-select',
+            'class': 'card-text mb-auto form-select',
         })
     )
 

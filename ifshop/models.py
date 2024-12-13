@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 
 ####################################################################################################
@@ -27,12 +28,14 @@ class Camiseta(models.Model):
     CURSOS_OPCOES = [
         ('infoweb', 'InfoWeb'),
         ('edific', 'Edific'),
-        ('mamb', 'Mamb')
+        ('mamb', 'Mamb'),
+        ('outro', 'Outro'),
     ]
     
     TURNOS_OPCOES = [
         ('matutino', 'Matutino'),
-        ('vespertino', 'Vespertino')
+        ('vespertino', 'Vespertino'),
+        ('noturno', 'Noturno'),
     ]
 
     titulo = models.CharField(max_length=100)
@@ -51,8 +54,6 @@ class Camiseta(models.Model):
 
 ####################################################################################################
 
-
-
 class Pedido(models.Model):
     camiseta = models.ForeignKey(Camiseta, on_delete=models.CASCADE)
     nome_estampa = models.CharField(max_length=50)
@@ -64,3 +65,7 @@ class Pedido(models.Model):
 
     def __str__(self):
         return f"Pedido para {self.camiseta.titulo} - {self.nome_estampa} ({self.numero_estampa})"
+
+####################################################################################################
+
+
