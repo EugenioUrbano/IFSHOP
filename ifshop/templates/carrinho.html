@@ -13,17 +13,25 @@
             {% if pedido.camiseta.imagem %}
                 <img src="{{ pedido.camiseta.imagem.url }}" alt="Imagem de {{ pedido.camiseta.titulo }}" style="width: 100px; height: 100px; object-fit: cover;">
             {% endif %}
-            <div>
-                <strong>{{ pedido.camiseta.titulo }}</strong><br>
-                Nome: {{ pedido.nome_estampa }}<br>
-                Número: {{ pedido.numero_estampa }}<br>
-                Tamanho: {{ pedido.tamanho }}<br>
-                Estilo: {{ pedido.estilo }}<br>
-                Preço: R$ {{ pedido.camiseta.preco }}
+            
+            <div class="col-md-8 themed-grid-col">
+                <div class="pb-3">
+                    <h3><strong>{{ pedido.camiseta.titulo }}</strong></h3>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    Nome: {{ pedido.nome_estampa }}<br>
+                    Número: {{ pedido.numero_estampa }}<br>
+                    Tamanho: {{ pedido.tamanho }}<br></div>
+                  <div class="col-md-6 ">
+                    Estilo: {{ pedido.estilo }}<br>
+                    Preço: R$ {{ pedido.camiseta.preco }}<br>
+                    Cor: {{ pedido.cor }}<br></div>
+                </div>
             </div>
         </div>
         <div style="text-align: right;">
-            <form method="post" style="display: inline;">
+            <form method="post"  class="pb-3">
                 {% csrf_token %}
                 <input type="hidden" name="pedido_id" value="{{ pedido.id }}">
                 <button class="btn btn-danger rounded-pill px-3" type="submit" name="deletar">Cancelar Pedido</button>

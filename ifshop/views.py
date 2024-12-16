@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.views import LoginView
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Camiseta, Pedido
 from .forms import CamisetaForm, PedidoForm, FiltroProdutoForm, CadastroUsuarioForm, LoginUsuarioForm
 
@@ -27,12 +27,15 @@ def index(request):
 
 ####################################################################################################
 
+def is_seller(user):
+    return user.is_seller
+
 class LoginUsuarioView(LoginView):
     template_name = 'login.html'
     authentication_form = LoginUsuarioForm
     
 def logout_usuario(request):
-    logout(request)  
+    logout(request)  # Remove a sessão do usuário
     return redirect('login')
 
 ####################################################################################################
@@ -88,7 +91,7 @@ def camiseta(request, camiseta_id):
 
 ####################################################################################################
 
-@login_required
+@user_passes_test(is_seller)
 def adicionar_pro(request):
     if request.method == 'POST':
         form = CamisetaForm(request.POST, request.FILES)
@@ -109,6 +112,6 @@ def adicionar_pro(request):
 
 ####################################################################################################
 
-@login_required
+@user_passes_test(is_seller)
 def gerenciar_pro(request):
     return render(request, 'gerenciar_pro')

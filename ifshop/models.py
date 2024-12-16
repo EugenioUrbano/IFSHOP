@@ -42,11 +42,11 @@ class Camiseta(models.Model):
     preco = models.DecimalField(max_digits=10, decimal_places=2)
     data_limite_pedidos = models.DateField()
     data_para_entrega = models.DateField()
-    cores = models.ManyToManyField(Cor, blank=True) 
+    cores = models.ManyToManyField(Cor, blank=False) 
     tamanhos = models.CharField(max_length=50) 
     turnos = models.CharField(max_length=50)
     cursos = models.CharField(max_length=50)
-    imagem = models.ImageField(blank=True)
+    imagem = models.ImageField(blank=False)
     estilos = models.CharField(max_length=50, default="" )  
 
     def __str__(self):
@@ -79,6 +79,7 @@ class UsuarioCustomizado(AbstractUser):
     telefone = models.CharField(max_length=15, blank=False, null=True)
     matricula_cpf = models.CharField(max_length=15, blank=False, null=True)
     curso = models.CharField(max_length=50, blank=False, null=True)
+    vendedor = models.BooleanField(default=False)
 
     def __str__(self):
         return self.username
