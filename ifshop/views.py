@@ -1,10 +1,26 @@
 from django.shortcuts import render, redirect
 from .models import Camiseta, Pedido
-from .forms import CamisetaForm, PedidoForm
+from .forms import CamisetaForm, PedidoForm, FiltroProdutoForm
 
 def index(request):
-    camisetas = Camiseta.objects.all()
-    return render(request, 'index.html', {'camisetas': camisetas})
+    form = FiltroProdutoForm(request.GET)  # Captura os parâmetros GET
+    camisetas =Camiseta.objects.all()
+
+    if form.is_valid():
+        turnos = form.cleaned_data.get('turnos')
+        cursos = form.cleaned_data.get('cursos')
+
+        if turnos:  # Filtra pelo horário se selecionado
+            camisetas = camisetas.filter(turnos=turnos)
+
+        if cursos:  # Filtra pelo curso se preenchido
+            camisetas = camisetas.filter(cursos=cursos)
+
+    context = {
+        'form': form,
+        'camisetas': camisetas,
+    }
+    return render(request, 'index.html', context )
 
 ####################################################################################################
 
@@ -74,3 +90,6 @@ def adicionar_pro(request):
     return render(request, 'adicionar_pro.html', {'form': form})
 
 ####################################################################################################
+
+def gerenciar_pro(request):
+    return render(request, 'gerenciar_pro')

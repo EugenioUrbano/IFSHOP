@@ -1,7 +1,31 @@
 from django import forms
 from .models import Camiseta, Pedido, Cor
 
- 
+
+### Filtro ###
+class FiltroProdutoForm(forms.Form):
+    turnos = forms.ChoiceField(
+        choices=[
+            ('', 'Todos os Turnos'),  
+            ('matutino', 'Matutino'),
+            ('vespertino', 'Vespertino'),
+            ('noturno', 'Noturno')
+        ],
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm d-inline p-2'})
+    )
+    cursos = forms.ChoiceField(
+        choices=[
+            ('', 'Todos os Cursos'),  
+            ('infoweb', 'InfoWeb'),
+            ('edific', 'Edific'),
+            ('mamb', 'Mamb'),
+            ('outro', 'Outro'),
+        ],
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm d-inline p-2'})
+    )
+### Filtro ###
 
 class CamisetaForm(forms.ModelForm):
     tamanhos = forms.MultipleChoiceField(

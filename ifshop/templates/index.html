@@ -25,16 +25,28 @@
         </button>
     </div>
 {% endblock %}
+{% block filtro %}
+    <section class="b-example-divider filtros-fundo  ">
+        <form>
+            <div class="d-flex justify-content-center filtros-fundo pt-3 ">
+                <div class="container filtros-fundo justify-content-between"></div>
+                    {{ form.turnos }}
+                <div class="container filtros-fundo justify-content-end" ></div>
+                    {{ form.cursos }}
+                <div class="container filtros-fundo justify-content-end" ></div>
+            </div>  
+            <div class="pricing-header p-3 mx-auto text-center">
+            <button type="submit" class="btn botoes shadow-lg rounded-pill px-3">Filtrar</button>
+            </div>
+        </form>
+    </section>
+{% endblock %}
+
 
 {% block content %}
-
-
 <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
-    <h1 class="display-4 fw-normal text-body-emphasis">Produtos Disponíveis</h1> 
     <button type="button" class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'adicionar_pro' %}" class="nav-link">Adicionar Produto(teste)</a></button>
 </div>
-
-
 {% if camisetas %}
 <div class="album py-5 ">
     <div class="container">
