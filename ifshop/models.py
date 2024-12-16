@@ -68,4 +68,19 @@ class Pedido(models.Model):
 
 ####################################################################################################
 
+class UsuarioCustomizado(AbstractUser):
+    CURSOs_OPCOES = [
+        ('infoweb', 'InfoWeb'),
+        ('edific', 'Edific'),
+        ('mamb', 'Mamb'),
+        ('outro', 'Outro'),
+    ]
+    email = models.EmailField(max_length=100, blank=False, null=True)
+    telefone = models.CharField(max_length=15, blank=False, null=True)
+    matricula_cpf = models.CharField(max_length=15, blank=False, null=True)
+    curso = models.CharField(max_length=50, blank=False, null=True)
 
+    def __str__(self):
+        return self.username
+    
+    

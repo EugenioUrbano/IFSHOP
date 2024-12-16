@@ -11,44 +11,38 @@
         <div class="col-lg-8 border rounded-3 py-4 shadow mx-md-n5 ">
             <div class="container">
                 <h2 class="fw-bold mb-5">Cadastro</h2>
-                <form class="row g-3" onsubmit="return verificarSenhas(event)">
+                <form class="row g-3" method="post">
+                    {% csrf_token %}
                     <div class=" col-12">
-                        <label for="floatingInput">Nome:</label>
-                        <input type="text" class="form-control rounded-3" id="nome" name="nome" maxlength="100" required="">
+                        <label for="id_nome">Nome</label>
+                        {{ form.username }}
                     </div>
                     <div class=" col-md-6">
-                        <label for="floatingPassword">Senha:</label>
-                        <input type="password" id="senha" name="senha" class="form-control rounded-3" minlength="8" maxlength="20" required="">
+                        <label for="id_password1">Senha</label>
+                        {{ form.password1 }}
                         <input type="checkbox" id="mostrarSenha" onclick="mostrarOcultarSenha()"> Mostrar
                     </div>
                     <div class=" col-md-6">
-                        <label for="floatingPassword">Repita a Senha:</label>
-                        <input type="password" id="repitaSenha" class="form-control rounded-3" minlength="8" maxlength="20" required="">
+                        <label for="id_password2">Confirme a senha</label>
+                        {{ form.password2 }}
                         <input type="checkbox" id="mostrarSenhaRep" onclick="mostrarOcultarSenhaRep()"> Mostrar
                     </div>
-                    
-                    <span id="erroSenha" class="error">As senhas não coincidem!</span>
-                    
                     <div class=" col-md-6">
-                        <label for="floatingEmail">Email:</label>
-                        <input type="email" class="form-control rounded-3" id="email" name="email" maxlength="100"  required="">
+                        <label for="id_email">Email</label>
+                        {{ form.email }}
                     </div>
                     <div class=" col-md-6">
-                        <label for="floatingTel">Telefone:</label>
-                        <input type="tel" class="form-control rounded-3" id="telefone" maxlength="15" name="telefone"  required="">
+                        <label for="id_telefone">Telefone</label>
+                        {{ form.telefone }}
                     </div>
                     <div class=" col-md-6">
-                        <label for="floatingNumber">Matricula | CPF:</label>
-                        <input type="text" id="matricula_cpf" name="matricula_cpf" inputmode="numeric" class="form-control rounded-3" title="Digite Sua Matricula ou CPF"  required="" minlength="7" maxlength="14">
+                        <label for="id_matricula_cpf">Matricula ou CPF</label>
+                        {{ form.matricula_cpf }}
                     </div>
                     <div class="col-md-6">
-                        <label for="imputCurso" >Curso:</label>
-                        <select id="curso" class="form-select" required="">
-                            <option>InfoWeb</option>
-                            <option>Edific</option>
-                            <option>Mamb</option>
-                            <option>Outros</option>
-                        </select>
+                        <label for="id_curso">Selecione o Curso</label>
+                        {{ form.curso }}
+                        <span>(Caso nao seja de nenhum selecione "Outro")</span>
                     </div>
                     <button class="btn botoes shadow-lg rounded-pill px-3 " type="submit">Realizar Cadastro</button>
                     </button>
@@ -56,82 +50,33 @@
                         <a> Já tem uma conta? 
                             <a href="{% url 'login' %}">Faça login</a>
                         </a>  
-                    </div>
-                    
-
-
-
-
-
-
-                    
+                    </div>    
                 </form>
             </div>
         </div>
     </div>
   </div>
 
-
-
   <script>  
     // senhas //
     function mostrarOcultarSenha() {
-        var senha = document.getElementById("senha");
+        var id_password1 = document.getElementById("id_password1");
         var checkbox = document.getElementById("mostrarSenha");
         if (checkbox.checked) {
-            senha.type = "text";  
+            id_password1.type = "text";  
         } else {
-            senha.type = "password";  
+            id_password1.type = "password";  
         }
     }
     function mostrarOcultarSenhaRep() {
-        var senha2 = document.getElementById("repitaSenha");
+        var is_password2 = document.getElementById("id_password2");
         var checkbox = document.getElementById("mostrarSenhaRep");
         if (checkbox.checked) {
-            senha2.type = "text";  
+            id_password2.type = "text";  
         } else {
-            senha2.type = "password";  
-        }
-    }
-    // verificar senhas //
-    function verificarSenhas(event) {
-        event.preventDefault();
-
-        var senha = document.getElementById("senha").value;
-        var repitaSenha = document.getElementById("repitaSenha").value;
-
-        if (senha !== repitaSenha) {
-            document.getElementById("erroSenha").style.display = "inline";
-            return false;
-        } else {
-            document.getElementById("erroSenha").style.display = "none";
-            alert("Cadastro realizado com sucesso!");
-
-            window.location.href = "{% url 'index' %}";
-
-            return true;
+            id_password2.type = "password";  
         }
     }
     // senhas //
-
-    // telefone //
-    document.getElementById('telefone').addEventListener('input', function (e) {
-        let telefone = e.target.value;
-        
-        telefone = telefone.replace(/\D/g, "");
-        
-        if (telefone.length > 10) {
-            telefone = telefone.replace(/^(\d{2})(\d{5})(\d{4}).*/, "($1) $2-$3");
-        } else if (telefone.length > 5) {
-            telefone = telefone.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, "($1) $2-$3");
-        } else if (telefone.length > 2) {
-            telefone = telefone.replace(/^(\d{2})(\d{0,5})/, "($1) $2");
-        } else if (telefone.length > 0) {
-            telefone = telefone.replace(/^(\d{0,2})/, "($1");
-        }
-        
-        e.target.value = telefone;
-    });
-    // telefone //
 </script>
 {% endblock %}

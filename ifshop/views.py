@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.views import LoginView
+from django.urls import reverse_lazy
 from .models import Camiseta, Pedido
-from .forms import CamisetaForm, PedidoForm, FiltroProdutoForm
+from .forms import CamisetaForm, PedidoForm, FiltroProdutoForm, CadastroUsuarioForm, LoginUsuarioForm
 
 def index(request):
     form = FiltroProdutoForm(request.GET)  # Captura os parâmetros GET
@@ -24,8 +27,9 @@ def index(request):
 
 ####################################################################################################
 
-def login(request):
-    return render(request, "login.html")
+class LoginUsuarioView(LoginView):
+    template_name = 'login.html'
+    authentication_form = LoginUsuarioForm
 
 ####################################################################################################
 
@@ -34,8 +38,16 @@ def perfil(request):
 
 ####################################################################################################
 
-def cadastro(request):
-    return render(request, 'cadastro.html')
+def cadastro_usuario(request):
+    if request.method == 'POST':
+        form = CadastroUsuarioForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)  # Faz login automático após o cadastro
+            return redirect('index')  # Redirecione para onde desejar
+    else:
+        form = CadastroUsuarioForm()
+    return render(request, 'cadastro.html', {'form': form})
 
 ####################################################################################################
 

@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-
+AUTH_USER_MODEL = 'ifshop.UsuarioCustomizado'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
