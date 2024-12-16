@@ -181,12 +181,12 @@ class CadastroUsuarioForm(UserCreationForm):
             'class': 'form-control rounded-3',
         })
     )
-    password1 = forms.IntegerField(
+    password1 = forms.CharField(
         widget=forms.PasswordInput(attrs={
             'class': 'form-control rounded-3',
         })
     )
-    password2 = forms.IntegerField(
+    password2 = forms.CharField(
         widget=forms.PasswordInput(attrs={
             'class': 'form-control rounded-3',
         })
@@ -209,6 +209,17 @@ class CadastroUsuarioForm(UserCreationForm):
         fields = ['username', 'email', 'telefone', 'matricula_cpf', 'curso', 'password1', 'password2']
 
 class LoginUsuarioForm(AuthenticationForm):
+    username = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control rounded-3',
+        })
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control rounded-3',
+        })
+    )
     class Meta:
         model = UsuarioCustomizado
         fields = ['username', 'password']

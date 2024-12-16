@@ -21,19 +21,23 @@
                 <form method="post" class="row g-3">
                     {% csrf_token %}
                     <div class=" col-md-6">
+                        <label for="id_nome_estampa">Nome na estampa</label>
                         {{ form.nome_estampa }}
                     </div>
                     <div class=" col-md-6">
+                        <label for="id_numero_estampa">Numero na estampa</label>
                         {{ form.numero_estampa }}
                     </div>
                     <div class=" col-md-6">
+                        <label for="id_estilo">Estilo da camiseta</label>
                         {{ form.estilo }}
                     </div>
                     <div class=" col-md-6">
+                        <label for="id_tamanho">Tamanho da camiseta</label>
                         {{ form.tamanho }}
                     </div>
-                    
-                    <div class="form-floating col-md-6">
+                    <div class="col-md-6">
+                        <label for="id_cor">Cor da camiseta</label>
                         {{ form.cor }}
                     </div>
                     <a>

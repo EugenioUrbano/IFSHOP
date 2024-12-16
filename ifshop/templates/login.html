@@ -14,14 +14,15 @@
             </div>
     
             <div class="modal-body p-5 pt-0">
-                <form class="">
-                    <div class="form-floating mb-3">
-                        <input type="email" class="form-control rounded-3" id="email" placeholder="Email" required="">
-                        <label for="email">Email</label>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class=" mb-3">
+                        <label for="id_username">Nome</label>
+                        {{ form.username }}
                     </div>
-                    <div class="form-floating mb-3">
-                        <input type="password" id="senha" name="senha" class="form-control rounded-3" placeholder="Senha" required="">
-                        <label for="senha">Senha</label>
+                    <div class=" mb-3">
+                        <label for="id_password">Senha</label>
+                        {{ form.password }}
                         <input type="checkbox" id="mostrarSenha" onclick="mostrarOcultarSenha()"> Mostrar
                     </div>
                     
@@ -37,15 +38,16 @@
         </div>
     </div>
 </div>
-<script>
+<script>  
     function mostrarOcultarSenha() {
-        var senha = document.getElementById("senha");
+        var id_password = document.getElementById("id_password");
         var checkbox = document.getElementById("mostrarSenha");
         if (checkbox.checked) {
-            senha.type = "text";  // Mostra a senha
+            id_password.type = "text";  
         } else {
-            senha.type = "password";  // Oculta a senha
+            id_password.type = "password";  
         }
     }
+    
 </script>
 {% endblock %}

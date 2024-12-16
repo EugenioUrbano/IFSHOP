@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.views import LoginView
-from django.urls import reverse_lazy
+from django.contrib.auth.decorators import login_required
 from .models import Camiseta, Pedido
 from .forms import CamisetaForm, PedidoForm, FiltroProdutoForm, CadastroUsuarioForm, LoginUsuarioForm
 
@@ -30,9 +30,14 @@ def index(request):
 class LoginUsuarioView(LoginView):
     template_name = 'login.html'
     authentication_form = LoginUsuarioForm
+    
+def logout_usuario(request):
+    logout(request)  
+    return redirect('login')
 
 ####################################################################################################
 
+@login_required
 def perfil(request):
     return render(request, "perfil.html")
 
@@ -83,6 +88,7 @@ def camiseta(request, camiseta_id):
 
 ####################################################################################################
 
+@login_required
 def adicionar_pro(request):
     if request.method == 'POST':
         form = CamisetaForm(request.POST, request.FILES)
@@ -103,5 +109,6 @@ def adicionar_pro(request):
 
 ####################################################################################################
 
+@login_required
 def gerenciar_pro(request):
     return render(request, 'gerenciar_pro')

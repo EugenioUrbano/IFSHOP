@@ -32,6 +32,12 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = 'ifshop.UsuarioCustomizado'
 
+LOGIN_URL = '/login/'
+
+LOGIN_REDIRECT_URL = '/perfil/'
+
+LOGOUT_REDIRECT_URL = '/login/'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
