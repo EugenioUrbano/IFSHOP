@@ -46,3 +46,9 @@ footer.fixar-rodape{
   position: fixed;
   width: 100%;
 }
+
+.titulo-pagina{
+  background-color: gray;
+  color: black;
+  padding: 10px;
+}

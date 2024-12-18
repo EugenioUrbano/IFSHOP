@@ -38,6 +38,8 @@ LOGIN_REDIRECT_URL = '/perfil/'
 
 LOGOUT_REDIRECT_URL = '/login/'
 
+AUTHENTICATION_BACKENDS = ['ifshop.backends.EmailBackend']
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

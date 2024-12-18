@@ -2,6 +2,63 @@ from django import forms
 from .models import Camiseta, Pedido, Cor, UsuarioCustomizado
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
+
+######################## login e cadastro de usuario  #############################       
+        
+class CadastroUsuarioForm(UserCreationForm):
+    curso = forms.ChoiceField(
+        choices=Camiseta.CURSOS_OPCOES,
+        widget=forms.Select(attrs={
+            'class': 'form-select rounded-3',
+        })
+    )
+    username = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control rounded-3',
+        })
+    )
+    email = forms.EmailField(
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control rounded-3',
+        })
+    )
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control rounded-3',
+        })
+    )
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control rounded-3',
+        })
+    )
+    matricula_cpf = forms.IntegerField(
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control rounded-3',
+        })
+    )
+    telefone = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control rounded-3',
+        })
+    )
+    class Meta:
+        model = UsuarioCustomizado
+        fields = ['username', 'email', 'telefone', 'matricula_cpf', 'curso', 'password1', 'password2']
+
+class LoginUsuarioForm(AuthenticationForm):
+    username = forms.EmailField(
+        widget=forms.EmailInput(attrs={'class': 'form-control rounded-3'}),
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control rounded-3'}),
+    )
+    
+
+
 ### Filtro ###
 class FiltroProdutoForm(forms.Form):
     turnos = forms.ChoiceField(
@@ -159,67 +216,3 @@ class PedidoForm(forms.ModelForm):
     class Meta:
         model = Pedido
         fields = ['nome_estampa', 'numero_estampa', 'tamanho', 'estilo', "cor"]
-        
-######################## login e cadastro de usuario  #############################       
-        
-class CadastroUsuarioForm(UserCreationForm):
-    curso = forms.ChoiceField(
-        choices=Camiseta.CURSOS_OPCOES,
-        widget=forms.Select(attrs={
-            'class': 'form-select rounded-3',
-        })
-    )
-    username = forms.CharField(
-        max_length=100,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control rounded-3',
-        })
-    )
-    email = forms.EmailField(
-        max_length=100,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control rounded-3',
-        })
-    )
-    password1 = forms.CharField(
-        widget=forms.PasswordInput(attrs={
-            'class': 'form-control rounded-3',
-        })
-    )
-    password2 = forms.CharField(
-        widget=forms.PasswordInput(attrs={
-            'class': 'form-control rounded-3',
-        })
-    )
-    matricula_cpf = forms.IntegerField(
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control rounded-3',
-        })
-    )
-    telefone = forms.CharField(
-        max_length=100,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control rounded-3',
-        })
-    )
-    
-    
-    class Meta:
-        model = UsuarioCustomizado
-        fields = ['username', 'email', 'telefone', 'matricula_cpf', 'curso', 'password1', 'password2']
-
-class LoginUsuarioForm(AuthenticationForm):
-    username = forms.CharField(
-        max_length=100,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control rounded-3',
-        })
-    )
-    password = forms.CharField(
-        widget=forms.PasswordInput(attrs={
-            'class': 'form-control rounded-3',
-        })
-    )
-    class Meta:
-        model = UsuarioCustomizado
-        fields = ['username', 'password']

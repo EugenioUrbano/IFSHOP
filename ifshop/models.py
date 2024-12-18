@@ -1,7 +1,28 @@
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 
-
+     
+class UsuarioCustomizado(AbstractUser):
+    CURSOs_OPCOES = [
+        ('infoweb', 'InfoWeb'),
+        ('edific', 'Edific'),
+        ('mamb', 'Mamb'),
+        ('outro', 'Outro'),
+    ]
+    email = models.EmailField(max_length=100, blank=False, null=True, unique=True)
+    telefone = models.CharField(max_length=15, blank=False, null=True)
+    matricula_cpf = models.CharField(max_length=15, blank=False, null=True, unique=True)
+    curso = models.CharField(max_length=50, blank=False, null=True)
+    vendedor = models.BooleanField(default=False)
+    username = models.CharField(max_length=50, unique=False)
+    
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+    
+    def __str__(self):
+        return self.email
+    
 ####################################################################################################
 
 class Cor(models.Model):
@@ -47,7 +68,8 @@ class Camiseta(models.Model):
     turnos = models.CharField(max_length=50)
     cursos = models.CharField(max_length=50)
     imagem = models.ImageField(blank=False)
-    estilos = models.CharField(max_length=50, default="" )  
+    estilos = models.CharField(max_length=50, default="" )
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE, related_name="camisetas")
 
     def __str__(self):
         return self.titulo
@@ -62,26 +84,13 @@ class Pedido(models.Model):
     tamanho = models.CharField(max_length=10)
     estilo = models.CharField(max_length=20, default="")
     data_pedido = models.DateTimeField(auto_now_add=True)
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE, related_name="pedidos")
 
     def __str__(self):
         return f"Pedido para {self.camiseta.titulo} - {self.nome_estampa} ({self.numero_estampa})"
 
 ####################################################################################################
 
-class UsuarioCustomizado(AbstractUser):
-    CURSOs_OPCOES = [
-        ('infoweb', 'InfoWeb'),
-        ('edific', 'Edific'),
-        ('mamb', 'Mamb'),
-        ('outro', 'Outro'),
-    ]
-    email = models.EmailField(max_length=100, blank=False, null=True)
-    telefone = models.CharField(max_length=15, blank=False, null=True)
-    matricula_cpf = models.CharField(max_length=15, blank=False, null=True)
-    curso = models.CharField(max_length=50, blank=False, null=True)
-    vendedor = models.BooleanField(default=False)
 
-    def __str__(self):
-        return self.username
     
     

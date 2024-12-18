@@ -5,8 +5,8 @@
 {% block filtro%} {% endblock %}
 
 {%block content%}
-<h1>Seu Carrinho</h1>
-<ul style="list-style: none; padding: 0;">
+<h1 style="background-color: #E9E2E2; color: black; padding: 10px;">Seu Carrinho</h1>
+<ul style="list-style: none; padding: 0;" class="container body-content">
     {% for pedido in pedidos %}
     <li style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; display: flex; align-items: center; justify-content: space-between;">
         <div style="display: flex; align-items: center; gap: 20px;">

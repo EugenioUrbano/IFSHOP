@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.views import LoginView
+from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Camiseta, Pedido
 from .forms import CamisetaForm, PedidoForm, FiltroProdutoForm, CadastroUsuarioForm, LoginUsuarioForm
@@ -27,13 +26,20 @@ def index(request):
 
 ####################################################################################################
 
-def is_seller(user):
-    return user.is_seller
+def vendedor(user):
+    return user.vendedor
 
-class LoginUsuarioView(LoginView):
-    template_name = 'login.html'
-    authentication_form = LoginUsuarioForm
-    
+def login_view(request):
+    if request.method == 'POST':
+        form = LoginUsuarioForm(data=request.POST)
+        if form.is_valid():
+            user = form.get_user()  # Obtém o usuário autenticado
+            login(request, user)
+            return redirect('perfil')  # Redireciona para a página inicial
+    else:
+        form = LoginUsuarioForm()
+    return render(request, 'login.html', {'form': form})
+
 def logout_usuario(request):
     logout(request)  # Remove a sessão do usuário
     return redirect('login')
@@ -82,6 +88,7 @@ def camiseta(request, camiseta_id):
         if form.is_valid():
             pedido = form.save(commit=False)
             pedido.camiseta = camiseta
+            pedido.usuario = request.user
             pedido.save()
             return redirect('carrinho')
     else:
@@ -91,13 +98,15 @@ def camiseta(request, camiseta_id):
 
 ####################################################################################################
 
-@user_passes_test(is_seller)
+@login_required
+@user_passes_test(vendedor)
 def adicionar_pro(request):
     if request.method == 'POST':
         form = CamisetaForm(request.POST, request.FILES)
 
         if form.is_valid():
             camiseta = form.save(commit=False)
+            camiseta.usuario = request.user
             camiseta.tamanhos = ', '.join(form.cleaned_data['tamanhos'])
             camiseta.estilos = ', '.join(form.cleaned_data['estilos'])
             camiseta.save()
@@ -112,6 +121,7 @@ def adicionar_pro(request):
 
 ####################################################################################################
 
-@user_passes_test(is_seller)
+@login_required
+@user_passes_test(vendedor)
 def gerenciar_pro(request):
     return render(request, 'gerenciar_pro')

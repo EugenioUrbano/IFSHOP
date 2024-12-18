@@ -17,7 +17,7 @@
                 <form method="post">
                     {% csrf_token %}
                     <div class=" mb-3">
-                        <label for="id_username">Nome</label>
+                        <label for="id_username">Email</label>
                         {{ form.username }}
                     </div>
                     <div class=" mb-3">
@@ -25,7 +25,9 @@
                         {{ form.password }}
                         <input type="checkbox" id="mostrarSenha" onclick="mostrarOcultarSenha()"> Mostrar
                     </div>
+                    {% if form.errors %}
                     
+                    {% endif %}
                     <button class="btn botoes shadow-lg rounded-pill px-3" type="submit">Realizar Login</button>
                     <div>
                         <a> Não tem conta ainda? 

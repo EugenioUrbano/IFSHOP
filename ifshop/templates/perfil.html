@@ -4,4 +4,6 @@
 {% block filtro%} {% endblock %}
 
 {% block content %}
+<h1>Bem-vindo(a), {{ request.user.username }}</h1>
+<a href="{% url 'logout' %}">Sair</a>
 {% endblock %}
