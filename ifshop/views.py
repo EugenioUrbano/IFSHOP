@@ -48,7 +48,11 @@ def logout_usuario(request):
 
 @login_required
 def perfil(request):
-    return render(request, "perfil.html")
+    if request.user.is_authenticated:
+        camisetas = Camiseta.objects.filter(vendedor=request.user)  # Filtra as camisetas pelo usuário logado
+    else:
+        camisetas = []
+    return render(request, "perfil.html", {'camisetas': camisetas})
 
 ####################################################################################################
 
@@ -113,8 +117,6 @@ def adicionar_pro(request):
             return redirect('index')
         else:
             print(form.errors)
-          
-    
     else:
         form = CamisetaForm()
     return render(request, 'adicionar_pro.html', {'form': form})

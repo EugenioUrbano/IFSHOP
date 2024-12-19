@@ -47,7 +47,7 @@ class CadastroUsuarioForm(UserCreationForm):
     )
     class Meta:
         model = UsuarioCustomizado
-        fields = ['username', 'email', 'telefone', 'matricula_cpf', 'curso', 'password1', 'password2']
+        fields = ['username', 'email', 'telefone', 'matricula_cpf', 'curso', 'password1', 'password2' ]
 
 class LoginUsuarioForm(AuthenticationForm):
     username = forms.EmailField(

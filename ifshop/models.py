@@ -15,10 +15,7 @@ class UsuarioCustomizado(AbstractUser):
     matricula_cpf = models.CharField(max_length=15, blank=False, null=True, unique=True)
     curso = models.CharField(max_length=50, blank=False, null=True)
     vendedor = models.BooleanField(default=False)
-    username = models.CharField(max_length=50, unique=False)
     
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
     
     def __str__(self):
         return self.email
@@ -69,7 +66,7 @@ class Camiseta(models.Model):
     cursos = models.CharField(max_length=50)
     imagem = models.ImageField(blank=False)
     estilos = models.CharField(max_length=50, default="" )
-    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE, related_name="camisetas")
+    vendedor = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE, related_name="camisetas")
 
     def __str__(self):
         return self.titulo
