@@ -5,17 +5,17 @@ from .models import Camiseta, Pedido
 from .forms import CamisetaForm, PedidoForm, FiltroProdutoForm, CadastroUsuarioForm, LoginUsuarioForm
 
 def index(request):
-    form = FiltroProdutoForm(request.GET)  # Captura os parâmetros GET
+    form = FiltroProdutoForm(request.GET) 
     camisetas =Camiseta.objects.all()
 
     if form.is_valid():
         turnos = form.cleaned_data.get('turnos')
         cursos = form.cleaned_data.get('cursos')
 
-        if turnos:  # Filtra pelo horário se selecionado
+        if turnos:  
             camisetas = camisetas.filter(turnos=turnos)
 
-        if cursos:  # Filtra pelo curso se preenchido
+        if cursos:  
             camisetas = camisetas.filter(cursos=cursos)
 
     context = {
@@ -33,15 +33,15 @@ def login_view(request):
     if request.method == 'POST':
         form = LoginUsuarioForm(data=request.POST)
         if form.is_valid():
-            user = form.get_user()  # Obtém o usuário autenticado
+            user = form.get_user()  
             login(request, user)
-            return redirect('perfil')  # Redireciona para a página inicial
+            return redirect('perfil')  
     else:
         form = LoginUsuarioForm()
     return render(request, 'login.html', {'form': form})
 
 def logout_usuario(request):
-    logout(request)  # Remove a sessão do usuário
+    logout(request) 
     return redirect('login')
 
 ####################################################################################################
@@ -49,10 +49,11 @@ def logout_usuario(request):
 @login_required
 def perfil(request):
     if request.user.is_authenticated:
-        camisetas = Camiseta.objects.filter(vendedor=request.user)  # Filtra as camisetas pelo usuário logado
+        camisetas = Camiseta.objects.filter(vendedor=request.user)  
     else:
-        camisetas = []
-    return render(request, "perfil.html", {'camisetas': camisetas})
+        camisetas = [] 
+
+    return render(request, 'perfil.html', {'camisetas': camisetas})
 
 ####################################################################################################
 
@@ -61,8 +62,8 @@ def cadastro_usuario(request):
         form = CadastroUsuarioForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # Faz login automático após o cadastro
-            return redirect('index')  # Redirecione para onde desejar
+            login(request, user) 
+            return redirect('index') 
     else:
         form = CadastroUsuarioForm()
     return render(request, 'cadastro.html', {'form': form})
@@ -110,7 +111,7 @@ def adicionar_pro(request):
 
         if form.is_valid():
             camiseta = form.save(commit=False)
-            camiseta.usuario = request.user
+            camiseta.vendedor = request.user
             camiseta.tamanhos = ', '.join(form.cleaned_data['tamanhos'])
             camiseta.estilos = ', '.join(form.cleaned_data['estilos'])
             camiseta.save()
@@ -126,13 +127,13 @@ def adicionar_pro(request):
 @login_required
 @user_passes_test(vendedor)
 def gerenciar_pro(request):
-    camisetas = Camiseta.objects.filter(vendedor=request.user)  # Filtra as camisetas pelo usuário logado
-    if request.method == "POST" and 'deletar' in request.POST:
-        camiseta_id = request.POST.get('camiseta_id')
-        camiseta = Camiseta.objects.get(id=camiseta_id)
-        camiseta.delete()
-        return redirect('gerenciar_pro')
-    
-    
-    
+    if request.user.is_authenticated:
+        camisetas = Camiseta.objects.filter(vendedor=request.user) 
+        if request.method == "POST" and 'deletar' in request.POST:
+            camiseta_id = request.POST.get('camiseta_id')
+            camiseta = camiseta.objects.get(id=camiseta_id)
+            camiseta.delete()
+            return redirect('gerenciar_pro')
+    else:
+        camisetas = []
     return render(request, 'gerenciar_pro.html', {'camisetas': camisetas})
