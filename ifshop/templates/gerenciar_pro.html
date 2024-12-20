@@ -7,25 +7,29 @@
 {% block filtro%} {% endblock %}
 
 {% block content %}
-<div style="background-color: #E9E2E2; color: black; padding: 10px;">
+<div style="background-color: #E9E2E2; color: black; padding: 10px;" class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
     <h1>Gerencie seus Produtos</h1>
-    <button type="button" class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'adicionar_pro' %}" class="nav-link">Adicionar Nova Camiseta</a></button>
+    <div class="text-end">
+        <button type="button" class="btn botoes shadow-lg rounded-pill px-3 "><a href="{% url 'adicionar_pro' %}" class="nav-link">Adicionar Nova Camiseta</a></button>
+    </div>
 </div>
-
 <ul style="list-style: none; padding: 0;" class="container body-content">
     {% for camiseta in camisetas %}
     <li style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; display: flex; align-items: center; justify-content: space-between;">
         <div style="display: flex; align-items: center; gap: 20px;">
+            
             <img src="{{ camiseta.imagem.url }}" alt="Imagem de {{ camiseta.titulo }}" style="width: 100px; height: 100px; object-fit: cover;">
+            
+            
             <div class="col-md-8 themed-grid-col">
                 <div class="pb-3">
                     <h3><strong>{{ camiseta.titulo }}</strong></h3>
                 </div>
                 <div class="row">
                     <div class="col-md-6">
-                        Nome: {{ camiseta.tamanhos }}<br>
-                        Número: {{ camiseta.preco }}<br>
-                        Tamanho: {{ camiseta.estilos }}<br>
+                        Tamanhos: {{ camiseta.tamanhos }}<br>
+                        Preço: R${{ camiseta.preco }}<br>
+                        Estilos: {{ camiseta.estilos }}<br>
                     </div>
                 </div>
             </div>
@@ -33,13 +37,14 @@
         <div style="text-align: right;">
             <form method="post"  class="pb-3">
                 {% csrf_token %}
-                <input type="hidden" name="pedido_id" value="{{ camiseta.id }}">
-                <button class="btn btn-danger rounded-pill px-3" type="submit" name="deletar">Cancelar Pedido</button>
+                <input type="hidden" name="camiseta_id" value="{{ camiseta.id }}">
+                <button class="btn btn-danger rounded-pill px-3" type="submit" name="deletar">Excluir Camiseta</button>
             </form>
-            <button class="btn botoes shadow-lg rounded-pill px-3">Pagar</button>
+            <button class="btn botoes shadow-lg rounded-pill px-3">Editar</button>
         </div>
     </li>
     {% endfor %}
 </ul>
+
 
 {% endblock %}

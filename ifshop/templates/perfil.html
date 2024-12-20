@@ -21,10 +21,7 @@
                 <img src="{{ camiseta.imagem.url }}" alt="Imagem de {{ camiseta.titulo }}" style="width: 100%; height: 428px; object-fit: cover;" class="img-thumbnail">
                 <div class="card-body ">
                     <h3>{{ camiseta.titulo }}</h3>
-                    <h6 class="text-body-secondary paddind-posts">Data Para fazer o pedido até {{ camiseta.data_limite_pedidos }}</h6>
                     <div class="d-flex justify-content-between align-items-center">
-                        <samp>  </samp>
-                        
                         <p class="text-body-secondary">R$ {{ camiseta.preco }}</p>
                     </div>
                 </div>
@@ -38,7 +35,5 @@
     <p>Nenhuma camisa cadastrada.</p>
 {% endif %}
 
-<div class="pricing-header p-3 pb-md-4 mx-auto text-center">
-    
-</div>
+
 {% endblock %}
