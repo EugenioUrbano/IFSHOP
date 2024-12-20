@@ -1,6 +1,8 @@
 from django import forms
 from .models import Camiseta, Pedido, Cor, UsuarioCustomizado
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Row, Column, Field
 
 
 ######################## login e cadastro de usuario  #############################       
@@ -8,57 +10,43 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 class CadastroUsuarioForm(UserCreationForm):
     curso = forms.ChoiceField(
         choices=Camiseta.CURSOS_OPCOES,
-        widget=forms.Select(attrs={
-            'class': 'form-select rounded-3',
-        })
-    )
-    username = forms.CharField(
+        widget=forms.Select(attrs={'class': 'form-select rounded-3 '}))
+    
+    nome = forms.CharField(
         max_length=100,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control rounded-3',
-        })
-    )
+        widget=forms.TextInput(attrs={'class': 'form-control rounded-3 '}))
+    
     email = forms.EmailField(
         max_length=100,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control rounded-3',
-        })
-    )
+        widget=forms.TextInput(attrs={'class': 'form-control rounded-3 '}))
+    
     password1 = forms.CharField(
-        widget=forms.PasswordInput(attrs={
-            'class': 'form-control rounded-3',
-        })
-    )
+        label="Digite uma senha",
+        widget=forms.PasswordInput(attrs={'class': 'form-control rounded-3 '}))
+    
     password2 = forms.CharField(
-        widget=forms.PasswordInput(attrs={
-            'class': 'form-control rounded-3',
-        })
-    )
-    matricula_cpf = forms.IntegerField(
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control rounded-3',
-        })
-    )
+        label="Confirme a senha",
+        widget=forms.PasswordInput(attrs={'class': 'form-control rounded-3 '}))
+    
+    matricula_cpf = forms.CharField(
+        label="Matricula ou CPF",
+        widget=forms.TextInput(attrs={'class': 'form-control rounded-3', 'placeholder': 'Somente numeros sem espaço', 'type': 'number'}))
+    
     telefone = forms.CharField(
         max_length=100,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control rounded-3',
-        })
-    )
+        widget=forms.TextInput(attrs={'type': 'number', 'class': 'form-control rounded-3 ', 'placeholder': 'Somente numeros sem espaço'}))
+    
     class Meta:
         model = UsuarioCustomizado
-        fields = ['username', 'email', 'telefone', 'matricula_cpf', 'curso', 'password1', 'password2' ]
-
-class LoginUsuarioForm(AuthenticationForm):
-    username = forms.EmailField(
-        widget=forms.EmailInput(attrs={'class': 'form-control rounded-3'}),
-    )
-    password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'class': 'form-control rounded-3'}),
-    )
+        fields = ['nome', 'email', 'telefone', 'matricula_cpf', 'curso', 'password1', 'password2' ]
+        
     
-
-
+    
+        
+class LoginUsuarioForm(AuthenticationForm):
+    username = forms.EmailField(label="Email", widget=forms.EmailInput(),)
+    password = forms.CharField(label="Senha", widget=forms.PasswordInput())
+    
 ### Filtro ###
 class FiltroProdutoForm(forms.Form):
     turnos = forms.ChoiceField(
@@ -88,72 +76,42 @@ class CamisetaForm(forms.ModelForm):
     tamanhos = forms.MultipleChoiceField(
         choices=Camiseta.TAMANHOS_OPCOES,
         label= 'Tamanhos',
-        widget=forms.CheckboxSelectMultiple(attrs={
-            'class': 'd-inline-block form-check-input'
-        }),
-        required=True
-    )
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'd-inline-block form-check-input' }), required=True)
+    
     estilos = forms.MultipleChoiceField(
         choices=Camiseta.ESTILOS_OPCOES,
         label= 'Estilos' ,
-        widget=forms.CheckboxSelectMultiple(attrs={
-            'class': 'd-inline-block form-check-input '
-        }),
-        required=True
-    )
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'd-inline-block form-check-input '}), required=True)
+    
     data_limite_pedidos = forms.DateField(
-        widget=forms.DateInput(attrs={
-            'type': 'date',  # Usa o calendário do navegador
-            'class': 'form-control rounded-3 ',
-        }),
-        required=True
-    )
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control rounded-3 ',}), required=True)
+    
     data_para_entrega = forms.DateField(
-        widget=forms.DateInput(attrs={
-            'type': 'date',  # Usa o calendário do navegador
-            'class': 'form-control rounded-3',
-        }),
-        required=True
-    )
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control rounded-3',}), required=True)
+    
     titulo = forms.CharField(
         max_length=100,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control rounded-3',
-            'placeholder': 'Ex.: Camisa De InfoWeb4M...'
-        })
-    )
+        widget=forms.TextInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: Camisa De InfoWeb4M...'}))
+    
     cores_input = forms.CharField(
         max_length=400,
         label="Cores",
-        widget=forms.TextInput(attrs={
-            'class': 'form-control rounded-3',
-            'placeholder': 'Ex.: Vermelho, Azul, Roxo...'
-            
-        })
-    )
+        widget=forms.TextInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: Vermelho, Azul, Roxo...'}))
+    
     preco = forms.DecimalField(
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control rounded-3',
-            'placeholder': 'Ex.: 00,00'
-        })
-    )
+        widget=forms.NumberInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: 00,00'}))
+    
     cursos = forms.ChoiceField(
         choices=Camiseta.CURSOS_OPCOES,
-        widget=forms.Select(attrs={
-            'class': 'form-select rounded-3',
-        })
-    )
+        widget=forms.Select(attrs={'class': 'form-select rounded-3',}))
+    
     turnos = forms.ChoiceField(
         choices=Camiseta.TURNOS_OPCOES,
-        widget=forms.Select(attrs={
-            'class': 'form-select rounded-3',
-        })
-    )
+        widget=forms.Select(attrs={'class': 'form-select rounded-3',}))
+    
     imagem = forms.ImageField(
-        widget=forms.FileInput(attrs={
-            'class': 'form-control rounded-3',
-        })
-    )
+        widget=forms.FileInput(attrs={'class': 'form-control rounded-3',}))
+    
     class Meta:
         model = Camiseta
         fields = ['titulo', 'preco', 'cores_input', 'imagem', 'data_limite_pedidos', 'data_para_entrega', 'cursos', 'turnos', 'tamanhos', 'estilos']
@@ -189,29 +147,21 @@ class PedidoForm(forms.ModelForm):
     nome_estampa = forms.CharField(
         max_length=100,
         widget=forms.TextInput(attrs={
-            'class': 'card-text mb-auto form-control',
-        }))
+            'class': 'card-text mb-auto form-control',}))
+    
     numero_estampa = forms.CharField(
         max_length=100,
-        widget=forms.TextInput(attrs={
-            'class': 'card-text mb-auto form-control',
-        }))
+        widget=forms.TextInput(attrs={'class': 'card-text mb-auto form-control',}))
+    
     tamanho = forms.ChoiceField(
-        widget=forms.Select(attrs={
-            'class': 'card-text mb-auto form-select',
-        })
-    )
+        widget=forms.Select(attrs={'class': 'card-text mb-auto form-select',}))
+    
     estilo = forms.ChoiceField(
-        widget=forms.Select(attrs={
-            'class': 'card-text mb-auto form-select',
-        })
-    )
+        widget=forms.Select(attrs={'class': 'card-text mb-auto form-select',}))
+    
     cor = forms.ModelChoiceField(
         queryset=Cor.objects.all(),
-        widget=forms.Select(attrs={
-            'class': 'card-text mb-auto form-select',
-        })
-    )
+        widget=forms.Select(attrs={'class': 'card-text mb-auto form-select',}))
 
     class Meta:
         model = Pedido

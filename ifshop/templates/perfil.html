@@ -1,5 +1,8 @@
 {% extends "base.html"%}
+
 {% load static %}
+{% load crispy_forms_filters %}
+
 {% block title%}Perfil{% endblock %}
 {% block filtro%} {% endblock %}
 
@@ -7,16 +10,35 @@
 <h1 style="background-color: #E9E2E2; color: black; padding: 10px;">Bem-vindo(a), {{ request.user.username }}</h1>
 <button type="button" class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'logout' %}" class="nav-link">Deslogar</a></button>
 <button type="button" class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'gerenciar_pro' %}" class="nav-link">Gerencie seus Produtos</a></button>
-<ul>
-    {% for camiseta in camisetas %}
-        <li>
-            <strong>{{ camiseta.titulo }}</strong> - R$ {{ camiseta.preco }}
-        </li>
-    {% empty %}
-        <p>Você ainda não adicionou nenhuma camiseta.</p>
-    {% endfor %}
-</ul>
+
+{% if camisetas %}
+<div class="album py-5 ">
+    <div class="container">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 ">
+        {% for camiseta in camisetas %}
+        <div class="col ">
+            <div class="card shadow-sm ">
+                <img src="{{ camiseta.imagem.url }}" alt="Imagem de {{ camiseta.titulo }}" style="width: 100%; height: 428px; object-fit: cover;" class="img-thumbnail">
+                <div class="card-body ">
+                    <h3>{{ camiseta.titulo }}</h3>
+                    <h6 class="text-body-secondary paddind-posts">Data Para fazer o pedido até {{ camiseta.data_limite_pedidos }}</h6>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <samp>  </samp>
+                        
+                        <p class="text-body-secondary">R$ {{ camiseta.preco }}</p>
+                    </div>
+                </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% else %}
+    <p>Nenhuma camisa cadastrada.</p>
+{% endif %}
+
 <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
-    <button type="button" class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'adicionar_pro' %}" class="nav-link">Adicionar Produto</a></button>
+    
 </div>
 {% endblock %}

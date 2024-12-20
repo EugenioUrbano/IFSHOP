@@ -1,5 +1,7 @@
 {% extends "base.html" %}
+
 {% load static %}
+{% load crispy_forms_filters %}
 
 {% block title %}Login{% endblock %}
 {% block filtro%} {% endblock %}
@@ -16,18 +18,7 @@
             <div class="modal-body p-5 pt-0">
                 <form method="post">
                     {% csrf_token %}
-                    <div class=" mb-3">
-                        <label for="id_username">Email</label>
-                        {{ form.username }}
-                    </div>
-                    <div class=" mb-3">
-                        <label for="id_password">Senha</label>
-                        {{ form.password }}
-                        <input type="checkbox" id="mostrarSenha" onclick="mostrarOcultarSenha()"> Mostrar
-                    </div>
-                    {% if form.errors %}
-                    
-                    {% endif %}
+                    {{ form | crispy }}
                     <button class="btn botoes shadow-lg rounded-pill px-3" type="submit">Realizar Login</button>
                     <div>
                         <a> Não tem conta ainda? 

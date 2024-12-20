@@ -126,4 +126,13 @@ def adicionar_pro(request):
 @login_required
 @user_passes_test(vendedor)
 def gerenciar_pro(request):
-    return render(request, 'gerenciar_pro')
+    camisetas = Camiseta.objects.filter(vendedor=request.user)  # Filtra as camisetas pelo usuário logado
+    if request.method == "POST" and 'deletar' in request.POST:
+        camiseta_id = request.POST.get('camiseta_id')
+        camiseta = Camiseta.objects.get(id=camiseta_id)
+        camiseta.delete()
+        return redirect('gerenciar_pro')
+    
+    
+    
+    return render(request, 'gerenciar_pro.html', {'camisetas': camisetas})

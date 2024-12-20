@@ -1,5 +1,8 @@
 {% extends "base.html" %}
+
 {% load static %}
+{% load crispy_forms_filters %}
+
 {% block title %}IFSHOP{% endblock %}
 
 {% block carrosel %}
@@ -52,11 +55,7 @@
         {% for camiseta in camisetas %}
         <div class="col ">
             <div class="card shadow-sm ">
-                {% if camiseta.imagem %}
-                    <img src="{{ camiseta.imagem.url }}" alt="Imagem de {{ camiseta.titulo }}" style="width: 100%; height: 428px; object-fit: cover;" class="img-thumbnail">
-                {% else %}
-                    <p>Sem imagem</p>
-                {% endif %}
+                <img src="{{ camiseta.imagem.url }}" alt="Imagem de {{ camiseta.titulo }}" style="width: 100%; height: 428px; object-fit: cover;" class="img-thumbnail">
                 <div class="card-body ">
                     <h3>{{ camiseta.titulo }}</h3>
                     <h6 class="text-body-secondary paddind-posts">Data Para fazer o pedido até {{ camiseta.data_limite_pedidos }}</h6>

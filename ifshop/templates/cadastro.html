@@ -1,5 +1,8 @@
 {% extends "base.html"%}
+
 {% load static %}
+{% load crispy_forms_filters %}
+
 {% block title%}Cadastro{% endblock %}
 {% block filtro%} {% endblock %}
 
@@ -15,7 +18,7 @@
                     {% csrf_token %}
                     <div class=" col-12">
                         <label for="id_username">Nome</label>
-                        {{ form.username }}
+                        {{ form.nome }}
                     </div>
                     <div class=" col-md-6">
                         <label for="id_password1">Senha</label>
@@ -45,7 +48,7 @@
                         <span>(Caso nao seja de nenhum selecione "Outro")</span>
                     </div>
                     <button class="btn botoes shadow-lg rounded-pill px-3 " type="submit">Realizar Cadastro</button>
-                    </button>
+                    
                     <div>
                         <a> Já tem uma conta? 
                             <a href="{% url 'login' %}">Faça login</a>

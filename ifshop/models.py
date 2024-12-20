@@ -15,7 +15,23 @@ class UsuarioCustomizado(AbstractUser):
     matricula_cpf = models.CharField(max_length=15, blank=False, null=True, unique=True)
     curso = models.CharField(max_length=50, blank=False, null=True)
     vendedor = models.BooleanField(default=False)
+    nome = models.CharField(max_length=150)
     
+    def save(self, *args, **kwargs):
+        if not self.username:  # Apenas gera username se estiver vazio
+            primeiro_nome = self.nome.split()[0]  # Captura o primeiro nome
+            contador = 1
+            username_base = primeiro_nome.lower()
+            username_gerado = username_base
+
+            # Garante que o username seja único
+            while UsuarioCustomizado.objects.filter(username=username_gerado).exists():
+                contador += 1
+                username_gerado = f"{username_base}_{contador}"
+
+            self.username = username_gerado
+
+        super().save(*args, **kwargs)
     
     def __str__(self):
         return self.email
@@ -87,7 +103,3 @@ class Pedido(models.Model):
         return f"Pedido para {self.camiseta.titulo} - {self.nome_estampa} ({self.numero_estampa})"
 
 ####################################################################################################
-
-
-    
-    

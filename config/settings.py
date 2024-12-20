@@ -22,6 +22,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'ifshop',
+    "crispy_forms",
+    "crispy_bootstrap5",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -29,6 +31,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# CONFIGURAÇÃOM LOGIN
 
 AUTH_USER_MODEL = 'ifshop.UsuarioCustomizado'
 
@@ -39,6 +47,8 @@ LOGIN_REDIRECT_URL = '/perfil/'
 LOGOUT_REDIRECT_URL = '/login/'
 
 AUTHENTICATION_BACKENDS = ['ifshop.backends.EmailBackend']
+
+# CONFIGURAÇÃOM LOGIN
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
