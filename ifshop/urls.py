@@ -10,8 +10,9 @@ urlpatterns = [
     path('cadastro/', cadastro_usuario, name='cadastro'),
     ##########################################################################
     path('perfil/', views.perfil, name='perfil'),
-    path('gerenciar_pro/', views.gerenciar_pro, name='gerenciar_pro'),
     path('logout/', logout_usuario, name='logout'),
+    path('gerenciar_pro/', views.gerenciar_pro, name='gerenciar_pro'),
+    path('gerenciar_pedidos/', views.gerenciar_pedidos, name="gerenciar_pedidos"),
     path('adicionar_pro/', views.adicionar_pro, name='adicionar_pro'),
     ##########################################################################
     path('carrinho/', views.carrinho, name='carrinho'),

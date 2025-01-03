@@ -30,12 +30,28 @@
                         <label for="id_cores">Cores</label>
                         {{ form.cores_input }}
                     </div>
-
-                    <div class=" col-md-6">
-                        <label for="id_imagens">Imagem da Camiseta</label>
-                        {{ form.imagem }}
+                    <div class="col-md-6">
+                        <div class="accordion" id="accordionPanelsStayOpenExample">
+                            <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="false" aria-controls="panelsStayOpen-collapseOne">
+                                Adicionar Imagens
+                                </button>
+                            </h2>
+                            <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse" style="">
+                                <div class="accordion-body">
+                                    {{ formset.management_form }}
+                                    {% for form in formset %}
+                                        <div class="form-row">
+                                            {{ form.imagem.label_tag }} {{ form.imagem }}
+                                            {{ form.principal.label_tag }} {{ form.principal }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            </div>
+                        </div>
                     </div>
-
                     <div class="col-md-6">
                         <label for="id_data_limite_pedidos">Data limite para pedidos</label>
                         {{ form.data_limite_pedidos }}
@@ -102,3 +118,24 @@
     </div>
 </div> 
 {% endblock %}
+<script>
+    function adicionarImagem() {
+        var num_imagens = document.getElementById('num_imagens');
+        var novoCampo = document.createElement('div');
+        novoCampo.innerHTML = '<input type="file" name="imagem_' + num_imagens.value + '-imagem" required>';
+        document.getElementById('imagens').appendChild(novoCampo);
+        num_imagens.value = parseInt(num_imagens.value) + 1;
+    }
+    
+    function atualizarCampos() {
+        var num_imagens = document.getElementById('num_imagens').value;
+        var imagensDiv = document.getElementById('imagens');
+        imagensDiv.innerHTML = ''; // Limpa os campos existentes
+    
+        for (var i = 0; i < num_imagens; i++) {
+            var novoCampo = document.createElement('div');
+            novoCampo.innerHTML = '<input type="file" name="imagem_' + i + '-imagem" required>';
+            imagensDiv.appendChild(novoCampo);
+        }
+    }
+    </script>

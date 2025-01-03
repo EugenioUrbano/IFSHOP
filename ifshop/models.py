@@ -86,7 +86,18 @@ class Camiseta(models.Model):
 
     def __str__(self):
         return self.titulo
+    
+    
+class ImagemCamiseta(models.Model):
+    camiseta = models.ForeignKey(Camiseta, on_delete=models.CASCADE, related_name='imagens')
+    imagem = models.ImageField(upload_to='imagens_camisetas/')
+    principal = models.BooleanField(default=False)  # Indica se é a imagem principal
 
+    def save(self, *args, **kwargs):
+        # Garante que só uma imagem seja marcada como principal
+        if self.principal:
+            ImagemCamiseta.objects.filter(camiseta=self.camiseta, principal=True).update(principal=False)
+        super().save(*args, **kwargs)
 ####################################################################################################
 
 class Pedido(models.Model):

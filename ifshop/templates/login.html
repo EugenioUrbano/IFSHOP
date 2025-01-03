@@ -18,7 +18,15 @@
             <div class="modal-body p-5 pt-0">
                 <form method="post">
                     {% csrf_token %}
-                    {{ form | crispy }}
+                    <div class=" col-12 pb-3">
+                        <label for="id_username">Email</label>
+                        {{ form.username }}
+                    </div>
+                    <div class=" col-12 pb-3">
+                        <label for="id_password">Senha</label>
+                        {{ form.password }}
+                    </div>
+                    
                     <button class="btn botoes shadow-lg rounded-pill px-3" type="submit">Realizar Login</button>
                     <div>
                         <a> Não tem conta ainda? 

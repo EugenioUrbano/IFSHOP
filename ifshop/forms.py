@@ -1,5 +1,6 @@
 from django import forms
-from .models import Camiseta, Pedido, Cor, UsuarioCustomizado
+from django.forms import modelformset_factory
+from .models import Camiseta, Pedido, Cor, UsuarioCustomizado, ImagemCamiseta
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Row, Column, Field
@@ -44,8 +45,8 @@ class CadastroUsuarioForm(UserCreationForm):
     
         
 class LoginUsuarioForm(AuthenticationForm):
-    username = forms.EmailField(label="Email", widget=forms.EmailInput(),)
-    password = forms.CharField(label="Senha", widget=forms.PasswordInput())
+    username = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control rounded-3 '}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control rounded-3 '}))
     
 ### Filtro ###
 class FiltroProdutoForm(forms.Form):
@@ -109,12 +110,11 @@ class CamisetaForm(forms.ModelForm):
         choices=Camiseta.TURNOS_OPCOES,
         widget=forms.Select(attrs={'class': 'form-select rounded-3',}))
     
-    imagem = forms.ImageField(
-        widget=forms.FileInput(attrs={'class': 'form-control rounded-3',}))
+    
     
     class Meta:
         model = Camiseta
-        fields = ['titulo', 'preco', 'cores_input', 'imagem', 'data_limite_pedidos', 'data_para_entrega', 'cursos', 'turnos', 'tamanhos', 'estilos']
+        fields = ['titulo', 'preco', 'cores_input', 'data_limite_pedidos', 'data_para_entrega', 'cursos', 'turnos', 'tamanhos', 'estilos']
 
     def save(self, commit=True):
         camiseta = super().save(commit=False)
@@ -132,7 +132,16 @@ class CamisetaForm(forms.ModelForm):
             camiseta.save()
 
         return camiseta
-
+    
+ImagemCamisetaFormSet = modelformset_factory(
+    ImagemCamiseta,
+    fields=('imagem', 'principal'),
+    extra=5,  # Permite adicionar até 5 imagens por vez
+    widgets={
+        'imagem': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        'principal': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+    }
+)
 ####################################################################################################      
 
 class PedidoForm(forms.ModelForm):
