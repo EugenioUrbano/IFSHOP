@@ -8,48 +8,48 @@
 
 {% block content %}
 <div style="background-color: #E9E2E2; color: black; padding: 10px;" class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
-    <h1>Gerencie seus Produtos</h1>
+    <h1>Gerencie Pedidos das suas Camisetas</h1>
     <div class="text-end">
         <button type="button" class="btn botoes shadow-lg rounded-pill px-3 "><a href="{% url 'adicionar_pro' %}" class="nav-link">Adicionar Nova Camiseta</a></button>
     </div>
 </div>
-<ul style="list-style: none; padding: 0;" class="container body-content">
-    {% for camiseta in camisetas %}
-    <li style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; display: flex; align-items: center; justify-content: space-between;">
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <img src="{{ camiseta.imagem.url }}" alt="Imagem de {{ camiseta.titulo }}" style="width: 100px; height: 100px; object-fit: cover;">
-            <div class="col-md-8 themed-grid-col">
-                <div class="pb-3">
-                    <h3><strong>{{ camiseta.titulo }}</strong></h3>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        Tamanhos: {{ camiseta.tamanhos }}<br>
-                        Preço: R${{ camiseta.preco }}<br>
-                        Estilos: {{ camiseta.estilos }}<br>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div style="text-align: right;">
-            <div class="dropstart ">
-                <button class="btn botoes shadow-lg rounded-pill px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Opções
-                </button>
-                <ul class="dropdown-menu">
-                  <li class="p-1"><button class="btn botoes shadow-lg rounded-pill px-3">Editar Camiseta</button></li>  
-                  <li class="p-1">
-                    <form method="post"  class="pb-3">
-                        {% csrf_token %}
-                        <input type="hidden" name="camiseta_id" value="{{ camiseta.id }}">
-                        <button class="btn btn-danger rounded-pill px-3" type="submit" name="deletar">Excluir Camiseta</button>
-                    </form></li>
-                </ul>
-            </div>
-        </div>
-    </li>
-    {% endfor %}
-</ul>
+{% if pedidos %}
+    <h2>Pedidos para suas camisetas</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID do Pedido</th>
+                <th>Cliente</th>
+                <th>Titulo do Produto</th>
+                <th>Data</th>
+                <th>Opção de Cor</th>
+                <th>Nome na Estampa</th>
+                <th>Numero na Estampa</th>
+                <th>Tamanho</th>
+                <th>Estilo</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pedido in pedidos %}
+                <tr>
+                    <td>{{ pedido.id }}</td>
+                    <td>{{ pedido.cliente }}</td>
+                    <td>{{ pedido.camiseta.titulo }}</td>
+                    <td>{{ pedido.data_pedido }}</td>
+                    <td>{{ pedido.cor }}</td>
+                    <td>{{ pedido.nome_estampa }}</td>
+                    <td>{{ pedido.numero_estampa }}</td>
+                    <td>{{ pedido.tamanho }}</td>
+                    <td>{{ pedido.estilo }}</td>
+                    <td>{{ pedido.status }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>Nenhum pedido encontrado para suas camisetas.</p>
+{% endif %}
 
 
 {% endblock %}

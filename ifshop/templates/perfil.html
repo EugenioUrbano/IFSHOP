@@ -7,33 +7,88 @@
 {% block filtro%} {% endblock %}
 
 {% block content %}
-<h1 style="background-color: #E9E2E2; color: black; padding: 10px;">Bem-vindo(a), {{ request.user.username }}</h1>
-<button type="button" class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'logout' %}" class="nav-link">Deslogar</a></button>
-<button type="button" class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'gerenciar_pro' %}" class="nav-link">Gerencie seus Produtos</a></button>
-
-{% if camisetas %}
-<div class="album py-5 ">
-    <div class="container">
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 ">
-        {% for camiseta in camisetas %}
-        <div class="col-6 ">
-          <div class="card" style="width: 18rem;">
-            <img src="{{ camiseta.imagem.url }}" alt="Imagem de {{ camiseta.titulo }}" style="width: 100%; height: 428px; object-fit: cover;" class="img-thumbnail">
-            <div class="card-body">
-              <h3>{{ camiseta.titulo }}</h3>
-              <div class="d-flex justify-content-between align-items-center">
-                <p class="text-body-secondary">R$ {{ camiseta.preco }}</p>
+<div style="background-color: #E9E2E2; color: black; padding: 10px;" class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
+  <h1 style="background-color: #E9E2E2; color: black; padding: 10px;">Bem-vindo(a), {{ request.user.username }}</h1>
+  <div class="text-end">
+    <button type="button" class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'logout' %}" class="nav-link">Deslogar</a></button>
+  </div>
+</div>
+{% if user.vendedor %}
+  <div style=" color: black; padding: 10px;" class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
+    <h3>Suas Camisetas</h3>
+    <div class="text-end">
+        <button type="button" class="btn botoes shadow-lg rounded-pill px-3 "><a href="{% url 'gerenciar_pro' %}" class="nav-link">Gerencie suas Camisetas</a></button>
+    </div>
+  </div>
+  {% if camisetas_com_imagens %}
+  <div class="album py-5 ">
+      <div class="container">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 ">
+          {% for item in camisetas_com_imagens|slice:":3" %}
+          <div class="col-6 ">
+            <div class="card" style="width: 18rem;">
+              {% if item.imagem_principal %}
+                  <img src="{{ item.imagem_principal.imagem.url }}" alt="Imagem de {{ item.camiseta.nome }}" >
+              {% else %}
+                  <p>Sem imagem disponível</p>
+              {% endif %}
+              <div class="card-body">
+                <h3>{{ item.camiseta.titulo }}</h3>
+                <div class="d-flex justify-content-between align-items-center">
+                  <p class="text-body-secondary">R$ {{ item.camiseta.preco }}</p>
+                </div>
               </div>
             </div>
           </div>
+          {% endfor %}
         </div>
-        {% endfor %}
       </div>
     </div>
+  {% else %}
+      <p>Nenhuma camisa cadastrada.</p>
+  {% endif %}
+  <div style=" color: black; padding-bottom: 50px;padding-left: 10px;padding-right: 10px;" class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
+    <h3>Pedidos das suas Camisetas</h3>
+    <div class="text-end">
+        <button type="button" class="btn botoes shadow-lg rounded-pill px-3 "><a href="{% url 'gerenciar_pedidos' %}" class="nav-link">Gerencie seus Pedidos</a></button>
+    </div>
   </div>
+
 {% else %}
-    <p>Nenhuma camisa cadastrada.</p>
+  <div style=" color: black; padding: 10px;" class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
+    <h3>Seus Pedidos</h3>
+    <div class="text-end">
+        <button type="button" class="btn botoes shadow-lg rounded-pill px-3 "><a href="{% url 'carrinho' %}" class="nav-link">Ver Mais Detalhes</a></button>
+    </div>
+  </div>
+  {% if pedidos %}
+  <div class="album py-5 ">
+      <div class="container">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 ">
+          {% for pedido in pedidos|slice:":3" %}
+          <div class="col-6 ">
+            <div class="card" style="width: 18rem;">
+              {% for item in camisetas_com_imagens %}
+                {% if item.imagem_principal %}
+                    <img src="{{ item.imagem_principal.imagem.url }}" alt="Imagem de {{ item.camiseta.nome }}" >
+                {% else %}
+                    <p>Sem imagem disponível</p>
+                {% endif %}
+              {% endfor %}
+              <div class="card-body">
+                <h3>{{ pedido.camiseta.titulo }}</h3>
+                <div class="d-flex justify-content-between align-items-center">
+                  <p class="text-body-secondary">R$ {{ pedido.camiseta.preco }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  {% else %}
+      <p>Nenhuma camisa cadastrada.</p>
+  {% endif %}
 {% endif %}
-
-
 {% endblock %}

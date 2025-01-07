@@ -71,9 +71,16 @@ class Camiseta(models.Model):
         ('vespertino', 'Vespertino'),
         ('noturno', 'Noturno'),
     ]
+    FORMA_PAG_OPCOES = [
+        ('dinheiro', 'Dinheiro'),
+        ('pix', 'Pix'),
+        ('cartão', 'Cartão'),
+        ('em duas vezes', 'Em duas Vezes')
+    ]
 
     titulo = models.CharField(max_length=100)
     preco = models.DecimalField(max_digits=10, decimal_places=2)
+    forma_pag_op = models.CharField(max_length=100,null=True)
     data_limite_pedidos = models.DateField()
     data_para_entrega = models.DateField()
     cores = models.ManyToManyField(Cor, blank=False) 
@@ -98,9 +105,22 @@ class ImagemCamiseta(models.Model):
         if self.principal:
             ImagemCamiseta.objects.filter(camiseta=self.camiseta, principal=True).update(principal=False)
         super().save(*args, **kwargs)
+        
 ####################################################################################################
 
 class Pedido(models.Model):
+    STATUS_OPCOES = [
+        ('pendente', 'Pendente'),
+        ('pago', 'Pago'),
+        ('parcelado', 'Parcelado'),
+    ]
+    FORMA_PAG_OPCOES = [
+        ('dinheiro', 'Dinheiro'),
+        ('pix', 'Pix'),
+        ('cartão', 'Cartão'),
+        ('em duas vezes', 'Em duas Vezes')
+    ]
+    
     camiseta = models.ForeignKey(Camiseta, on_delete=models.CASCADE)
     nome_estampa = models.CharField(max_length=50)
     numero_estampa = models.CharField(max_length=50)
@@ -108,7 +128,9 @@ class Pedido(models.Model):
     tamanho = models.CharField(max_length=10)
     estilo = models.CharField(max_length=20, default="")
     data_pedido = models.DateTimeField(auto_now_add=True)
-    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE, related_name="pedidos")
+    forma_pag = models.CharField(max_length=100,null=True)
+    status = models.CharField(max_length=100, default="Pendente")
+    cliente = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE, related_name="pedidos")
 
     def __str__(self):
         return f"Pedido para {self.camiseta.titulo} - {self.nome_estampa} ({self.numero_estampa})"

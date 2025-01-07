@@ -49,38 +49,37 @@
 {% block content %}
 
 {% if camisetas_com_imagens %}
-<div class="album py-5 ">
+<div class="album py-5">
     <div class="container">
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 ">
-        {% for item in camisetas_com_imagens %}
-        <div class="col ">
-            <div class="card shadow-sm ">
-                {% if item.imagem_principal %}
-                    <img src="{{ item.imagem_principal.imagem.url }}" alt="Imagem de {{ item.camiseta.nome }}" width="200">
-                {% else %}
-                    <p>Sem imagem disponível</p>
-                {% endif %}
-                <div class="card-body ">
-                    <h3>{{ item.camiseta.titulo }}</h3>
-                    <h6 class="text-body-secondary paddind-posts">Data Para fazer o pedido até {{ item.camiseta.data_limite_pedidos }}</h6>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <a href="{% url 'camiseta' item.camiseta.id %}">
-                                <button type="button" class="btn botoes shadow-lg rounded px-3">Fazer Pedido</button> 
-                            </a>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+            {% for item in camisetas_com_imagens %}
+                <div class="col">
+                    <div class="card shadow-sm">
+                        {% if item.imagem_principal %}
+                            <img src="{{ item.imagem_principal.imagem.url }}" alt="Imagem de {{ item.camiseta.nome }}">
+                        {% else %}
+                            <p>Sem imagem disponível</p>
+                        {% endif %}
+                        <div class="card-body">
+                            <h3>{{ item.camiseta.titulo }}</h3>
+                            <h6 class="text-body-secondary">Data para fazer o pedido até {{ item.camiseta.data_limite_pedidos }}</h6>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <a href="{% url 'camiseta' item.camiseta.id %}">
+                                        <button type="button" class="btn botoes shadow-lg rounded px-3">Fazer Pedido</button> 
+                                    </a>
+                                </div>
+                                <p class="text-body-secondary">R$ {{ item.camiseta.preco }}</p>
+                            </div>
                         </div>
-                        
-                        <p class="text-body-secondary">R$ {{ item.camiseta.preco }}</p>
                     </div>
                 </div>
-          </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-      </div>
     </div>
-  </div>
+</div>
 {% else %}
-    <p>Nenhuma camisa cadastrada.</p>
+    <h3>Nenhuma camisa cadastrada.</h3>
 {% endif %}
 
 {% endblock %}

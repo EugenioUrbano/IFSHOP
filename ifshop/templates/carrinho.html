@@ -6,16 +6,20 @@
 {% block title %}Carrinho{% endblock %}
 {% block filtro%} {% endblock %}
 
-{%block content%}
+{% block content %}
 <h1 style="background-color: #E9E2E2; color: black; padding: 10px;">Seu Carrinho</h1>
 <ul style="list-style: none; padding: 0;" class="container body-content">
     {% if pedidos %}
         {% for pedido in pedidos %}
         <li style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; display: flex; align-items: center; justify-content: space-between;">
             <div style="display: flex; align-items: center; gap: 20px;">
-                {% if pedido.camiseta.imagem %}
-                    <img src="{{ pedido.camiseta.imagem.url }}" alt="Imagem de {{ pedido.camiseta.titulo }}" style="width: 100px; height: 100px; object-fit: cover;">
-                {% endif %}
+                {% for item in camisetas_com_imagens %}
+                    {% if item.imagem_principal %}
+                    <img src="{{ item.imagem_principal.imagem.url }}" alt="Imagem de {{ item.camiseta.nome }}" class="thumbnail" style="width: 200px ;  height: 200px">
+                    {% else %}
+                        <p>Sem imagem disponível</p>
+                    {% endif %}
+                {% endfor %}
                 
                 <div class="col-md-8 themed-grid-col">
                     <div class="pb-3">
@@ -45,8 +49,9 @@
                                 <input type="hidden" name="pedido_id" value="{{ pedido.id }}">
                                 <button class="btn btn-danger rounded-pill px-3" type="submit" name="deletar">Cancelar Pedido</button>
                             </form></li>
+                        <li class="p-1"><button class="btn botoes shadow-lg rounded-pill px-3"><a href="https://wa.me/558487660374" class="nav-link">Pagar/Negociar</a></button></li>
                         <li class="p-1"><button class="btn botoes shadow-lg rounded-pill px-3">Editar Pedido</button></li>    
-                        <li class="p-1"><button class="btn botoes shadow-lg rounded-pill px-3">Pagar</button></li>
+                        
                     </ul>
                 </div>
             </div>

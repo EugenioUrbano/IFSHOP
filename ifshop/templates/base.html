@@ -49,13 +49,16 @@
             <div class="offcanvas-body">
               <ul style="list-style: none; padding: 0;" class="container body-content">
                 {% if pedidos %}
-                  {% for pedido in pedidos %}
+                  {% for pedido in pedidos|slice:":3" %}
                   <li style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; display: flex; align-items: center; justify-content: space-between;">
                       <div style="display: flex; align-items: center; gap: 20px;">
-                          {% if pedido.camiseta.imagem %}
-                              <img src="{{ pedido.camiseta.imagem.url }}" alt="Imagem de {{ pedido.camiseta.titulo }}" style="width: 100px; height: 100px; object-fit: cover;">
+                        {% for item in camisetas_com_imagens %}
+                          {% if item.imagem_principal %}
+                              <img src="{{ item.imagem_principal.imagem.url }}" alt="Imagem de {{ item.camiseta.nome }}" width="100">
+                          {% else %}
+                              <p>Sem imagem disponível</p>
                           {% endif %}
-                          
+                        {% endfor %}
                           <div class="col-md-8 themed-grid-col">
                               <div class="pb-3">
                                   <h3><strong>{{ pedido.camiseta.titulo }}</strong></h3>
@@ -97,16 +100,13 @@
       {% endblock %}
     </div>
     
-   
-    <footer class="custom-header fixar-rodape d-flex flex-wrap align-items-center justify-content-center justify-content-md-between"></header>
-      
-      <div class="col-md-4 d-flex align-items-center">
-        <a href="{% url 'index' %}" class="nav-link"><img src="{% static 'img/logo.png' %}" alt="logo ifshop" class="rounded float-start" width="40" height="34"></a>
-        
-        <h6 class="mb-3 mb-md-0 ">© 2024 Infoweb-2022</h6> 
-      </div>
-      
-    </footer>
+    <div style="padding-top: 50px">
+      <footer style="padding-left: 10px" class="custom-header fixar-rodape d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
+        <div class="col-md-4 d-flex align-items-center">
+          <a href="{% url 'index' %}" class="nav-link"><img src="{% static 'img/logo.png' %}" alt="logo ifshop" class="rounded float-start" width="40" height="34"></a>
+          <h6 class="mb-3 mb-md-0 ">© 2024 Infoweb-2022</h6> 
+        </div>
+      </footer>
 </body>
 
 

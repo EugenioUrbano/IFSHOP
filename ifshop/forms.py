@@ -102,6 +102,11 @@ class CamisetaForm(forms.ModelForm):
     preco = forms.DecimalField(
         widget=forms.NumberInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: 00,00'}))
     
+    forma_pag_op = forms.MultipleChoiceField(
+        choices=Camiseta.FORMA_PAG_OPCOES,
+        label= 'Formas de Pagamento Disponivel' ,
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'd-inline-block form-check-input '}), required=True)
+    
     cursos = forms.ChoiceField(
         choices=Camiseta.CURSOS_OPCOES,
         widget=forms.Select(attrs={'class': 'form-select rounded-3',}))
@@ -114,7 +119,7 @@ class CamisetaForm(forms.ModelForm):
     
     class Meta:
         model = Camiseta
-        fields = ['titulo', 'preco', 'cores_input', 'data_limite_pedidos', 'data_para_entrega', 'cursos', 'turnos', 'tamanhos', 'estilos']
+        fields = ['titulo', 'preco', 'forma_pag_op', 'cores_input', 'data_limite_pedidos', 'data_para_entrega', 'cursos', 'turnos', 'tamanhos', 'estilos']
 
     def save(self, commit=True):
         camiseta = super().save(commit=False)
@@ -148,10 +153,12 @@ class PedidoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         tamanhos_opcoes = kwargs.pop('tamanhos_opcoes', [])
         estilos_opcoes = kwargs.pop('estilos_opcoes', [])
+        forma_pag_opcoes = kwargs.pop('forma_pag_opcoes', [])
         super().__init__(*args, **kwargs)
 
         self.fields['tamanho'].choices = [(op, op) for op in tamanhos_opcoes]
         self.fields['estilo'].choices = [(op, op) for op in estilos_opcoes]
+        self.fields['forma_pag'].choices = [(op, op) for op in forma_pag_opcoes]
 
     nome_estampa = forms.CharField(
         max_length=100,
@@ -168,10 +175,13 @@ class PedidoForm(forms.ModelForm):
     estilo = forms.ChoiceField(
         widget=forms.Select(attrs={'class': 'card-text mb-auto form-select',}))
     
+    forma_pag = forms.ChoiceField(
+        widget=forms.Select(attrs={'class': 'card-text mb-auto form-select',}))
+    
     cor = forms.ModelChoiceField(
         queryset=Cor.objects.all(),
         widget=forms.Select(attrs={'class': 'card-text mb-auto form-select',}))
 
     class Meta:
         model = Pedido
-        fields = ['nome_estampa', 'numero_estampa', 'tamanho', 'estilo', "cor"]
+        fields = ['nome_estampa', 'numero_estampa', 'tamanho', 'estilo', "cor", "forma_pag"]

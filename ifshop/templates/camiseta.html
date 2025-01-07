@@ -7,17 +7,30 @@
 {% block filtro%} {% endblock %}
 
 {% block content %}
-    
-    <div class=" d-flex justify-content-center " style="padding: 5%">
-        <div class="col-lg-8 border rounded-3 shadow mx-md-n5" style="padding-top: 5%; padding-bottom: 5%">
-            <div class="d-flex justify-content-center">
-                {% if camiseta.imagem %}
-                    <img src="{{ camiseta.imagem.url }}" alt="Imagem da camisa {{ camiseta.titulo }}" width="200">
-                {% endif %}
+<div class="d-flex justify-content-center " style="padding: 5%">
+    <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+        <div class="col-auto d-lg-block">
+            <div id="carousel{{ camiseta.id }}" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% for imagem in camiseta.imagens.all %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <img src="{{ imagem.imagem.url }}" style="width: 500px ;  height: 500px" alt="Imagem de {{ camiseta.nome }}">
+                        </div>
+                    {% endfor %}
+                </div>
+                <!-- Controles de navegação -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ camiseta.id }}" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Anterior</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ camiseta.id }}" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Próximo</span>
+                </button>
             </div>
-            
-            <div class="col p-4 d-flex flex-column position-static">
-                <strong class="d-inline-block mb-2 text-primary-emphasis">Data para Pedidos até {{ camiseta.data_limite_pedidos }}</strong>
+        </div>
+        <div class="col p-4 d-flex flex-column position-static">
+            <strong class="d-inline-block mb-2 text-primary-emphasis">Data para Pedidos até {{ camiseta.data_limite_pedidos }}</strong>
                 <h3 class="mb-0">{{ camiseta.titulo }}</h3>
                 <div class="mb-1 text-body-secondary">Preço: R$ {{ camiseta.preco }}</div>
                 <form method="post" class="row g-3">
@@ -42,12 +55,19 @@
                         <label for="id_cor">Cor da camiseta</label>
                         {{ form.cor }}
                     </div>
+                    <div class="col-md-6">
+                        <label for="id_cor">Cor da camiseta</label>
+                        {{ form.forma_pag }}
+                    </div>
                     <a>
                         <button type="submit" class="btn botoes shadow-lg rounded px-3 d-flex justify-content-center">Adicionar ao Carrinho</button>
                     </a>
                 </form>
-            </div>
-            
         </div>
+        
     </div>
+  </div>
+
+
+    
 {% endblock %}
