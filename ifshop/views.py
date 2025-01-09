@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.forms import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -217,10 +218,9 @@ def gerenciar_pedidos(request):
 
     if request.method == 'POST':
         for pedido in pedidos:
-            # Criar o formulário e associar o pedido à instância do formulário
-            form = AlterarStatusPedidoForm(request.POST, instance=pedido)  # Passa o pedido para associar com o formulário
+            form = AlterarStatusPedidoForm(request.POST, instance=pedido)
             if form.is_valid():
-                form.save()  # Atualiza o pedido com o novo status
+                form.save()  
                 messages.success(request, f"Status do pedido {pedido.id} atualizado com sucesso!")
             else:
                 messages.error(request, f"Erro ao atualizar o status do pedido {pedido.id}.")
@@ -228,7 +228,7 @@ def gerenciar_pedidos(request):
 
     pedidos_com_forms = []
     for pedido in pedidos:
-        form = AlterarStatusPedidoForm(instance=pedido)  # Passa o pedido para o formulário para edição
+        form = AlterarStatusPedidoForm(instance=pedido)
         pedidos_com_forms.append({'pedido': pedido, 'form': form})
 
     return render(request, 'gerenciar_pedidos.html', {'pedidos_com_forms': pedidos_com_forms})
@@ -259,5 +259,50 @@ def edit_pedido(request, pedido_id):
 
 @login_required
 @user_passes_test(vendedor)
-def edit_produto(request):
-    return render(request, 'edit_produto.html')
+def edit_produto(request, camiseta_id):
+    camiseta = get_object_or_404(Camiseta, id=camiseta_id, vendedor=request.user)
+
+    # Cria um formset para as imagens associadas à camiseta
+    ImagemCamisetaFormSet = modelformset_factory(
+        ImagemCamiseta,
+        fields=('imagem', 'principal'),
+        extra=1,
+        can_delete=True
+    )
+    
+    # Inicializa os forms
+    if request.method == 'POST':
+        form = CamisetaForm(request.POST, request.FILES, instance=camiseta)
+        formset = ImagemCamisetaFormSet(request.POST, request.FILES, queryset=ImagemCamiseta.objects.filter(camiseta=camiseta))
+
+        if form.is_valid() and formset.is_valid():
+            # Salva a camiseta com os novos dados
+            camiseta = form.save(commit=False)
+            camiseta.tamanhos = ', '.join(form.cleaned_data['tamanhos'])
+            camiseta.estilos = ', '.join(form.cleaned_data['estilos'])
+            camiseta.forma_pag_op = ', '.join(form.cleaned_data['forma_pag_op'])
+            camiseta.save()
+
+            # Salva as imagens associadas
+            for img_form in formset:
+                if img_form.cleaned_data.get('imagem') or img_form.cleaned_data.get('DELETE'):
+                    imagem = img_form.save(commit=False)
+                    imagem.camiseta = camiseta
+                    if img_form.cleaned_data.get('DELETE'):
+                        imagem.delete()
+                    else:
+                        imagem.save()
+
+            messages.success(request, "Camiseta atualizada com sucesso!")
+            return redirect('index')
+        else:
+            messages.error(request, "Corrija os erros no formulário.")
+    else:
+        form = CamisetaForm(instance=camiseta)
+        formset = ImagemCamisetaFormSet(queryset=ImagemCamiseta.objects.filter(camiseta=camiseta))
+
+    return render(request, 'edit_produto.html', {
+        'form': form,
+        'formset': formset,
+        'camiseta': camiseta
+    })

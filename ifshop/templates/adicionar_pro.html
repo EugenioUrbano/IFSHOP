@@ -138,24 +138,3 @@
     </div>
 </div> 
 {% endblock %}
-<script>
-    function adicionarImagem() {
-        var num_imagens = document.getElementById('num_imagens');
-        var novoCampo = document.createElement('div');
-        novoCampo.innerHTML = '<input type="file" name="imagem_' + num_imagens.value + '-imagem" required>';
-        document.getElementById('imagens').appendChild(novoCampo);
-        num_imagens.value = parseInt(num_imagens.value) + 1;
-    }
-    
-    function atualizarCampos() {
-        var num_imagens = document.getElementById('num_imagens').value;
-        var imagensDiv = document.getElementById('imagens');
-        imagensDiv.innerHTML = ''; // Limpa os campos existentes
-    
-        for (var i = 0; i < num_imagens; i++) {
-            var novoCampo = document.createElement('div');
-            novoCampo.innerHTML = '<input type="file" name="imagem_' + i + '-imagem" required>';
-            imagensDiv.appendChild(novoCampo);
-        }
-    }
-    </script>

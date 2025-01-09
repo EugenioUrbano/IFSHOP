@@ -12,13 +12,13 @@ urlpatterns = [
     path('perfil/', views.perfil, name='perfil'),
     path('logout/', logout_usuario, name='logout'),
     path('gerenciar_pro/', views.gerenciar_pro, name='gerenciar_pro'),
-    path('edit_produto/', views.edit_produto, name='edit_produto'),
+    path('edit_produto/<int:camiseta_id>/', views.edit_produto, name='edit_produto'),
     path('gerenciar_pedidos/', views.gerenciar_pedidos, name="gerenciar_pedidos"),
     path('adicionar_pro/', views.adicionar_pro, name='adicionar_pro'),
     ##########################################################################
     path('carrinho/', views.carrinho, name='carrinho'),
     path('edit_pedido/<int:pedido_id>/',views.edit_pedido, name='edit_pedido'),
-    path('camiseta/<int:camiseta_id>', views.camiseta, name='camiseta'),
+    path('camiseta/<int:camiseta_id>/', views.camiseta, name='camiseta'),
     
     
 ]

@@ -38,29 +38,40 @@
                     </div>
                 </div>
             </div>
-            <div style="text-align: right;">
-                <div class="dropstart">
-                    <button class="btn botoes shadow-lg rounded-pill px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Opções
+            <div >
+                <li class="p-1"> 
+                    <button type="button" class="btn botoes shadow-lg rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                        Adicione as imagens aqui
                     </button>
-                    <ul class="dropdown-menu">
-                        <li class="p-1">
-                            <form method="post" class="">
-                                {% csrf_token %}
-                                <input type="hidden" name="pedido_id" value="{{ item.pedido.id }}">
-                                <button class="btn btn-danger rounded-pill px-3" type="submit" name="deletar">Cancelar Pedido</button>
-                            </form>
-                        </li>
-                        <li class="p-1">
-                            <button class="btn botoes shadow-lg rounded-pill px-3">
-                                <a href="https://wa.me/55{{item.pedido.camiseta.vendedor.telefone}}?text=Olá!%20Gostaria%20de%20Negociar/Pagar%20o%20produto%20com%20ID:%20{{item.pedido.id}}." class="nav-link"><i class="fab fa-whatsapp"></i>Pagar/Negociar</a>
-                            </button>
-                        </li>
-                        <li class="p-1">
-                            <button class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'edit_pedido' item.pedido.id %}" class="nav-link">Editar Pedido</a></button>
-                        </li>
-                    </ul>
-                </div>
+                    
+                    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                
+                                <div class="modal-body">
+                                    Tem certeza que deseja cancelar este pedido?
+                                </div>
+                                <div class="modal-footer" >
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
+                                    <form method="post" class="">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="pedido_id" value="{{ item.pedido.id }}">
+                                        <button type="submit" name="deletar" class="btn btn-primary">Sim</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                
+                <li class="p-1">
+                    <button class="btn botoes shadow-lg rounded-pill px-3">
+                        <a href="https://wa.me/55{{item.pedido.camiseta.vendedor.telefone}}?text=Olá!%20Gostaria%20de%20Negociar/Pagar%20o%20produto%20com%20ID:%20{{item.pedido.id}}." class="nav-link"><i class="fab fa-whatsapp"></i>Pagar/Negociar</a>
+                    </button>
+                </li>
+                <li class="p-1">
+                    <button class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'edit_pedido' item.pedido.id %}" class="nav-link">Editar Pedido</a></button>
+                </li>
             </div>
         </li>
         {% endfor %}

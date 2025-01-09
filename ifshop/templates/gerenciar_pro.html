@@ -43,7 +43,7 @@
                 Opções
                 </button>
                 <ul class="dropdown-menu">
-                <li class="p-1"><button class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'edit_produto' %}" class="nav-link">Editar Camiseta</a></button></li>  
+                <li class="p-1"><button class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'edit_produto' item.camiseta.id%}" class="nav-link">Editar Camiseta</a></button></li>  
                 <li class="p-1">
                     <form method="post"  class="pb-3">
                         {% csrf_token %}
