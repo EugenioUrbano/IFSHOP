@@ -17,7 +17,7 @@ urlpatterns = [
     path('adicionar_pro/', views.adicionar_pro, name='adicionar_pro'),
     ##########################################################################
     path('carrinho/', views.carrinho, name='carrinho'),
-    path('edit_pedido/',views.edit_pedido, name='edit_pedido'),
+    path('edit_pedido/<int:pedido_id>/',views.edit_pedido, name='edit_pedido'),
     path('camiseta/<int:camiseta_id>', views.camiseta, name='camiseta'),
     
     

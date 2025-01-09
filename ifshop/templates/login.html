@@ -19,12 +19,10 @@
                 <form method="post">
                     {% csrf_token %}
                     <div class="col-12 pb-3">
-                        <label for="id_username">Email</label>
-                        {{ form.username }}
+                        {{ form.username|as_crispy_field }}
                     </div>
                     <div class="col-12 pb-3">
-                        <label for="id_password">Senha</label>
-                        {{ form.password }}
+                        {{ form.password|as_crispy_field }}
                         <div>
                             <input type="checkbox" id="mostrarSenha" onclick="mostrarOcultarSenha()"> Mostrar
                         </div>

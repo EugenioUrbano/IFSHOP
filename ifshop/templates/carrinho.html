@@ -53,11 +53,11 @@
                         </li>
                         <li class="p-1">
                             <button class="btn botoes shadow-lg rounded-pill px-3">
-                                <a href="https://wa.me/558487660374" class="nav-link">Pagar/Negociar</a>
+                                <a href="https://wa.me/55{{item.pedido.camiseta.vendedor.telefone}}?text=Olá!%20Gostaria%20de%20Negociar/Pagar%20o%20produto%20com%20ID:%20{{item.pedido.id}}." class="nav-link"><i class="fab fa-whatsapp"></i>Pagar/Negociar</a>
                             </button>
                         </li>
                         <li class="p-1">
-                            <button class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'edit_pedido' %}" class="nav-link">Editar Pedido</a></button>
+                            <button class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'edit_pedido' item.pedido.id %}" class="nav-link">Editar Pedido</a></button>
                         </li>
                     </ul>
                 </div>

@@ -43,28 +43,22 @@
                 <form method="post" class="row g-3">
                     {% csrf_token %}
                     <div class=" col-md-6">
-                        <label for="id_nome_estampa">Nome na estampa</label>
-                        {{ form.nome_estampa }}
+                        {{ form.nome_estampa|as_crispy_field }}
                     </div>
                     <div class=" col-md-6">
-                        <label for="id_numero_estampa">Numero na estampa</label>
-                        {{ form.numero_estampa }}
+                        {{ form.numero_estampa|as_crispy_field }}
                     </div>
                     <div class=" col-md-6">
-                        <label for="id_estilo">Estilo da camiseta</label>
-                        {{ form.estilo }}
+                        {{ form.estilo|as_crispy_field }}
                     </div>
                     <div class=" col-md-6">
-                        <label for="id_tamanho">Tamanho da camiseta</label>
-                        {{ form.tamanho }}
+                        {{ form.tamanho|as_crispy_field }}
                     </div>
                     <div class="col-md-6">
-                        <label for="id_cor">Cor da camiseta</label>
-                        {{ form.cor }}
+                        {{ form.cor|as_crispy_field }}
                     </div>
                     <div class="col-md-6">
-                        <label for="id_forma_pag">Forma de Pagamento</label>
-                        {{ form.forma_pag }}
+                        {{ form.forma_pag|as_crispy_field }}
                     </div>
                     <a>
                         <button type="submit" class="btn botoes shadow-lg rounded px-3 d-flex justify-content-center">Adicionar ao Carrinho</button>

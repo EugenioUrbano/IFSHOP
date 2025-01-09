@@ -17,34 +17,27 @@
                 <form class="row g-3" method="post">
                     {% csrf_token %}
                     <div class=" col-12">
-                        <label for="id_username">Nome</label>
-                        {{ form.nome }}
+                        {{ form.nome|as_crispy_field }}
                     </div>
                     <div class=" col-md-6">
-                        <label for="id_password1">Senha</label>
-                        {{ form.password1 }}
+                        {{ form.password1|as_crispy_field }}
                         <input type="checkbox" id="mostrarSenha" onclick="mostrarOcultarSenha()"> Mostrar
                     </div>
                     <div class=" col-md-6">
-                        <label for="id_password2">Confirme a senha</label>
-                        {{ form.password2 }}
+                        {{ form.password2|as_crispy_field }}
                         <input type="checkbox" id="mostrarSenhaRep" onclick="mostrarOcultarSenhaRep()"> Mostrar
                     </div>
                     <div class=" col-md-6">
-                        <label for="id_email">Email</label>
-                        {{ form.email }}
+                        {{ form.email|as_crispy_field }}
                     </div>
                     <div class=" col-md-6">
-                        <label for="id_telefone">Telefone</label>
-                        {{ form.telefone }}
+                        {{ form.telefone|as_crispy_field }}
                     </div>
                     <div class=" col-md-6">
-                        <label for="id_matricula_cpf">Matricula ou CPF</label>
-                        {{ form.matricula_cpf }}
+                        {{ form.matricula_cpf|as_crispy_field }}
                     </div>
                     <div class="col-md-6">
-                        <label for="id_curso">Selecione o Curso</label>
-                        {{ form.curso }}
+                        {{ form.curso|as_crispy_field }}
                         <span class="text-danger">(Caso nao seja de nenhum selecione "Outro")</span>
                     </div>
                     <button class="btn botoes shadow-lg rounded-pill px-3 " type="submit">Realizar Cadastro</button>

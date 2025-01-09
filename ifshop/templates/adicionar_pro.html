@@ -18,39 +18,32 @@
                     {% csrf_token %}
                     
                     <div class=" col-12">
-                        <label for="id_titulo">Titulo</label>
-                        {{ form.titulo }}
+                        {{ form.titulo|as_crispy_field }}
                     </div>
 
                     <div class=" col-md-6">
-                        <label for="id_preco">Preço</label>
-                        {{ form.preco }}
+                        {{ form.preco|as_crispy_field }}
                     </div>
 
                     <div class=" col-md-6">
-                        <label for="id_cores">Cores</label>
-                        {{ form.cores_input }}
+                        {{ form.cores_input|as_crispy_field }}
                     </div>
                     
                     <div class="col-md-6">
-                        <label for="id_data_limite_pedidos">Data limite para pedidos</label>
-                        {{ form.data_limite_pedidos }}
+                        {{ form.data_limite_pedidos|as_crispy_field }}
                     </div>
 
                     <div class=" col-md-6">
-                        <label for="id_data_para_entrega">Data que sera feita a entrega</label>
-                        {{ form.data_para_entrega }}
+                        {{ form.data_para_entrega|as_crispy_field }}
                         
                     </div>
 
                     <div class=" col-md-6">
-                        <label for="id_cursos">Curso</label>
-                        {{ form.cursos }}
+                        {{ form.cursos|as_crispy_field }}
                     </div>
 
                     <div class=" col-md-6">
-                        <label for="id_turnos">Turno</label>
-                        {{ form.turnos }}
+                        {{ form.turnos|as_crispy_field }}
                     </div>
 
                     <div class=" col-md-6">

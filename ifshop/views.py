@@ -102,9 +102,8 @@ def carrinho(request):
         return redirect('carrinho')
 
     return render(request, "carrinho.html")
+    
 
-def edit_pedido(request):
-    return render(request, 'edit_pedido.html')
 
 ####################################################################################################
 
@@ -233,3 +232,32 @@ def gerenciar_pedidos(request):
         pedidos_com_forms.append({'pedido': pedido, 'form': form})
 
     return render(request, 'gerenciar_pedidos.html', {'pedidos_com_forms': pedidos_com_forms})
+
+####################################################################################################
+
+@login_required
+def edit_pedido(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id, cliente=request.user)
+
+    # Define opções para o formulário (baseadas no modelo relacionado à camiseta)
+    tamanhos_opcoes = [t.strip() for t in pedido.camiseta.tamanhos.split(',')]
+    estilos_opcoes = [e.strip() for e in pedido.camiseta.estilos.split(',')]
+    forma_pag_opcoes = [f.strip() for f in pedido.camiseta.forma_pag_op.split(',')]
+
+    if request.method == 'POST':
+        # Preenche o formulário com os dados enviados para edição
+        form = PedidoForm(request.POST, instance=pedido, tamanhos_opcoes=tamanhos_opcoes, estilos_opcoes=estilos_opcoes,forma_pag_opcoes=forma_pag_opcoes)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Pedido atualizado com sucesso!")
+            return redirect('carrinho')  # Redireciona para o carrinho ou outra página
+    else:
+        # Inicializa o formulário com os dados atuais do pedido
+        form = PedidoForm(instance=pedido, tamanhos_opcoes=tamanhos_opcoes, estilos_opcoes=estilos_opcoes, forma_pag_opcoes=forma_pag_opcoes)
+
+    return render(request, 'edit_pedido.html', {'form': form, 'pedido': pedido})
+
+@login_required
+@user_passes_test(vendedor)
+def edit_produto(request):
+    return render(request, 'edit_produto.html')

@@ -2,8 +2,6 @@ from django import forms
 from django.forms import modelformset_factory
 from .models import Camiseta, Pedido, Cor, UsuarioCustomizado, ImagemCamiseta
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Row, Column, Field
 
 
 ######################## login e cadastro de usuario  #############################       
@@ -34,19 +32,19 @@ class CadastroUsuarioForm(UserCreationForm):
         widget=forms.TextInput(attrs={'class': 'form-control rounded-3', 'placeholder': 'Somente numeros sem espaço', 'type': 'number'}))
     
     telefone = forms.CharField(
+        min_length=10,
         max_length=100,
-        widget=forms.TextInput(attrs={'type': 'number', 'class': 'form-control rounded-3 ', 'placeholder': 'Somente numeros sem espaço'}))
+        widget=forms.TextInput(attrs={'type': 'number', 'class': 'form-control rounded-3 ', 'placeholder': 'Ex.: 8499999999'}))
     
     class Meta:
         model = UsuarioCustomizado
         fields = ['nome', 'email', 'telefone', 'matricula_cpf', 'curso', 'password1', 'password2' ]
         
     
-    
         
 class LoginUsuarioForm(AuthenticationForm):
-    username = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control rounded-3 '}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control rounded-3 '}))
+    username = forms.EmailField(label="Email",widget=forms.EmailInput(attrs={'class': 'form-control rounded-3 '}))
+    password = forms.CharField(label="Senha",widget=forms.PasswordInput(attrs={'class': 'form-control rounded-3 '}))
     
 ### Filtro ###
 class FiltroProdutoForm(forms.Form):
@@ -176,6 +174,7 @@ class PedidoForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'card-text mb-auto form-select',}))
     
     forma_pag = forms.ChoiceField(
+        label="Forma de Pagamento",
         widget=forms.Select(attrs={'class': 'card-text mb-auto form-select',}))
     
     cor = forms.ModelChoiceField(

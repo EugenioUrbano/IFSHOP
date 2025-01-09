@@ -1,0 +1,67 @@
+{% extends "base.html"%}
+
+{% load static %}
+{% load crispy_forms_filters %}
+
+{% block title%}Edição Pedido{% endblock %}
+{% block filtro%} {% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center " style="padding: 5%">
+    <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+        <div class="col-auto d-lg-block">
+            <div id="carousel{{ camiseta.id }}" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% for imagem in camiseta.imagens.all %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <img src="{{ imagem.imagem.url }}" style="width: 500px ;  height: 500px" alt="Imagem de {{ camiseta.nome }}">
+                        </div>
+                    {% endfor %}
+                </div>
+                <!-- Controles de navegação -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ camiseta.id }}" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Anterior</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ camiseta.id }}" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Próximo</span>
+                </button>
+            </div>
+        </div>
+        <div class="col p-4 d-flex flex-column position-static">
+            <strong class="d-inline-block mb-2 text-primary-emphasis">Data para Pedidos até {{ camiseta.data_limite_pedidos }}</strong>
+                <h3 class="mb-0">{{ camiseta.titulo }}</h3>
+                <div class="mb-1 text-body-secondary">Preço: R$ {{ camiseta.preco }}</div>
+                <form method="post" class="row g-3">
+                    {% csrf_token %}
+                    <div class=" col-md-6">
+                        {{ form.nome_estampa|as_crispy_field }}
+                    </div>
+                    <div class=" col-md-6">
+                        {{ form.numero_estampa|as_crispy_field }}
+                    </div>
+                    <div class=" col-md-6">
+                        {{ form.estilo|as_crispy_field }}
+                    </div>
+                    <div class=" col-md-6">
+                        {{ form.tamanho|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.cor|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.forma_pag|as_crispy_field }}
+                    </div>
+                    <a>
+                        <button type="submit" class="btn botoes shadow-lg rounded px-3 d-flex justify-content-center">Salvar</button>
+                    </a>
+                </form>
+        </div>
+        
+    </div>
+  </div>
+
+
+    
+{% endblock %}

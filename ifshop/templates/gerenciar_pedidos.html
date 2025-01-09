@@ -19,6 +19,7 @@
                 <tr>
                     <th class="border border-black">ID do Pedido</th>
                     <th class="border border-black">Cliente</th>
+                    <th class="border border-black">Numero Cliente</th>
                     <th class="border border-black">Título do Produto</th>
                     <th class="border border-black">Data</th>
                     <th class="border border-black">Opção de Cor</th>
@@ -34,6 +35,7 @@
                     <tr class="border-end border-start">
                         <td class="border border-black ">{{ item.pedido.id }}</td>
                         <td class="border border-black ">{{ item.pedido.cliente }}</td>
+                        <td class="border border-black ">{{ item.pedido.cliente.telefone }}</td>
                         <td class="border border-black ">{{ item.pedido.camiseta.titulo }}</td>
                         <td class="border border-black ">{{ item.pedido.data_pedido }}</td>
                         <td class="border border-black ">{{ item.pedido.cor }}</td>
