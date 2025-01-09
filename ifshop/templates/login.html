@@ -18,21 +18,21 @@
             <div class="modal-body p-5 pt-0">
                 <form method="post">
                     {% csrf_token %}
-                    <div class=" col-12 pb-3">
+                    <div class="col-12 pb-3">
                         <label for="id_username">Email</label>
                         {{ form.username }}
                     </div>
-                    <div class=" col-12 pb-3">
+                    <div class="col-12 pb-3">
                         <label for="id_password">Senha</label>
                         {{ form.password }}
-                        <input type="checkbox" id="mostrarSenha" onclick="mostrarOcultarSenha()"> Mostrar
+                        <div>
+                            <input type="checkbox" id="mostrarSenha" onclick="mostrarOcultarSenha()"> Mostrar
+                        </div>
                     </div>
-                    
                     <button class="btn botoes shadow-lg rounded-pill px-3" type="submit">Realizar Login</button>
                     <div>
-                        <a> Não tem conta ainda? 
-                            <a href="{% url 'cadastro' %}">Faça seu cadastro</a>
-                        </a>  
+                        Não tem conta ainda? 
+                        <a href="{% url 'cadastro' %}">Faça seu cadastro</a>
                     </div>
                 </form>
             </div>
@@ -40,16 +40,14 @@
         </div>
     </div>
 </div>
-<script>  
+<script>
     function mostrarOcultarSenha() {
-        var id_password = document.getElementById("id_password");
-        var checkbox = document.getElementById("mostrarSenha");
-        if (checkbox.checked) {
-            id_password.type = "text";  
+        const passwordField = document.getElementById("id_password");
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
         } else {
-            id_password.type = "password";  
+            passwordField.type = "password";
         }
     }
-    
 </script>
 {% endblock %}

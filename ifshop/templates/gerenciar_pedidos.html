@@ -9,44 +9,59 @@
 {% block content %}
 <div style="background-color: #E9E2E2; color: black; padding: 10px;" class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
     <h1>Gerencie Pedidos das suas Camisetas</h1>
-    <div class="text-end">
-        <button type="button" class="btn botoes shadow-lg rounded-pill px-3 "><a href="{% url 'adicionar_pro' %}" class="nav-link">Adicionar Nova Camiseta</a></button>
-    </div>
 </div>
-{% if pedidos %}
+{% if pedidos_com_forms %}
     <h2>Pedidos para suas camisetas</h2>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>ID do Pedido</th>
-                <th>Cliente</th>
-                <th>Titulo do Produto</th>
-                <th>Data</th>
-                <th>Opção de Cor</th>
-                <th>Nome na Estampa</th>
-                <th>Numero na Estampa</th>
-                <th>Tamanho</th>
-                <th>Estilo</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for pedido in pedidos %}
+    <form method="POST">
+        {% csrf_token %}
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>{{ pedido.id }}</td>
-                    <td>{{ pedido.cliente }}</td>
-                    <td>{{ pedido.camiseta.titulo }}</td>
-                    <td>{{ pedido.data_pedido }}</td>
-                    <td>{{ pedido.cor }}</td>
-                    <td>{{ pedido.nome_estampa }}</td>
-                    <td>{{ pedido.numero_estampa }}</td>
-                    <td>{{ pedido.tamanho }}</td>
-                    <td>{{ pedido.estilo }}</td>
-                    <td>{{ pedido.status }}</td>
+                    <th class="border border-black">ID do Pedido</th>
+                    <th class="border border-black">Cliente</th>
+                    <th class="border border-black">Título do Produto</th>
+                    <th class="border border-black">Data</th>
+                    <th class="border border-black">Opção de Cor</th>
+                    <th class="border border-black">Nome na Estampa</th>
+                    <th class="border border-black">Número na Estampa</th>
+                    <th class="border border-black">Tamanho</th>
+                    <th class="border border-black">Estilo</th>
+                    <th class="border border-black">Status</th>
                 </tr>
+            </thead>
+            <tbody>
+                {% for item in pedidos_com_forms %}
+                    <tr class="border-end border-start">
+                        <td class="border border-black ">{{ item.pedido.id }}</td>
+                        <td class="border border-black ">{{ item.pedido.cliente }}</td>
+                        <td class="border border-black ">{{ item.pedido.camiseta.titulo }}</td>
+                        <td class="border border-black ">{{ item.pedido.data_pedido }}</td>
+                        <td class="border border-black ">{{ item.pedido.cor }}</td>
+                        <td class="border border-black ">{{ item.pedido.nome_estampa }}</td>
+                        <td class="border border-black ">{{ item.pedido.numero_estampa }}</td>
+                        <td class="border border-black ">{{ item.pedido.tamanho }}</td>
+                        <td class="border border-black ">{{ item.pedido.estilo }}</td>
+                        <td class="border border-black ">
+                            <!-- Campo select para alterar o status -->
+                            {{ item.form.status }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+    </form>
+
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
             {% endfor %}
-        </tbody>
-    </table>
+        </div>
+    {% endif %}
 {% else %}
     <p>Nenhum pedido encontrado para suas camisetas.</p>
 {% endif %}

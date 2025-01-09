@@ -112,7 +112,7 @@ class Pedido(models.Model):
     STATUS_OPCOES = [
         ('pendente', 'Pendente'),
         ('pago', 'Pago'),
-        ('parcelado', 'Parcelado'),
+        ('negociando', 'Negociando'),
     ]
     FORMA_PAG_OPCOES = [
         ('dinheiro', 'Dinheiro'),

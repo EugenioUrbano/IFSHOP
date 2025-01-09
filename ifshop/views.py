@@ -1,8 +1,9 @@
+from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Camiseta, Pedido, ImagemCamiseta
-from .forms import CamisetaForm, PedidoForm, FiltroProdutoForm, CadastroUsuarioForm, LoginUsuarioForm, ImagemCamisetaFormSet
+from .forms import CamisetaForm, PedidoForm, AlterarStatusPedidoForm, FiltroProdutoForm, CadastroUsuarioForm, LoginUsuarioForm, ImagemCamisetaFormSet
 
 def index(request):
     form = FiltroProdutoForm(request.GET) 
@@ -10,8 +11,6 @@ def index(request):
     camisetas =Camiseta.objects.all()
     pedidos = Pedido.objects.all()
     
-    
-        
     if form.is_valid():
         turnos = form.cleaned_data.get('turnos')
         cursos = form.cleaned_data.get('cursos')
@@ -40,14 +39,8 @@ def vendedor(user):
     return user.vendedor
 
 def login_view(request):
-    camisetas =Camiseta.objects.all()
     pedidos = Pedido.objects.all()
     
-    camisetas_com_imagens = []
-    for camiseta in camisetas:
-        imagem_principal = camiseta.imagens.filter(principal=True).first() or camiseta.imagens.first()
-        camisetas_com_imagens.append({'camiseta': camiseta, 'imagem_principal': imagem_principal})
-        
     if request.method == 'POST':
         form = LoginUsuarioForm(data=request.POST)
         if form.is_valid():
@@ -56,7 +49,7 @@ def login_view(request):
             return redirect('perfil')  
     else:
         form = LoginUsuarioForm()
-    return render(request, 'login.html', {'form': form, 'pedidos': pedidos, 'camisetas_com_imagens': camisetas_com_imagens})
+    return render(request, 'login.html', {'form': form, 'pedidos': pedidos})
 
 def logout_usuario(request):
     logout(request) 
@@ -66,12 +59,22 @@ def logout_usuario(request):
 
 @login_required
 def perfil(request):
-    camisetas =Camiseta.objects.all()
-    pedidos = Pedido.objects.all()
+    camisetas = Camiseta.objects.filter(vendedor=request.user)
+    
+    pedidos_relacionados = Pedido.objects.filter(camiseta__vendedor=request.user)
+    
+    pedidos_feitos = Pedido.objects.filter(cliente=request.user)
+    
+    pedidos = pedidos_relacionados | pedidos_feitos
+    
+    pedidos = pedidos.distinct()
     
     camisetas_com_imagens = []
     for camiseta in camisetas:
-        imagem_principal = camiseta.imagens.filter(principal=True).first() or camiseta.imagens.first()
+        imagem_principal = (
+            camiseta.imagens.filter(principal=True).first() 
+            or camiseta.imagens.first()
+        )
         camisetas_com_imagens.append({'camiseta': camiseta, 'imagem_principal': imagem_principal})
 
     return render(request, 'perfil.html', {'pedidos': pedidos, 'camisetas_com_imagens': camisetas_com_imagens})
@@ -79,14 +82,6 @@ def perfil(request):
 ####################################################################################################
 
 def cadastro_usuario(request):
-    camisetas =Camiseta.objects.all()
-    pedidos = Pedido.objects.all()
-    
-    camisetas_com_imagens = []
-    for camiseta in camisetas:
-        imagem_principal = camiseta.imagens.filter(principal=True).first() or camiseta.imagens.first()
-        camisetas_com_imagens.append({'camiseta': camiseta, 'imagem_principal': imagem_principal}) 
-            
     if request.method == 'POST':
         form = CadastroUsuarioForm(request.POST)
         if form.is_valid():
@@ -95,48 +90,55 @@ def cadastro_usuario(request):
             return redirect('index') 
     else:
         form = CadastroUsuarioForm()
-    return render(request, 'cadastro.html', {'form': form, 'pedidos': pedidos, 'camisetas_com_imagens': camisetas_com_imagens})
+    return render(request, 'cadastro.html', {'form': form})
 
 ####################################################################################################
 
 def carrinho(request):
-    camisetas =Camiseta.objects.all()
-    pedidos = Pedido.objects.all()
-    
-    camisetas_com_imagens = []
-    for camiseta in camisetas:
-        imagem_principal = camiseta.imagens.filter(principal=True).first() or camiseta.imagens.first()
-        camisetas_com_imagens.append({'camiseta': camiseta, 'imagem_principal': imagem_principal}) 
-
     if request.method == "POST" and 'deletar' in request.POST:
         pedido_id = request.POST.get('pedido_id')
         pedido = get_object_or_404(Pedido, id=pedido_id)
         pedido.delete()
         return redirect('carrinho')
-    return render(request, "carrinho.html", {'pedidos': pedidos, 'camisetas_com_imagens': camisetas_com_imagens})
+
+    return render(request, "carrinho.html")
+
+def edit_pedido(request):
+    return render(request, 'edit_pedido.html')
 
 ####################################################################################################
 
 def camiseta(request, camiseta_id):
-    camiseta = Camiseta.objects.prefetch_related('imagens').get(id=camiseta_id)
-    pedidos = Pedido.objects.all()
-    
+    camiseta = get_object_or_404(Camiseta.objects.prefetch_related('imagens'), id=camiseta_id)
     tamanhos_opcoes = [t.strip() for t in camiseta.tamanhos.split(',')]
     estilos_opcoes = [e.strip() for e in camiseta.estilos.split(',')]
     forma_pag_opcoes = [f.strip() for f in camiseta.forma_pag_op.split(',')]
 
-    if request.method == 'POST':
-        form = PedidoForm(request.POST, tamanhos_opcoes=tamanhos_opcoes, estilos_opcoes=estilos_opcoes, forma_pag_opcoes=forma_pag_opcoes)
-        if form.is_valid():
-            pedido = form.save(commit=False)
-            pedido.camiseta = camiseta
-            pedido.cliente = request.user
-            pedido.save()
-            return redirect('carrinho')
-    else:
-        form = PedidoForm(tamanhos_opcoes=tamanhos_opcoes, estilos_opcoes=estilos_opcoes, forma_pag_opcoes=forma_pag_opcoes)
+    form = PedidoForm(
+        tamanhos_opcoes=tamanhos_opcoes,
+        estilos_opcoes=estilos_opcoes,
+        forma_pag_opcoes=forma_pag_opcoes
+    )
 
-    return render(request, 'camiseta.html', {'camiseta': camiseta, 'form': form, 'pedidos': pedidos})
+    if request.method == 'POST':
+        if not request.user.is_authenticated:
+            messages.warning(request, "Você precisa estar logado para fazer um pedido. Por favor, faça login ou cadastro.")
+        else:
+            form = PedidoForm(
+                request.POST,
+                tamanhos_opcoes=tamanhos_opcoes,
+                estilos_opcoes=estilos_opcoes,
+                forma_pag_opcoes=forma_pag_opcoes
+            )
+            if form.is_valid():
+                pedido = form.save(commit=False)
+                pedido.camiseta = camiseta
+                pedido.cliente = request.user
+                pedido.save()
+                messages.success(request, "Pedido adicionado com sucesso!")
+                return redirect('carrinho')
+
+    return render(request, 'camiseta.html', {'camiseta': camiseta, 'form': form})
 
 ####################################################################################################
 
@@ -144,7 +146,6 @@ def camiseta(request, camiseta_id):
 @user_passes_test(vendedor)
 def adicionar_pro(request):
     camisetas =Camiseta.objects.all()
-    pedidos = Pedido.objects.all()
     
     camisetas_com_imagens = []
     for camiseta in camisetas:
@@ -169,7 +170,7 @@ def adicionar_pro(request):
                     imagem.camiseta = camiseta
                     imagem.save()
             
-            return redirect('index')  # Redirecionar para uma página de sucesso
+            return redirect('index')  
 
     else:
         form = CamisetaForm()
@@ -177,7 +178,6 @@ def adicionar_pro(request):
     
     return render(request, 'adicionar_pro.html', {
         'form': form,
-        'pedidos': pedidos,
         'formset': formset,
         'camisetas_com_imagens': camisetas_com_imagens
     })
@@ -187,45 +187,49 @@ def adicionar_pro(request):
 @login_required
 @user_passes_test(vendedor)
 def gerenciar_pro(request):
-    pedidos = Pedido.objects.all()
     camisetas_com_imagens = []
     
     if request.user.is_authenticated:
         camisetas = Camiseta.objects.filter(vendedor=request.user) 
         
-        # Verifica se foi enviado um pedido POST para deletar
         if request.method == "POST" and 'deletar' in request.POST:
             camiseta_id = request.POST.get('camiseta_id')
             
-            # Certifique-se de usar o modelo correto
             camiseta_selecionada = Camiseta.objects.get(id=camiseta_id)
             camiseta_selecionada.delete()
             return redirect('gerenciar_pro')
         
-        # Gera a lista de camisetas com imagens principais
         for camiseta in camisetas:
             imagem_principal = camiseta.imagens.filter(principal=True).first() or camiseta.imagens.first()
             camisetas_com_imagens.append({'camiseta': camiseta, 'imagem_principal': imagem_principal})
 
-    return render(request, 'gerenciar_pro.html', {
-        'camisetas_com_imagens': camisetas_com_imagens,
-        'pedidos': pedidos
-    })
+    return render(request, 'gerenciar_pro.html', {'camisetas_com_imagens': camisetas_com_imagens,})
+    
+def edit_produto(request):
+    return render(request, 'edit_produto.html')
 
 ####################################################################################################
 
 @login_required
 @user_passes_test(vendedor)
 def gerenciar_pedidos(request):
-    camisetas =Camiseta.objects.all()
-    pedidos = Pedido.objects.all()
-    
-    camisetas_com_imagens = []
-    for camiseta in camisetas:
-        imagem_principal = camiseta.imagens.filter(principal=True).first() or camiseta.imagens.first()
-        camisetas_com_imagens.append({'camiseta': camiseta, 'imagem_principal': imagem_principal}) 
-        
     camisetas_vendedor = Camiseta.objects.filter(vendedor=request.user)
-    
     pedidos = Pedido.objects.filter(camiseta__in=camisetas_vendedor)
-    return render(request, 'gerenciar_pedidos.html', {'pedidos': pedidos, 'camisetas_com_imagens': camisetas_com_imagens})
+
+    if request.method == 'POST':
+        for pedido in pedidos:
+            # Criar o formulário e associar o pedido à instância do formulário
+            form = AlterarStatusPedidoForm(request.POST, instance=pedido)  # Passa o pedido para associar com o formulário
+            if form.is_valid():
+                form.save()  # Atualiza o pedido com o novo status
+                messages.success(request, f"Status do pedido {pedido.id} atualizado com sucesso!")
+            else:
+                messages.error(request, f"Erro ao atualizar o status do pedido {pedido.id}.")
+        return redirect('gerenciar_pedidos')
+
+    pedidos_com_forms = []
+    for pedido in pedidos:
+        form = AlterarStatusPedidoForm(instance=pedido)  # Passa o pedido para o formulário para edição
+        pedidos_com_forms.append({'pedido': pedido, 'form': form})
+
+    return render(request, 'gerenciar_pedidos.html', {'pedidos_com_forms': pedidos_com_forms})

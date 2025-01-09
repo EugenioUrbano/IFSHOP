@@ -185,3 +185,10 @@ class PedidoForm(forms.ModelForm):
     class Meta:
         model = Pedido
         fields = ['nome_estampa', 'numero_estampa', 'tamanho', 'estilo', "cor", "forma_pag"]
+        
+class AlterarStatusPedidoForm(forms.ModelForm):
+    status = forms.ChoiceField(choices=Pedido.STATUS_OPCOES, widget=forms.Select(attrs={'class': 'card-text mb-auto form-select',}))
+    class Meta:
+        model = Pedido
+        fields = ['status']  # Apenas o campo de status
+    

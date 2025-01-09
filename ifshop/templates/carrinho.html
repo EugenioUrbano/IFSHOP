@@ -9,58 +9,67 @@
 {% block content %}
 <h1 style="background-color: #E9E2E2; color: black; padding: 10px;">Seu Carrinho</h1>
 <ul style="list-style: none; padding: 0;" class="container body-content">
-    {% if pedidos %}
-        {% for pedido in pedidos %}
+{% if user.is_authenticated %}
+    {% if pedidos_com_imagem %}
+        {% for item in pedidos_com_imagem %}
         <li style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; display: flex; align-items: center; justify-content: space-between;">
             <div style="display: flex; align-items: center; gap: 20px;">
-                {% for item in camisetas_com_imagens %}
-                    {% if item.imagem_principal %}
-                    <img src="{{ item.imagem_principal.imagem.url }}" alt="Imagem de {{ item.camiseta.nome }}" class="thumbnail" style="width: 200px ;  height: 200px">
-                    {% else %}
-                        <p>Sem imagem disponível</p>
-                    {% endif %}
-                {% endfor %}
+                {% if item.imagem_principal %}
+                <img src="{{ item.imagem_principal.imagem.url }}" alt="Imagem de {{ item.pedido.camiseta.titulo }}" class="thumbnail" style="width: 200px; height: 200px;">
+                {% else %}
+                <p>Sem imagem disponível</p>
+                {% endif %}
                 
                 <div class="col-md-8 themed-grid-col">
                     <div class="pb-3">
-                        <h3><strong>{{ pedido.camiseta.titulo }}</strong></h3>
+                        <h3><strong>{{ item.pedido.camiseta.titulo }}</strong></h3>
                     </div>
                     <div class="row">
-                    <div class="col-md-6">
-                        Nome: {{ pedido.nome_estampa }}<br>
-                        Número: {{ pedido.numero_estampa }}<br>
-                        Tamanho: {{ pedido.tamanho }}<br></div>
-                    <div class="col-md-6 ">
-                        Estilo: {{ pedido.estilo }}<br>
-                        Preço: R$ {{ pedido.camiseta.preco }}<br>
-                        Cor: {{ pedido.cor }}<br></div>
+                        <div class="col-md-6">
+                            Nome: {{ item.pedido.nome_estampa }}<br>
+                            Número: {{ item.pedido.numero_estampa }}<br>
+                            Tamanho: {{ item.pedido.tamanho }}<br>
+                        </div>
+                        <div class="col-md-6">
+                            Estilo: {{ item.pedido.estilo }}<br>
+                            Preço: R$ {{ item.pedido.camiseta.preco }}<br>
+                            Cor: {{ item.pedido.cor }}<br>
+                        </div>
                     </div>
                 </div>
             </div>
             <div style="text-align: right;">
-                <div class="dropstart ">
+                <div class="dropstart">
                     <button class="btn botoes shadow-lg rounded-pill px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Opções
+                        Opções
                     </button>
                     <ul class="dropdown-menu">
                         <li class="p-1">
-                            <form method="post"  class="">
+                            <form method="post" class="">
                                 {% csrf_token %}
-                                <input type="hidden" name="pedido_id" value="{{ pedido.id }}">
+                                <input type="hidden" name="pedido_id" value="{{ item.pedido.id }}">
                                 <button class="btn btn-danger rounded-pill px-3" type="submit" name="deletar">Cancelar Pedido</button>
-                            </form></li>
-                        <li class="p-1"><button class="btn botoes shadow-lg rounded-pill px-3"><a href="https://wa.me/558487660374" class="nav-link">Pagar/Negociar</a></button></li>
-                        <li class="p-1"><button class="btn botoes shadow-lg rounded-pill px-3">Editar Pedido</button></li>    
-                        
+                            </form>
+                        </li>
+                        <li class="p-1">
+                            <button class="btn botoes shadow-lg rounded-pill px-3">
+                                <a href="https://wa.me/558487660374" class="nav-link">Pagar/Negociar</a>
+                            </button>
+                        </li>
+                        <li class="p-1">
+                            <button class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'edit_pedido' %}" class="nav-link">Editar Pedido</a></button>
+                        </li>
                     </ul>
                 </div>
             </div>
-            
         </li>
         {% endfor %}
     {% else %}
         <h3>Nenhum pedido feito.</h3>
     {% endif %}
+{% else %}
+    <p>Nenhum pedido feito.</p>
+{% endif %}
 </ul>
 
 {% endblock %}
