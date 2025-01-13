@@ -7,14 +7,20 @@
 {% block filtro%} {% endblock %}
 
 {% block content %}
-<div class="card-body py-5 px-md-5 ">
-    <div class="row d-flex justify-content-center ">
-        <div class="col-lg-8 border rounded-3 py-4 shadow mx-md-n5 ">
+
+
+<div class="card-body py-5 px-md-5">
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-8 border rounded-3 py-4 shadow mx-md-n5">
             <div class="container">
-                <h2 class="fw-bold mb-5">Editar Produto</h2>
+                <h2 class="fw-bold mb-5">Editar Camiseta</h2>
                 <form class="row g-3" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
                     <div class=" col-12">
                         {{ form.titulo|as_crispy_field }}
                     </div>
@@ -33,6 +39,7 @@
 
                     <div class=" col-md-6">
                         {{ form.data_para_entrega|as_crispy_field }}
+                        
                     </div>
 
                     <div class=" col-md-6">
@@ -45,7 +52,7 @@
 
                     <div class=" col-md-6">
                         <div class="row">
-                            <label for="id_tamanhos" class="form-label">Tamanhos disponíveis:</label>
+                            <label for="id_tamanhos" class="form-label">Tamanhos disponiveis:</label>
                             <div>
                                 <div class="col-auto">
                                     {% for checkbox in form.tamanhos %}
@@ -63,7 +70,7 @@
 
                     <div class=" col-md-6">
                         <div class="row">
-                            <label for="id_estilos" class="form-label">Estilos disponíveis:</label>
+                            <label for="id_estilos" class="form-label">Estilos disponiveis:</label>
                             <div>
                                 <div class="col-auto">
                                     {% for checkbox in form.estilos %}
@@ -81,7 +88,7 @@
 
                     <div class=" col-12">
                         <div class="row">
-                            <label for="id_forma_pag_op" class="form-label">Opções de Pagamento Disponíveis:</label>
+                            <label for="id_forma_pag_op" class="form-label">Opções de Pagamento Disponiveis:</label>
                             <div>
                                 <div class="col-auto">
                                     {% for checkbox in form.forma_pag_op %}
@@ -96,29 +103,25 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="col-md-6" >
                         <button type="button" class="btn botoes shadow-lg rounded  d-block" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                            Adicione as imagens aqui
+                            Altere as imagens aqui
                         </button>
                         
                         <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Precisa adicionar no minimo uma imagem</h1>
+                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Altere as imagens da forma que quiser</h1>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         {{ formset.management_form }}
                                         {% for form in formset %}
-                                            <div class="form-row border p-2 rounded mb-2">
-                                                {{ form.imagem.label_tag }} {{ form.imagem }}
-                                                {{ form.principal.label_tag }} {{ form.principal }}
-                                                {{ form.DELETE.label_tag }} {{ form.DELETE }}
-                                            </div>
+                                            {{ form.as_p }}
                                         {% endfor %}
                                     </div>
-                                    <small class="text-muted">Você pode marcar uma imagem como principal ou removê-la.</small>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                                     </div>
@@ -127,34 +130,14 @@
                         </div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-6" >
                         <button type="submit" class="btn botoes shadow-lg rounded px-3 d-flex justify-content-center">Salvar</button>
                     </div>
                 </form>
+                
             </div>
         </div>
     </div>
-</div> 
+</div>
 
 {% endblock %}
-<script>
-    function adicionarImagem() {
-        var num_imagens = document.getElementById('num_imagens');
-        var novoCampo = document.createElement('div');
-        novoCampo.innerHTML = '<input type="file" name="imagem_' + num_imagens.value + '-imagem" required>';
-        document.getElementById('imagens').appendChild(novoCampo);
-        num_imagens.value = parseInt(num_imagens.value) + 1;
-    }
-    
-    function atualizarCampos() {
-        var num_imagens = document.getElementById('num_imagens').value;
-        var imagensDiv = document.getElementById('imagens');
-        imagensDiv.innerHTML = ''; // Limpa os campos existentes
-    
-        for (var i = 0; i < num_imagens; i++) {
-            var novoCampo = document.createElement('div');
-            novoCampo.innerHTML = '<input type="file" name="imagem_' + i + '-imagem" required>';
-            imagensDiv.appendChild(novoCampo);
-        }
-    }
-    </script>

@@ -1,5 +1,6 @@
 from django.contrib import messages
-from django.forms import modelformset_factory
+from django.db import transaction
+import os
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -258,51 +259,37 @@ def edit_pedido(request, pedido_id):
     return render(request, 'edit_pedido.html', {'form': form, 'pedido': pedido})
 
 @login_required
-@user_passes_test(vendedor)
+@user_passes_test(vendedor)  # Apenas vendedores podem acessar
 def edit_produto(request, camiseta_id):
-    camiseta = get_object_or_404(Camiseta, id=camiseta_id, vendedor=request.user)
+    camiseta = get_object_or_404(Camiseta, id=camiseta_id)
 
-    # Cria um formset para as imagens associadas à camiseta
-    ImagemCamisetaFormSet = modelformset_factory(
-        ImagemCamiseta,
-        fields=('imagem', 'principal'),
-        extra=1,
-        can_delete=True
-    )
-    
-    # Inicializa os forms
     if request.method == 'POST':
         form = CamisetaForm(request.POST, request.FILES, instance=camiseta)
-        formset = ImagemCamisetaFormSet(request.POST, request.FILES, queryset=ImagemCamiseta.objects.filter(camiseta=camiseta))
+        formset = ImagemCamisetaFormSet(request.POST, request.FILES, queryset=camiseta.imagens.all())
 
         if form.is_valid() and formset.is_valid():
-            # Salva a camiseta com os novos dados
-            camiseta = form.save(commit=False)
-            camiseta.tamanhos = ', '.join(form.cleaned_data['tamanhos'])
-            camiseta.estilos = ', '.join(form.cleaned_data['estilos'])
-            camiseta.forma_pag_op = ', '.join(form.cleaned_data['forma_pag_op'])
-            camiseta.save()
+            
+            with transaction.atomic():
+                for imagem in camiseta.imagens.all():
+                    if imagem.imagem and os.path.isfile(imagem.imagem.path):
+                        os.remove(imagem.imagem.path)
 
-            # Salva as imagens associadas
-            for img_form in formset:
-                if img_form.cleaned_data.get('imagem') or img_form.cleaned_data.get('DELETE'):
-                    imagem = img_form.save(commit=False)
-                    imagem.camiseta = camiseta
-                    if img_form.cleaned_data.get('DELETE'):
-                        imagem.delete()
-                    else:
-                        imagem.save()
+                camiseta.imagens.all().delete()
+                camiseta.tamanhos = ', '.join(form.cleaned_data['tamanhos'])
+                camiseta.estilos = ', '.join(form.cleaned_data['estilos'])
+                camiseta.forma_pag_op = ', '.join(form.cleaned_data['forma_pag_op'])
+                
+                form.save()
 
-            messages.success(request, "Camiseta atualizada com sucesso!")
-            return redirect('index')
+                formset.queryset=camiseta.imagens.all()
+                formset.save()
+
+            messages.success(request, 'Camiseta atualizada com sucesso!')
+            return redirect('gerenciar_pro')
         else:
-            messages.error(request, "Corrija os erros no formulário.")
+            messages.error(request, 'Erro ao atualizar a camiseta. Verifique os campos.')
     else:
         form = CamisetaForm(instance=camiseta)
-        formset = ImagemCamisetaFormSet(queryset=ImagemCamiseta.objects.filter(camiseta=camiseta))
+        formset = ImagemCamisetaFormSet(queryset=camiseta.imagens.all())
 
-    return render(request, 'edit_produto.html', {
-        'form': form,
-        'formset': formset,
-        'camiseta': camiseta
-    })
+    return render(request, 'edit_produto.html', {'form': form, 'formset': formset})

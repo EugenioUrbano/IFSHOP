@@ -74,7 +74,13 @@
                 </li>
             </div>
         </li>
+        {% if not pedido.revisado %}
+            <span style="color: red;">Atenção: Produto atualizado. Por favor, revise o pedido.</span>
+        {% else %}
+            <span>Ok</span>
+        {% endif %}
         {% endfor %}
+        
     {% else %}
         <h3>Nenhum pedido feito.</h3>
     {% endif %}

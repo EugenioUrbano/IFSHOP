@@ -1,3 +1,4 @@
+import os
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
@@ -91,17 +92,27 @@ class Camiseta(models.Model):
     estilos = models.CharField(max_length=50, default="" )
     vendedor = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE, related_name="camisetas")
 
+    def save(self, *args, **kwargs):
+        if self.pk: 
+            pedidos = Pedido.objects.filter(camiseta=self)
+            pedidos.update(revisado=False) 
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.titulo
     
     
 class ImagemCamiseta(models.Model):
-    camiseta = models.ForeignKey(Camiseta, on_delete=models.CASCADE, related_name='imagens')
+    camiseta = models.ForeignKey(Camiseta, related_name='imagens', on_delete=models.CASCADE)
     imagem = models.ImageField(upload_to='imagens_camisetas/')
-    principal = models.BooleanField(default=False)  # Indica se é a imagem principal
+    principal = models.BooleanField(default=False) 
 
+    def delete(self, *args, **kwargs):
+        if self.imagem and os.path.isfile(self.imagem.path):
+            os.remove(self.imagem.path)  
+        super().delete(*args, **kwargs)
+    
     def save(self, *args, **kwargs):
-        # Garante que só uma imagem seja marcada como principal
         if self.principal:
             ImagemCamiseta.objects.filter(camiseta=self.camiseta, principal=True).update(principal=False)
         super().save(*args, **kwargs)
@@ -130,6 +141,7 @@ class Pedido(models.Model):
     data_pedido = models.DateTimeField(auto_now_add=True)
     forma_pag = models.CharField(max_length=100,null=True)
     status = models.CharField(max_length=100, default="Pendente")
+    revisado = models.BooleanField(default=True)
     cliente = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE, related_name="pedidos")
 
     def __str__(self):
