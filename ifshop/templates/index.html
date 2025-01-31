@@ -31,16 +31,22 @@
 {% block filtro %}
     <section class="b-example-divider filtros-fundo  ">
         <form  method="get">
-            <div class="d-flex justify-content-center filtros-fundo pt-3 ">
+        <div class="row align-items-start">
+            <div class="col" style="width:30%; ">
                 <div class="container filtros-fundo justify-content-between"></div>
-                    {{ form.turnos }}
-                <div class="container filtros-fundo justify-content-end" ></div>
-                    {{ form.cursos }}
-                <div class="container filtros-fundo justify-content-end" ></div>
-            </div>  
-            <div class="pricing-header p-3 mx-auto text-center">
-            <button type="submit" class="btn botoes shadow-lg rounded-pill px-3">Filtrar</button>
+                {{ form.turnos }}
             </div>
+            <div class="col" style="padding-left: 3%; width:30%;">
+                <div class="container filtros-fundo justify-content-end" ></div>
+                {{ form.cursos }}
+            </div>
+            <div class="col" style="padding-left: 3%;width:30%; ">
+                <button type="submit" class="btn botoes shadow-lg rounded-pill px-3">Filtrar</button>
+            </div>
+
+        </div>  
+            
+        
         </form>
     </section>
 {% endblock %}
