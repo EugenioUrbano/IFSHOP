@@ -33,6 +33,15 @@
   display: none;
 }
 
+.filtros-col {
+  width: 100%; /* Make the columns take full width */
+  max-width: 300px; /* Set a maximum width for the filters */
+}
+
+.filtros-col select {
+  width: 100%; /* Make the select elements take full width */
+}
+
 div.body-content{
   /** Essa margem vai evitar que o conteudo fique por baixo do rodapé **/
   margin-bottom: 40px;
@@ -52,3 +61,12 @@ footer.fixar-rodape{
   color: black;
   padding: 10px;
 }
+
+h3 {
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  text-align: center;
+  margin-top: 100px;
+  margin-bottom: 100px;
+}
+
+
