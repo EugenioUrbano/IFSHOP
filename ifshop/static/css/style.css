@@ -1,10 +1,10 @@
 .custom-header {
   background-color:#2671bc;
   color: white;
-  border-bottom: 20px solid #FFD468;
+  border-bottom: 20px solid #FFD468; /** barrinha de baixo do header **/
 }
 
-.custom-footer{
+.custom-footer{ /** mudei o nome do footer de custom-header pra custom-footer pq atrapalhou na hora de colocar a barrinha**/
   background-color:#2671bc;
   color: white;
   
@@ -75,23 +75,11 @@ h3 {
   margin-bottom: 100px;
 }
 
-.header-bar{
-  height: 20px;
-  background-color: rgb(248, 248, 124);
-  width: 100%;
-}
-
 .row.justify-content-center {
   margin-top: 50px;
 }
 
-.carousel-inner{
+.carousel-inner{  /**Alterrei o tamanho do carrosel aqui ó (helloar) -->**/
   height: 500px;
 
-}
-
-.litte-bar{
-  height: 50px;
-  background-color: rgb(248, 248, 124);
-  width: 100%;
 }
