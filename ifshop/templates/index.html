@@ -60,9 +60,9 @@
                 <div class="col">
                     <div class="card shadow-sm">
                         {% if item.imagem_principal %}
-                            <img src="{{ item.imagem_principal.imagem.url }}" alt="Imagem de {{ item.camiseta.nome }}" class="img-fluid">
+                            <img id="fotos_pro" src="{{ item.imagem_principal.imagem.url }}" alt="Imagem de {{ item.camiseta.nome }}" class="img-fluid">
                         {% else %}
-                            <p>Sem imagem disponível</p>
+                            <img id="fotos_pro" src="{% static 'img/não_tem_imagem.svg' %}"  alt="Imagem de {{ item.camiseta.nome }}" class="img-fluid">
                         {% endif %}
                         <div class="card-body">
                             <h3>{{ item.camiseta.titulo }}</h3>

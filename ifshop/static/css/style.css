@@ -68,7 +68,7 @@ footer.fixar-rodape{
   padding: 10px;
 }
 
-h3 {
+#texto_pra_arrumar{
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   text-align: center;
   margin-top: 100px;
@@ -84,5 +84,10 @@ h3 {
 } 
 
 #filter_bar{
-  padding-left: 15%;
+  padding-left: 11%;
+}
+#fotos_pro{
+  max-width: 419px;
+  max-height: 419px;
+  
 }
