@@ -88,6 +88,12 @@ footer.fixar-rodape{
   padding-left: 11%;
 }
 
+#fotos_pro{
+  max-width: 419px;
+  max-height: 419px;
+  
+}
+
 html, body {
   margin: 0;
   padding: 0;
