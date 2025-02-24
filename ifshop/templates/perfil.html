@@ -101,15 +101,15 @@
           {% for pedido in pedidos_feitos|slice:":4" %}
           <div class="col-3 ">
             <div class="card" style="width: 18rem;">
-              {% if imagem_principal %}
-                <img src="{{ imagem_principal.imagem.url }}" alt="Imagem de {{ pedido.camiseta.titulo }}" class="thumbnail" style="width: 200px; height: 200px;">
+              {% if pedido.imagem_principal %}
+                <img src="{{ pedido.imagem_principal.imagem.url }}" alt="Imagem de {{ pedido.pedido.camiseta.titulo }}" class="thumbnail" style="width: 200px; height: 200px;">
               {% else %}
                 <p>Sem imagem disponível</p>
               {% endif %}
               <div class="card-body">
-                <h3>{{ pedido.camiseta.titulo }}</h3>
+                <h3>{{ pedido.pedido.camiseta.titulo }}</h3>
                 <div class="d-flex justify-content-between align-items-center">
-                  <p class="text-body-secondary">R$ {{ pedido.camiseta.preco }}</p>
+                  <p class="text-body-secondary">R$ {{ pedido.pedido.camiseta.preco }}</p>
                 </div>
               </div>
             </div>
