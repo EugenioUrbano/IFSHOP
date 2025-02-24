@@ -104,13 +104,15 @@ def cadastro_usuario(request):
 ####################################################################################################
 
 def carrinho(request):
+    pedido = Pedido.objects.filter(cliente=request.user) if request.user.is_authenticated else [] 
+
     if request.method == "POST" and 'deletar' in request.POST:
         pedido_id = request.POST.get('pedido_id')
         pedido = get_object_or_404(Pedido, id=pedido_id)
         pedido.delete()
         return redirect('carrinho')
 
-    return render(request, "carrinho.html")
+    return render(request, "carrinho.html", {'pedido': pedido})
     
 
 
@@ -217,10 +219,6 @@ def gerenciar_pro(request):
 
     return render(request, 'gerenciar_pro.html', { 'camisetas_com_imagens': camisetas_paginadas,})
     
-    
-    
-def edit_produto(request):
-    return render(request, 'edit_produto.html')
 
 ####################################################################################################
 
@@ -302,8 +300,12 @@ def edit_produto(request, camiseta_id):
                 
                 form.save()
 
-                formset.queryset=camiseta.imagens.all()
-                formset.save()
+                imagens = formset.save(commit=False)  
+                for imagem in imagens:
+                    imagem.camiseta = camiseta  
+                    imagem.save()
+
+                formset.save_m2m() 
 
             messages.success(request, 'Camiseta atualizada com sucesso!')
             return redirect('gerenciar_pro')

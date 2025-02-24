@@ -55,20 +55,20 @@
                     {% for pedido in pedidos_feitos|slice:":3" %}
                     <li style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; display: flex; align-items: center; justify-content: space-between;">
                         <div style="display: flex; align-items: center; gap: 20px;">
-                          {% if imagem_principal %}
-                            <img src="{{ imagem_principal.imagem.url }}" alt="Imagem de {{ pedido.camiseta.titulo }}" width="100">
+                          {% if pedido.imagem_principal %}
+                            <img src="{{ pedido.imagem_principal.imagem.url }}" alt="Imagem de {{ pedido.pedido.camiseta.titulo }}" width="100">
                           {% else %}
                             <p>Sem imagem disponível</p>
                           {% endif %}
                             <div class="col-md-8 themed-grid-col">
                                 <div class="pb-3">
-                                    <h3><strong>{{ pedido.camiseta.titulo }}</strong></h3>
+                                    <h3><strong>{{ pedido.pedido.camiseta.titulo }}</strong></h3>
                                 </div>
                                 <div class="row">
                                   <div class="">
-                                    Nome: {{ pedido.nome_estampa }}<br>
-                                    Número: {{ pedido.numero_estampa }}<br>
-                                    Preço: R$ {{ pedido.camiseta.preco }}<br>
+                                    Nome: {{ pedido.pedido.nome_estampa }}<br>
+                                    Número: {{ pedido.pedido.numero_estampa }}<br>
+                                    Preço: R$ {{ pedido.pedido.camiseta.preco }}<br>
                                 </div>
                             </div>
                         </div>

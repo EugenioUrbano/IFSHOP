@@ -15,26 +15,26 @@
 
                 <li style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; display: flex; align-items: center; justify-content: space-between;">
                     <div style="display: flex; align-items: center; gap: 20px;">
-                        {% if imagem_principal %}
-                        <img src="{{ imagem_principal.imagem.url }}" alt="Imagem de {{ pedido.camiseta.titulo }}" class="thumbnail" style="width: 200px; height: 200px;">
+                        {% if pedido.imagem_principal %}
+                        <img src="{{ pedido.imagem_principal.imagem.url }}" alt="Imagem de {{ pedido.pedido.camiseta.titulo }}" class="thumbnail" style="width: 200px; height: 200px;">
                         {% else %}
                         <p>Sem imagem disponível</p>
                         {% endif %}
                         
                         <div class="col-md-8 themed-grid-col">
                             <div class="pb-3">
-                                <h3><strong>{{ pedido.camiseta.titulo }}</strong></h3>
+                                <h3><strong>{{ pedido.pedido.camiseta.titulo }}</strong></h3>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
-                                    Nome: {{ pedido.nome_estampa }}<br>
-                                    Número: {{ pedido.numero_estampa }}<br>
-                                    Tamanho: {{ pedido.tamanho }}<br>
+                                    Nome: {{ pedido.pedido.nome_estampa }}<br>
+                                    Número: {{ pedido.pedido.numero_estampa }}<br>
+                                    Tamanho: {{ pedido.pedido.tamanho }}<br>
                                 </div>
                                 <div class="col-md-6">
-                                    Estilo: {{ pedido.estilo }}<br>
-                                    Preço: R$ {{ pedido.camiseta.preco }}<br>
-                                    Cor: {{ pedido.cor }}<br>
+                                    Estilo: {{ pedido.pedido.estilo }}<br>
+                                    Preço: R$ {{ pedido.pedido.camiseta.preco }}<br>
+                                    Cor: {{ pedido.pedido.cor }}<br>
                                 </div>
                             </div>
                         </div>
@@ -56,7 +56,7 @@
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
                                             <form method="post" class="">
                                                 {% csrf_token %}
-                                                <input type="hidden" name="pedido_id" value="{{ pedido.id }}">
+                                                <input type="hidden" name="pedido_id" value="{{ pedido.pedido.id }}">
                                                 <button type="submit" name="deletar" class="btn btn-primary">Sim</button>
                                             </form>
                                         </div>
@@ -67,11 +67,11 @@
                         
                         <li class="p-1">
                             <button class="btn botoes shadow-lg rounded-pill px-3">
-                                <a href="https://wa.me/55{{pedido.camiseta.vendedor.telefone}}?text=Olá!%20Gostaria%20de%20Negociar/Pagar%20o%20produto%20com%20ID:%20{{pedido.id}}." class="nav-link"><i class="fab fa-whatsapp"></i>Pagar/Negociar</a>
+                                <a href="https://wa.me/55{{pedido.pedido.camiseta.vendedor.telefone}}?text=Olá!%20Gostaria%20de%20Negociar/Pagar%20o%20produto%20com%20ID:%20{{pedido.pedido.id}}." class="nav-link"><i class="fab fa-whatsapp"></i>Pagar/Negociar</a>
                             </button>
                         </li>
                         <li class="p-1">
-                            <button class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'edit_pedido' pedido.id %}" class="nav-link">Editar Pedido</a></button>
+                            <button class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'edit_pedido' pedido.pedido.id %}" class="nav-link">Editar Pedido</a></button>
                         </li>
                     </div>
                 </li>
