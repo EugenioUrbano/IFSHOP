@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.db import transaction
 import os
+from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -11,7 +12,6 @@ def index(request):
     form = FiltroProdutoForm(request.GET) 
     
     camisetas =Camiseta.objects.all()
-    pedidos = Pedido.objects.all()
     
     if form.is_valid():
         turnos = form.cleaned_data.get('turnos')
@@ -27,11 +27,15 @@ def index(request):
     for camiseta in camisetas:
         imagem_principal = camiseta.imagens.filter(principal=True).first() or camiseta.imagens.first()
         camisetas_com_imagens.append({'camiseta': camiseta, 'imagem_principal': imagem_principal})
-        
+    
+    paginator = Paginator(camisetas, 9)
+    numero_da_pagina = request.GET.get('pagina')  
+    camisetas_paginadas = paginator.get_page(numero_da_pagina)
+       
     context = {
         'form': form,
-        'pedidos': pedidos,
         'camisetas_com_imagens': camisetas_com_imagens,
+        'produtos': camisetas_paginadas,
     }
     return render(request, 'index.html', context )
 
@@ -41,8 +45,6 @@ def vendedor(user):
     return user.vendedor
 
 def login_view(request):
-    pedidos = Pedido.objects.all()
-    
     if request.method == 'POST':
         form = LoginUsuarioForm(data=request.POST)
         if form.is_valid():
@@ -51,7 +53,7 @@ def login_view(request):
             return redirect('perfil')  
     else:
         form = LoginUsuarioForm()
-    return render(request, 'login.html', {'form': form, 'pedidos': pedidos})
+    return render(request, 'login.html', {'form': form})
 
 def logout_usuario(request):
     logout(request) 
@@ -62,14 +64,13 @@ def logout_usuario(request):
 @login_required
 def perfil(request):
     camisetas = Camiseta.objects.filter(vendedor=request.user)
-    
-    pedidos_relacionados = Pedido.objects.filter(camiseta__vendedor=request.user)
-    
     pedidos_feitos = Pedido.objects.filter(cliente=request.user)
     
-    pedidos = pedidos_relacionados | pedidos_feitos
-    
-    pedidos = pedidos.distinct()
+    if request.user.vendedor:
+        camisetas_vendedor = Camiseta.objects.filter(vendedor=request.user)
+        pedidos_recebidos = Pedido.objects.filter(camiseta__in=camisetas_vendedor)
+    else:
+        pedidos_recebidos = []
     
     camisetas_com_imagens = []
     for camiseta in camisetas:
@@ -79,7 +80,13 @@ def perfil(request):
         )
         camisetas_com_imagens.append({'camiseta': camiseta, 'imagem_principal': imagem_principal})
 
-    return render(request, 'perfil.html', {'pedidos': pedidos, 'camisetas_com_imagens': camisetas_com_imagens})
+    context = {
+        "pedidos_feitos": pedidos_feitos,
+        "pedidos_recebidos": pedidos_recebidos,
+        'camisetas_com_imagens': camisetas_com_imagens
+        }
+    
+    return render(request, 'perfil.html', context)
 
 ####################################################################################################
 
@@ -204,7 +211,13 @@ def gerenciar_pro(request):
             imagem_principal = camiseta.imagens.filter(principal=True).first() or camiseta.imagens.first()
             camisetas_com_imagens.append({'camiseta': camiseta, 'imagem_principal': imagem_principal})
 
-    return render(request, 'gerenciar_pro.html', {'camisetas_com_imagens': camisetas_com_imagens,})
+    paginator = Paginator(camisetas_com_imagens, 4)
+    numero_da_pagina = request.GET.get('pagina')  
+    camisetas_paginadas = paginator.get_page(numero_da_pagina)
+
+    return render(request, 'gerenciar_pro.html', { 'camisetas_com_imagens': camisetas_paginadas,})
+    
+    
     
 def edit_produto(request):
     return render(request, 'edit_produto.html')
@@ -231,8 +244,16 @@ def gerenciar_pedidos(request):
     for pedido in pedidos:
         form = AlterarStatusPedidoForm(instance=pedido)
         pedidos_com_forms.append({'pedido': pedido, 'form': form})
+        
+    paginator = Paginator(pedidos_com_forms, 20)
+    numero_da_pagina = request.GET.get('pagina')  
+    pedidos_paginadas = paginator.get_page(numero_da_pagina)
 
-    return render(request, 'gerenciar_pedidos.html', {'pedidos_com_forms': pedidos_com_forms})
+    context = {
+        'pedidos_com_forms': pedidos_paginadas,
+        }
+    
+    return render(request, 'gerenciar_pedidos.html', context)
 
 ####################################################################################################
 

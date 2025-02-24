@@ -51,24 +51,24 @@
             <div class="offcanvas-body">
               <ul style="list-style: none; padding: 0;" class="container body-content">
                 {% if user.is_authenticated %}
-                  {% if pedidos_com_imagem %}
-                    {% for item in pedidos_com_imagem|slice:":3" %}
+                  {% if pedidos_feitos %}
+                    {% for pedido in pedidos_feitos|slice:":3" %}
                     <li style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; display: flex; align-items: center; justify-content: space-between;">
                         <div style="display: flex; align-items: center; gap: 20px;">
-                          {% if item.imagem_principal %}
-                            <img src="{{ item.imagem_principal.imagem.url }}" alt="Imagem de {{ item.pedido.camiseta.titulo }}" width="100">
+                          {% if imagem_principal %}
+                            <img src="{{ imagem_principal.imagem.url }}" alt="Imagem de {{ pedido.camiseta.titulo }}" width="100">
                           {% else %}
                             <p>Sem imagem disponível</p>
                           {% endif %}
                             <div class="col-md-8 themed-grid-col">
                                 <div class="pb-3">
-                                    <h3><strong>{{ item.pedido.camiseta.titulo }}</strong></h3>
+                                    <h3><strong>{{ pedido.camiseta.titulo }}</strong></h3>
                                 </div>
                                 <div class="row">
                                   <div class="">
-                                    Nome: {{ item.pedido.nome_estampa }}<br>
-                                    Número: {{ item.pedido.numero_estampa }}<br>
-                                    Preço: R$ {{ item.pedido.camiseta.preco }}<br>
+                                    Nome: {{ pedido.nome_estampa }}<br>
+                                    Número: {{ pedido.numero_estampa }}<br>
+                                    Preço: R$ {{ pedido.camiseta.preco }}<br>
                                 </div>
                             </div>
                         </div>

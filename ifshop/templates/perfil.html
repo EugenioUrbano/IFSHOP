@@ -53,7 +53,7 @@
         <button type="button" class="btn botoes shadow-lg rounded-pill px-3 "><a href="{% url 'gerenciar_pedidos' %}" class="nav-link">Gerencie seus Pedidos</a></button>
     </div>
   </div>
-  {% if pedidos %}
+  {% if pedidos_recebidos %}
     <table style="width:60% ;margin: 0 auto" class="table">
         <thead>
             <tr>
@@ -70,7 +70,7 @@
             </tr>
         </thead>
         <tbody >
-            {% for pedido in pedidos|slice:":3" %}
+            {% for pedido in pedidos_recebidos|slice:":3" %}
                 <tr class="border- border-start">
                     <td class="border border-black border-top-0 border-bottom-40px">{{ pedido.id }}</td>
                     <td class="border border-black border-top-0 border-bottom-40px">{{ pedido.cliente }}</td>
@@ -96,22 +96,22 @@
         <button type="button" class="btn botoes shadow-lg rounded-pill px-3 "><a href="{% url 'carrinho' %}" class="nav-link">Ver Mais Detalhes</a></button>
     </div>
   </div>
-  {% if pedidos_com_imagem %}
+  {% if pedidos_feitos %}
   <div style="padding-left: 50px;" class="album py-5 ">
       <div class="container">
         <div class="row row-cols-1 ">
-          {% for item in pedidos_com_imagem|slice:":4" %}
+          {% for pedido in pedidos_feitos|slice:":4" %}
           <div class="col-3 ">
             <div class="card" style="width: 18rem;">
-              {% if item.imagem_principal %}
-                <img src="{{ item.imagem_principal.imagem.url }}" alt="Imagem de {{ item.pedido.camiseta.titulo }}" class="thumbnail" style="width: 200px; height: 200px;">
+              {% if imagem_principal %}
+                <img src="{{ imagem_principal.imagem.url }}" alt="Imagem de {{ pedido.camiseta.titulo }}" class="thumbnail" style="width: 200px; height: 200px;">
               {% else %}
                 <p>Sem imagem disponível</p>
               {% endif %}
               <div class="card-body">
-                <h3>{{ item.pedido.camiseta.titulo }}</h3>
+                <h3>{{ pedido.camiseta.titulo }}</h3>
                 <div class="d-flex justify-content-between align-items-center">
-                  <p class="text-body-secondary">R$ {{ item.pedido.camiseta.preco }}</p>
+                  <p class="text-body-secondary">R$ {{ pedido.camiseta.preco }}</p>
                 </div>
               </div>
             </div>

@@ -7,6 +7,7 @@
 {% block filtro%} {% endblock %}
 
 {% block content %}
+
 <div style="background-color: #E9E2E2; color: black; padding: 10px;" class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
     <h1>Gerencie Pedidos das suas Camisetas</h1>
 </div>
@@ -51,19 +52,28 @@
                 {% endfor %}
             </tbody>
         </table>
-
+        <div class="pagination justify-content-center align-items-center">
+            <span class="step-links">
+                {% if pedidos_com_forms.has_previous %}
+                    <button type="button" class="btn botoes_paginacao"><a href="?pagina=1" class="nav-link">&laquo; Início</a></button>
+                    <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ pedidos_com_forms.previous_page_number }} " class="nav-link">Anterior</a></button>
+                    
+                {% endif %}
+        
+                <span class="current">
+                    Página {{ pedidos_com_forms.number }} de {{ pedidos_com_forms.paginator.num_pages }}
+                </span>
+        
+                {% if pedidos_com_forms.has_next %}
+                    <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ pedidos_com_forms.next_page_number }}" class="nav-link">Próxima</a></button>
+                    <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ pedidos_com_forms.paginator.num_pages }}" class="nav-link">Última &raquo;</a></button>
+                {% endif %}
+            </span>
+        </div>
         <button type="submit" class="btn botoes shadow-lg rounded-pill px-3">Salvar Alterações</button>
     </form>
 
-    {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
+    
 {% else %}
     <p>Nenhum pedido encontrado para suas camisetas.</p>
 {% endif %}
