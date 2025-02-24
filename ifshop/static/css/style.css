@@ -2,6 +2,7 @@
   background-color:#2671bc;
   color: white;
   border-bottom: 20px solid #FFD468; /** barrinha de baixo do header **/
+  width: 100%;
 }
 
 .custom-footer{ /** mudei o nome do footer de custom-header pra custom-footer pq atrapalhou na hora de colocar a barrinha**/
@@ -85,4 +86,25 @@ h3 {
 
 #filter_bar{
   padding-left: 15%;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.main-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.carousel {
+  flex: 1;
+}
+
+.filtros-fundo {
+  flex: 1;
 }
