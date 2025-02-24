@@ -137,9 +137,10 @@ class CamisetaForm(forms.ModelForm):
         return camiseta
     
 ImagemCamisetaFormSet = modelformset_factory(
-    ImagemCamiseta,
+    ImagemCamiseta ,
     fields=('imagem', 'principal'),
-    extra=5,  # Permite adicionar até 5 imagens por vez
+    extra=4,  # Permite adicionar até 5 imagens por vez
+    can_delete=True,
     widgets={
         'imagem': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         'principal': forms.CheckboxInput(attrs={'class': 'form-check-input'}),

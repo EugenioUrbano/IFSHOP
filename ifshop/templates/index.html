@@ -6,7 +6,7 @@
 {% block title %}IFSHOP{% endblock %}
 
 {% block carrosel %}
-    <div id="carouselExampleRide" class="carousel slide border-top border-black border-4   " data-bs-ride="true">
+    <div id="carouselExampleRide" class="carousel slide   " data-bs-ride="true">
         <div class="carousel-inner">
         <div class="carousel-item active">
             <img src="{% static 'img/ft1.svg' %}" class="d-block w-100" alt="...">
@@ -60,9 +60,9 @@
                 <div class="col">
                     <div class="card shadow-sm">
                         {% if item.imagem_principal %}
-                            <img src="{{ item.imagem_principal.imagem.url }}" alt="Imagem de {{ item.camiseta.nome }}" class="img-fluid">
+                            <img id="fotos_pro" src="{{ item.imagem_principal.imagem.url }}" alt="Imagem de {{ item.camiseta.nome }}" class="img-fluid">
                         {% else %}
-                            <p>Sem imagem disponível</p>
+                            <img id="fotos_pro" src="{% static 'img/não_tem_imagem.svg' %}"  alt="Imagem de {{ item.camiseta.nome }}" class="img-fluid">
                         {% endif %}
                         <div class="card-body">
                             <h3>{{ item.camiseta.titulo }}</h3>
@@ -83,7 +83,7 @@
     </div>
 </div>
 {% else %}
-    <h3>Nenhuma camisa cadastrada.</h3>
+    <h3 class= "semcamisacadast">Nenhuma camisa cadastrada.</h3>
 {% endif %}
 <div class="pagination justify-content-center align-items-center">
     <span class="step-links">
