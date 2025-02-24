@@ -9,9 +9,7 @@
 {% block content %}
 <div style="background-color: #ffffff; color: black; padding: 0px;" class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
   <h1 style=" color: #012145; padding: 15px;">Bem-vindo(a), {{ request.user.username }}</h1>
-  <div style="padding: 15px;" class="text-end">
-    <button  type="button" class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'logout' %}" class="nav-link">Deslogar</a></button>
-  </div>
+  
 </div>
 {% if user.vendedor %}
   <div style=" color: #012145; padding: 15px;" class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
@@ -103,15 +101,15 @@
           {% for pedido in pedidos_feitos|slice:":4" %}
           <div class="col-3 ">
             <div class="card" style="width: 18rem;">
-              {% if imagem_principal %}
-                <img src="{{ imagem_principal.imagem.url }}" alt="Imagem de {{ pedido.camiseta.titulo }}" class="thumbnail" style="width: 200px; height: 200px;">
+              {% if pedido.imagem_principal %}
+                <img src="{{ pedido.imagem_principal.imagem.url }}" alt="Imagem de {{ pedido.pedido.camiseta.titulo }}" class="thumbnail" style="width: 200px; height: 200px;">
               {% else %}
                 <p>Sem imagem disponível</p>
               {% endif %}
               <div class="card-body">
-                <h3>{{ pedido.camiseta.titulo }}</h3>
+                <h3>{{ pedido.pedido.camiseta.titulo }}</h3>
                 <div class="d-flex justify-content-between align-items-center">
-                  <p class="text-body-secondary">R$ {{ pedido.camiseta.preco }}</p>
+                  <p class="text-body-secondary">R$ {{ pedido.pedido.camiseta.preco }}</p>
                 </div>
               </div>
             </div>

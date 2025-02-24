@@ -64,7 +64,6 @@ def logout_usuario(request):
 @login_required
 def perfil(request):
     camisetas = Camiseta.objects.filter(vendedor=request.user)
-    pedidos_feitos = Pedido.objects.filter(cliente=request.user)
     
     if request.user.vendedor:
         camisetas_vendedor = Camiseta.objects.filter(vendedor=request.user)
@@ -81,7 +80,6 @@ def perfil(request):
         camisetas_com_imagens.append({'camiseta': camiseta, 'imagem_principal': imagem_principal})
 
     context = {
-        "pedidos_feitos": pedidos_feitos,
         "pedidos_recebidos": pedidos_recebidos,
         'camisetas_com_imagens': camisetas_com_imagens
         }
