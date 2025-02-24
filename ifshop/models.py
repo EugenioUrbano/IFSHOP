@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractUser
 
      
 class UsuarioCustomizado(AbstractUser):
-    CURSOs_OPCOES = [
+    CURSOS_OPCOES = [
         ('infoweb', 'InfoWeb'),
         ('edific', 'Edific'),
         ('mamb', 'Mamb'),
@@ -101,10 +101,20 @@ class Camiseta(models.Model):
     def __str__(self):
         return self.titulo
     
-    
+class CamisetaCor(models.Model):
+    camiseta = models.ForeignKey(Camiseta, on_delete=models.CASCADE, related_name="cores_disponiveis")
+    cor = models.ForeignKey(Cor, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('camiseta', 'cor')
+
+    def __str__(self):
+        return f"{self.camiseta.titulo} - {self.cor.nome}"
+
+
 class ImagemCamiseta(models.Model):
     camiseta = models.ForeignKey(Camiseta, related_name='imagens', on_delete=models.CASCADE)
-    imagem = models.ImageField(upload_to='imagens_camisetas/')
+    imagem = models.ImageField(upload_to='imagens_camisetas/', null=True)
     principal = models.BooleanField(default=False) 
 
     def delete(self, *args, **kwargs):
