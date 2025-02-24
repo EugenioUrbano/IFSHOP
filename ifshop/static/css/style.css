@@ -80,6 +80,9 @@ h3 {
 }
 
 .carousel-inner{  /**Alterrei o tamanho do carrosel aqui ó (helloar) -->**/
-  height: 500px;
+  max-height: 500px;
+} 
 
+#filter_bar{
+  padding-left: 15%;
 }
