@@ -69,11 +69,11 @@ footer.fixar-rodape{
   padding: 10px;
 }
 
-#texto_pra_arrumar{
+.texto_perfil{
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-  text-align: center;
-  margin-top: 100px;
-  margin-bottom: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .row.justify-content-center {
@@ -93,8 +93,18 @@ footer.fixar-rodape{
   max-height: 419px;
   
 }
+#card_perfil{
+  max-width: 200px;
+  max-height: 200px;
+  font-size: 5%;
+}
 
-
+#card_perfil{
+  max-width: 200px;
+  max-height: 300px;
+  font-size: 5%;
+  
+}
 
 .main-container {
   height: 100%;
