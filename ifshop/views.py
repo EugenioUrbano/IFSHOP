@@ -30,14 +30,13 @@ def index(request):
         imagem_principal = camiseta.imagens.filter(principal=True).first() or camiseta.imagens.first()
         camisetas_com_imagens.append({'camiseta': camiseta, 'imagem_principal': imagem_principal})
     
-    paginator = Paginator(camisetas, 9)
+    paginator = Paginator(camisetas_com_imagens, 9)
     numero_da_pagina = request.GET.get('pagina')  
     camisetas_paginadas = paginator.get_page(numero_da_pagina)
        
     context = {
         'form': form,
-        'camisetas_com_imagens': camisetas_com_imagens,
-        'produtos': camisetas_paginadas,
+        'camisetas_com_imagens': camisetas_paginadas,
     }
     return render(request, 'index.html', context )
 

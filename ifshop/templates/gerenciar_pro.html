@@ -60,25 +60,20 @@
 </ul>
 <div class="pagination justify-content-center align-items-center">
     <span class="step-links">
-        {% if camisetas.has_previous %}
+        {% if camisetas_com_imagens.has_previous %}
             <button type="button" class="btn botoes_paginacao"><a href="?pagina=1" class="nav-link">&laquo; Início</a></button>
-            <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ camisetas.previous_page_number }} " class="nav-link">Anterior</a></button>
+            <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ camisetas_com_imagens.previous_page_number }}" class="nav-link">Anterior</a></button>
             
         {% endif %}
 
-        {% if camisetas.has_next and camisetas.has_previous %}
-            <span class="current">
-                Página {{ camisetas.number }} de {{ camisetas.paginator.num_pages }}
-            </span>
-        {% else %}
-            <span class="current">
-                Página 1 de 1
-            </span>
-        {% endif %}
+        <span class="current">
+            Página {{ camisetas_com_imagens.number }} de {{ camisetas_com_imagens.paginator.num_pages }}
+        </span>
+        
 
-        {% if camisetas.has_next %}
-            <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ camisetas.next_page_number }}" class="nav-link">Próxima</a></button>
-            <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ camisetas.paginator.num_pages }}" class="nav-link">Última &raquo;</a></button>
+        {% if camisetas_com_imagens.has_next %}
+            <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ camisetas_com_imagens.next_page_number }}" class="nav-link">Próxima</a></button>
+            <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ camisetas_com_imagens.paginator.num_pages }}" class="nav-link">Última &raquo;</a></button>
         {% endif %}
     </span>
 </div>
