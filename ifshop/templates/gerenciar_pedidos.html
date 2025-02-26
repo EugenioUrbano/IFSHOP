@@ -60,9 +60,15 @@
                     
                 {% endif %}
         
-                <span class="current">
-                    Página {{ pedidos_com_forms.number }} de {{ pedidos_com_forms.paginator.num_pages }}
-                </span>
+                {% if pedidos_com_forms.has_next and pedidos_com_forms.has_previous %}
+                    <span class="current">
+                        Página {{ pedidos_com_forms.number }} de {{ pedidos_com_forms.paginator.num_pages }}
+                    </span>
+                {% else %}
+                    <span class="current">
+                        Página 1 de 1
+                    </span>
+                {% endif %}
         
                 {% if pedidos_com_forms.has_next %}
                     <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ pedidos_com_forms.next_page_number }}" class="nav-link">Próxima</a></button>

@@ -1,5 +1,5 @@
 
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -50,6 +50,19 @@ AUTHENTICATION_BACKENDS = ['ifshop.backends.EmailBackend']
 
 # CONFIGURAÇÃOM LOGIN
 
+# CONFIGURAÇÃO RESTAURAÇÃO DE SENHA
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Configure conforme seu provedor de e-mail
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'ifshop135@gmail.com'
+EMAIL_HOST_PASSWORD = 'bucb ctbc afnl etgq'
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# CONFIGURAÇÃO RESTAURAÇÃO DE SENHA
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -65,7 +78,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -128,6 +141,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+
 MEDIA_ROOT = BASE_DIR / 'media/' # pasta onde django armazena os arquivos
 MEDIA_URL = 'media/'
 

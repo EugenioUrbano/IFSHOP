@@ -24,14 +24,18 @@
                     <div class="col-12 pb-3">
                         {{ form.password|as_crispy_field }}
                         <div>
-                            <input type="checkbox" id="mostrarSenha" onclick="mostrarOcultarSenha()"> Mostrar
+                            <input type="checkbox" id="mostrarSenha" onclick="mostrarOcultarSenha()"> Mostrar Senha
                         </div>
+                        <a href="{% url 'password_reset' %}">Esqueci minha senha</a>
+                        
                     </div>
                     <button class="btn botoes shadow-lg rounded-pill px-3" type="submit">Realizar Login</button>
                     <div>
+                        
                         Não tem conta ainda? 
                         <a href="{% url 'cadastro' %}">Faça seu cadastro</a>
                     </div>
+                    
                 </form>
             </div>
         </div>

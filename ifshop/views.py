@@ -134,6 +134,7 @@ def camiseta(request, camiseta_id):
         else:
             form = PedidoForm(
                 request.POST,
+                camiseta=camiseta,
                 tamanhos_opcoes=tamanhos_opcoes,
                 estilos_opcoes=estilos_opcoes,
                 forma_pag_opcoes=forma_pag_opcoes
