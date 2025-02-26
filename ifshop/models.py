@@ -39,13 +39,6 @@ class UsuarioCustomizado(AbstractUser):
     
 ####################################################################################################
 
-class Cor(models.Model):
-    nome = models.CharField(max_length=100, unique=True)
-
-    def __str__(self):
-        return self.nome
-    
-
 class Camiseta(models.Model):
     TAMANHOS_OPCOES = [
         ('P', 'Pequeno'),
@@ -84,32 +77,28 @@ class Camiseta(models.Model):
     forma_pag_op = models.CharField(max_length=100,null=True)
     data_limite_pedidos = models.DateField()
     data_para_entrega = models.DateField()
-    cores = models.ManyToManyField(Cor, blank=False) 
     tamanhos = models.CharField(max_length=50) 
     turnos = models.CharField(max_length=50)
+    cores = models.TextField( null=True, help_text="Digite as cores separadas por vírgula. Ex: azul, vermelho, verde")
     cursos = models.CharField(max_length=50)
     imagem = models.ImageField(blank=False)
     estilos = models.CharField(max_length=50, default="" )
     vendedor = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE, related_name="camisetas")
 
+    def lista_cores(self):
+        return [cor.strip() for cor in self.cores.split(",") if cor.strip()]
+    
     def save(self, *args, **kwargs):
         if self.pk: 
             pedidos = Pedido.objects.filter(camiseta=self)
             pedidos.update(revisado=False) 
+            
+        self.cores = ", ".join(self.lista_cores())
         super().save(*args, **kwargs)
 
     def __str__(self):
         return self.titulo
     
-class CamisetaCor(models.Model):
-    camiseta = models.ForeignKey(Camiseta, on_delete=models.CASCADE, related_name="cores_disponiveis")
-    cor = models.ForeignKey(Cor, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = ('camiseta', 'cor')
-
-    def __str__(self):
-        return f"{self.camiseta.titulo} - {self.cor.nome}"
 
 
 class ImagemCamiseta(models.Model):
@@ -145,7 +134,7 @@ class Pedido(models.Model):
     camiseta = models.ForeignKey(Camiseta, on_delete=models.CASCADE)
     nome_estampa = models.CharField(max_length=50)
     numero_estampa = models.CharField(max_length=50)
-    cor = models.CharField(max_length=20)
+    cor_escolhida = models.CharField(max_length=50, null=True)
     tamanho = models.CharField(max_length=10)
     estilo = models.CharField(max_length=20, default="")
     data_pedido = models.DateTimeField(auto_now_add=True)

@@ -122,7 +122,10 @@ def camiseta(request, camiseta_id):
     estilos_opcoes = [e.strip() for e in camiseta.estilos.split(',')]
     forma_pag_opcoes = [f.strip() for f in camiseta.forma_pag_op.split(',')]
 
+    print("Camiseta carregada na View:", camiseta.titulo, camiseta.cores)
+    
     form = PedidoForm(
+        camiseta=camiseta,
         tamanhos_opcoes=tamanhos_opcoes,
         estilos_opcoes=estilos_opcoes,
         forma_pag_opcoes=forma_pag_opcoes
@@ -134,6 +137,7 @@ def camiseta(request, camiseta_id):
         else:
             form = PedidoForm(
                 request.POST,
+                camiseta=camiseta,
                 tamanhos_opcoes=tamanhos_opcoes,
                 estilos_opcoes=estilos_opcoes,
                 forma_pag_opcoes=forma_pag_opcoes

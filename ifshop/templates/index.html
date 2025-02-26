@@ -93,9 +93,15 @@
             
         {% endif %}
 
-        <span class="current">
-            Página {{ camisetas.number }} de {{ camisetas.paginator.num_pages }}
-        </span>
+        {% if camisetas.has_next and camisetas.has_previous %}
+            <span class="current">
+                Página {{ camisetas.number }} de {{ camisetas.paginator.num_pages }}
+            </span>
+        {% else %}
+            <span class="current">
+                Página 1 de 1
+            </span>
+        {% endif %}
 
         {% if camisetas.has_next %}
             <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ camisetas.next_page_number }}" class="nav-link">Próxima</a></button>
