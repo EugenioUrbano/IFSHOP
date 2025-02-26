@@ -7,7 +7,7 @@
 {% block filtro%} {% endblock %}
 
 {% block content %}
-<h1 style="background-color: #E9E2E2; color: black; padding: 10px;">Seu Carrinho</h1>
+<h1 style="color: black; padding: 10px;">Seu Carrinho</h1>
 {% if user.is_authenticated %}
     {% if pedidos_feitos %}
         {% for pedido in pedidos_feitos %}
@@ -18,7 +18,7 @@
                         {% if pedido.imagem_principal %}
                         <img src="{{ pedido.imagem_principal.imagem.url }}" alt="Imagem de {{ pedido.pedido.camiseta.titulo }}" class="thumbnail" style="width: 200px; height: 200px;">
                         {% else %}
-                        <p>Sem imagem disponível</p>
+                        <img id="foto_carrinho" src="{% static 'img/não_tem_imagem.svg' %}"  alt="Imagem de {{ item.camiseta.nome }}" class="img-fluid">
                         {% endif %}
                         
                         <div class="col-md-8 themed-grid-col">

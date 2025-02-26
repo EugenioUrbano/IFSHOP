@@ -67,7 +67,7 @@
                             {% if pedido.imagem_principal %}
                               <img src="{{ pedido.imagem_principal.imagem.url }}" alt="Imagem de {{ pedido.pedido.camiseta.titulo }}" width="100">
                             {% else %}
-                              <p>Sem imagem disponível</p>
+                            <img id="foto_carrinho2" src="{% static 'img/não_tem_imagem.svg' %}"  alt="Imagem de {{ item.camiseta.nome }}" class="img-fluid">
                             {% endif %}
                               <div class="col-md-8 themed-grid-col">
                                   <div class="pb-3">

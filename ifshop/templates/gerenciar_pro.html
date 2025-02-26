@@ -7,10 +7,12 @@
 {% block filtro%} {% endblock %}
 
 {% block content %}
-<div style="background-color: #E9E2E2; color: black; padding: 10px;" class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
-    <h1>Gerencie seus Produtos</h1>
-    <div class="text-end">
+<div style=" color: black; padding: 10px;" class=" justify-content-center ">
+    <div class=" row justify-content-end d-flex flex-wrap align-items-center">
+        <h1 class="col-4">Gerencie seus Produtos</h1>
+    <div class="text-end col-4" style="position: relative; padding-left: 5px;">
         <button type="button" class="btn botoes shadow-lg rounded-pill px-3 "><a href="{% url 'adicionar_pro' %}" class="nav-link">Adicionar Nova Camiseta</a></button>
+    </div>
     </div>
 </div>
 
@@ -22,7 +24,7 @@
             {% if item.imagem_principal %}
                 <img src="{{ item.imagem_principal.imagem.url }}" alt="Imagem de {{ item.camiseta.nome }}" class="thumbnail" style="width: 200px ;  height: 200px">
             {% else %}
-                <p>Sem imagem disponível</p>
+            <img id="foto_carrinho" src="{% static 'img/não_tem_imagem.svg' %}"  alt="Imagem de {{ item.camiseta.nome }}" class="img-fluid">
             {% endif %}
             <div class="col-md-8 themed-grid-col">
                 <div class="pb-3">
