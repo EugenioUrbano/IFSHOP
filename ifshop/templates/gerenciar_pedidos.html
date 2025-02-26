@@ -8,11 +8,11 @@
 
 {% block content %}
 
-<div style="background-color: #E9E2E2; color: black; padding: 10px;" class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
-    <h1>Gerencie Pedidos das suas Camisetas</h1>
+<div style=" color: black; padding: 10px;" class="d-flex flex-wrap align-items-center justify-content-center ">
+    <h1 class="container text-center">Gerencie Pedidos das suas Camisetas</h1>
 </div>
 {% if pedidos_com_forms %}
-    <h2>Pedidos para suas camisetas</h2>
+    <h2 class="container text-center">Pedidos para suas camisetas</h2>
     <form method="POST">
         {% csrf_token %}
         <table style="width:60% ;margin: 0 auto" class="table">
@@ -50,8 +50,13 @@
                         </td>
                     </tr>
                 {% endfor %}
+                
             </tbody>
         </table>
+        <div class="row justify-content-end">
+            <div class="col-4 text-end">
+                <button type="submit" class=" justfy btn botoes shadow-lg rounded-pill px-3">Salvar Alterações</button>
+            </div>
         <div class="pagination justify-content-center align-items-center">
             <span class="step-links">
                 {% if pedidos_com_forms.has_previous %}
@@ -70,12 +75,12 @@
                 {% endif %}
             </span>
         </div>
-        <button type="submit" class="btn botoes shadow-lg rounded-pill px-3">Salvar Alterações</button>
+        
     </form>
 
     
 {% else %}
-    <p>Nenhum pedido encontrado para suas camisetas.</p>
+    <p class="container text-center">Nenhum pedido encontrado para suas camisetas.</p>
 {% endif %}
 
 

@@ -64,16 +64,14 @@ footer.fixar-rodape{
 }
 
 .titulo-pagina {
-  background-color: gray;
+  
   color: black;
   padding: 10px;
 }
 
 .texto_perfil{
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  
 }
 
 .row.justify-content-center {
@@ -93,15 +91,15 @@ footer.fixar-rodape{
   max-height: 419px;
   
 }
-#card_perfil{
-  max-width: 200px;
-  max-height: 200px;
+#foto_perfil{
+  max-width: 300px;
+  max-height: 300px;
   font-size: 5%;
 }
 
 #card_perfil{
-  max-width: 200px;
-  max-height: 300px;
+  max-width:300px;
+  max-height: 360px;
   font-size: 5%;
   
 }
