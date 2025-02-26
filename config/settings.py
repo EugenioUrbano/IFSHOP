@@ -50,18 +50,25 @@ AUTHENTICATION_BACKENDS = ['ifshop.backends.EmailBackend']
 
 # CONFIGURAÇÃOM LOGIN
 
-# CONFIGURAÇÃO RESTAURAÇÃO DE SENHA
+# CONFIGURAÇÃO RESTAURAÇÃO DE SENHA PELO EMAIL DO USUARIO
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'  # Configure conforme seu provedor de e-mail
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'ifshop135@gmail.com'
-EMAIL_HOST_PASSWORD = 'bucb ctbc afnl etgq'
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#EMAIL_HOST = 'smtp.gmail.com'  # Configure conforme seu provedor de e-mail
+#EMAIL_PORT = 587
+#EMAIL_USE_TLS = True
+#EMAIL_HOST_USER = 'ifshop135@gmail.com'
+#EMAIL_HOST_PASSWORD = 'wopz nzqw lign gvck'
 
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+#DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-# CONFIGURAÇÃO RESTAURAÇÃO DE SENHA
+
+# CONFIGURAÇÃO RESTAURAÇÃO DE SENHA PELO EMAIL DO USUARIO
+
+# CONFIGURAÇÃO RESTAURAÇÃO DE SENHA PELO CONSOLE
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+# CONFIGURAÇÃO RESTAURAÇÃO DE SENHA PELO CONSOLE
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
