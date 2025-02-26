@@ -35,6 +35,7 @@
                     </div>
                     <div class=" col-md-6">
                         {{ form.matricula_cpf|as_crispy_field }}
+                        <span id="matricula_cpf-status"></span>
                     </div>
                     <div class="col-md-6">
                         {{ form.curso|as_crispy_field }}
@@ -53,7 +54,7 @@
     </div>
   </div>
 
-  <script>  
+<script>  
     // senhas //
     function mostrarOcultarSenha() {
         var id_password1 = document.getElementById("id_password1");
@@ -74,5 +75,22 @@
         }
     }
     // senhas //
+    document.getElementById("matricula_cpf").addEventListener("input", function() {
+        let matricula_cpf = this.value;
+        if (matricula_cpf.length > 3) {
+            fetch(`/validar-matricula-cpf/?matricula_cpf=${matricula_cpf}`)
+                .then(response => response.json())
+                .then(data => {
+                    let status = document.getElementById("matricula_cpf-status");
+                    if (data.existe) {
+                        status.innerText = "Matricula ou CPF já cadastrado!";
+                        status.style.color = "red";
+                    } else {
+                        status.innerText = "Matricula ou CPF disponível!";
+                        status.style.color = "green";
+                    }
+                });
+        }
+    });
 </script>
 {% endblock %}

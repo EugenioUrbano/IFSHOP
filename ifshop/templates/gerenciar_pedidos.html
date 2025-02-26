@@ -39,7 +39,7 @@
                         <td class="border border-black ">{{ item.pedido.cliente.telefone }}</td>
                         <td class="border border-black ">{{ item.pedido.camiseta.titulo }}</td>
                         <td class="border border-black ">{{ item.pedido.data_pedido }}</td>
-                        <td class="border border-black ">{{ item.pedido.cor }}</td>
+                        <td class="border border-black ">{{ item.pedido.cor_escolhida }}</td>
                         <td class="border border-black ">{{ item.pedido.nome_estampa }}</td>
                         <td class="border border-black ">{{ item.pedido.numero_estampa }}</td>
                         <td class="border border-black ">{{ item.pedido.tamanho }}</td>
@@ -88,6 +88,40 @@
 {% else %}
     <p class="container text-center">Nenhum pedido encontrado para suas camisetas.</p>
 {% endif %}
-
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        fetch("/marcar-pedidos-vistos/", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken"),  // Obtém o CSRF Token para segurança
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                console.log("Pedidos marcados como vistos.");
+            }
+        })
+        .catch(error => console.error("Erro ao marcar pedidos como vistos:", error));
+    });
+    
+    // Função para obter o CSRF Token do cookie
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            let cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    </script>
 
 {% endblock %}

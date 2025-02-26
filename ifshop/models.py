@@ -141,6 +141,7 @@ class Pedido(models.Model):
     forma_pag = models.CharField(max_length=100,null=True)
     status = models.CharField(max_length=100, default="Pendente")
     revisado = models.BooleanField(default=True)
+    visto = models.BooleanField(default=False)
     cliente = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE, related_name="pedidos")
 
     def __str__(self):

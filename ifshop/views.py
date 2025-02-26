@@ -1,12 +1,14 @@
+from .forms import CamisetaForm, PedidoForm, AlterarStatusPedidoForm, FiltroProdutoForm, CadastroUsuarioForm, LoginUsuarioForm, ImagemCamisetaFormSet
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Camiseta, Pedido, ImagemCamiseta
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import login, logout
+from django.core.paginator import Paginator
+from django.http import JsonResponse
 from django.contrib import messages
 from django.db import transaction
 import os
-from django.core.paginator import Paginator
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.decorators import login_required, user_passes_test
-from .models import Camiseta, Pedido, ImagemCamiseta
-from .forms import CamisetaForm, PedidoForm, AlterarStatusPedidoForm, FiltroProdutoForm, CadastroUsuarioForm, LoginUsuarioForm, ImagemCamisetaFormSet
 
 def index(request):
     form = FiltroProdutoForm(request.GET) 
@@ -98,6 +100,8 @@ def cadastro_usuario(request):
     else:
         form = CadastroUsuarioForm()
     return render(request, 'cadastro.html', {'form': form})
+
+
 
 ####################################################################################################
 
@@ -254,6 +258,19 @@ def gerenciar_pedidos(request):
         }
     
     return render(request, 'gerenciar_pedidos.html', context)
+
+@login_required
+def verificar_pedidos(request):
+    pedidos_novos = Pedido.objects.filter(camiseta__vendedor=request.user, visto=False).count()
+    return JsonResponse({"pedidos_novos": pedidos_novos})
+
+@login_required
+@csrf_exempt 
+def marcar_pedidos_vistos(request):
+    if request.method == "POST":
+        Pedido.objects.filter(camiseta__vendedor=request.user, visto=False).update(visto=True)
+        return JsonResponse({"status": "success"})
+    return JsonResponse({"error": "Método inválido"}, status=400)
 
 ####################################################################################################
 
