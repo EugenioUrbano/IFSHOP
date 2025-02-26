@@ -285,14 +285,14 @@ def edit_pedido(request, pedido_id):
 
     if request.method == 'POST':
         # Preenche o formulário com os dados enviados para edição
-        form = PedidoForm(request.POST, instance=pedido, tamanhos_opcoes=tamanhos_opcoes, estilos_opcoes=estilos_opcoes,forma_pag_opcoes=forma_pag_opcoes)
+        form = PedidoForm(request.POST, camiseta=pedido.camiseta, instance=pedido, tamanhos_opcoes=tamanhos_opcoes, estilos_opcoes=estilos_opcoes,forma_pag_opcoes=forma_pag_opcoes)
         if form.is_valid():
             form.save()
             messages.success(request, "Pedido atualizado com sucesso!")
             return redirect('carrinho')  # Redireciona para o carrinho ou outra página
     else:
         # Inicializa o formulário com os dados atuais do pedido
-        form = PedidoForm(instance=pedido, tamanhos_opcoes=tamanhos_opcoes, estilos_opcoes=estilos_opcoes, forma_pag_opcoes=forma_pag_opcoes)
+        form = PedidoForm(instance=pedido,camiseta=pedido.camiseta, tamanhos_opcoes=tamanhos_opcoes, estilos_opcoes=estilos_opcoes, forma_pag_opcoes=forma_pag_opcoes)
 
     return render(request, 'edit_pedido.html', {'form': form, 'pedido': pedido})
 
