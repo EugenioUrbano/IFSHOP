@@ -17,46 +17,70 @@
 </div>
 
 <ul style="list-style: none; padding: 0;" class="container body-content">
-    {% for item in camisetas_com_imagens %}
-    <li style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; display: flex; align-items: center; justify-content: space-between;">
-        <div style="display: flex; align-items: center; gap: 20px;">
-            
-            {% if item.imagem_principal %}
-                <img src="{{ item.imagem_principal.imagem.url }}" alt="Imagem de {{ item.camiseta.nome }}" class="thumbnail" style="width: 200px ;  height: 200px">
-            {% else %}
-            <img id="foto_carrinho" src="{% static 'img/não_tem_imagem.svg' %}"  alt="Imagem de {{ item.camiseta.nome }}" class="img-fluid">
-            {% endif %}
-            <div class="col-md-8 themed-grid-col">
-                <div class="pb-3">
-                    <h3><strong>{{ item.camiseta.titulo }}</strong></h3>
+    {% if camisetas_com_imagens%}
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h1>Tem certeza que deseja excluir produto?</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        Tamanhos: {{ item.camiseta.tamanhos }}<br>
-                        Estilos: {{ item.camiseta.estilos }}<br>
-                        Preço: R${{ item.camiseta.preco }}<br>
+                <div class="modal-body">
+                    Isso irá fazer com que todos os pedidos deste produto sejam excluidos juntos?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
+                    <form method="post" class="">
+                        {% csrf_token %}
+                        <input type="hidden" name="camiseta_id" value="{{ item.camiseta.id }}">
+                        <button class="btn btn-danger " type="submit" name="deletar">Sim</button>
+                    </form>
+                </div>
+            </div>
+            </div>
+        </div>
+        {% for item in camisetas_com_imagens %}
+        <li style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                
+                {% if item.imagem_principal %}
+                    <img src="{{ item.imagem_principal.imagem.url }}" alt="Imagem de {{ item.camiseta.nome }}" class="thumbnail" style="width: 200px ;  height: 200px">
+                {% else %}
+                <img id="foto_carrinho" src="{% static 'img/não_tem_imagem.svg' %}"  alt="Imagem de {{ item.camiseta.nome }}" class="img-fluid">
+                {% endif %}
+                <div class="col-md-8 themed-grid-col">
+                    <div class="pb-3">
+                        <h3><strong>{{ item.camiseta.titulo }}</strong></h3>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            Tamanhos: {{ item.camiseta.tamanhos }}<br>
+                            Estilos: {{ item.camiseta.estilos }}<br>
+                            Preço: R${{ item.camiseta.preco }}<br>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div style="text-align: right;">
-            <div class="dropstart ">
-                <button class="btn botoes shadow-lg rounded-pill px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Opções
-                </button>
-                <ul class="dropdown-menu">
-                <li class="p-1"><button class="btn botoes shadow-lg rounded-pill px-3"><a href="{% url 'edit_produto' item.camiseta.id%}" class="nav-link">Editar Camiseta</a></button></li>  
-                <li class="p-1">
-                    <form method="post"  class="pb-3">
-                        {% csrf_token %}
-                        <input type="hidden" name="camiseta_id" value="{{ item.camiseta.id }}">
-                        <button class="btn btn-danger rounded-pill px-3" type="submit" name="deletar">Excluir Camiseta</button>
-                    </form></li>
-                </ul>
+            <div style="text-align: right;">
+                <div class="dropstart ">
+                    <button class="btn botoes shadow-lg rounded-pill px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Opções
+                    </button>
+                    <ul class="dropdown-menu">
+                    <li class="p-1"><button class="btn"><a href="{% url 'edit_produto' item.camiseta.id%}" class="nav-link">Editar Camiseta</a></button></li>  
+                    <li class="p-1">
+                        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            Cancelar pedido
+                        </button>
+                    </ul>
+                </div>
             </div>
-        </div>
-    </li>
-    {% endfor %}
+        </li>
+        {% endfor %}
+    {% else %}
+        <p class="container text-center">Nenhuma camisa cadastrada.</p>
+    {% endif %}
 </ul>
 <div class="pagination justify-content-center align-items-center">
     <span class="step-links">

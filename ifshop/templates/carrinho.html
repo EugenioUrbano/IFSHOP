@@ -11,6 +11,28 @@
 {% if user.is_authenticated %}
     {% if pedidos_feitos %}
         {% for pedido in pedidos_feitos %}
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1>Tem certeza que deseja cancelar este pedido?</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Se você excluir este pedido tera que refazê-lo.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
+                    <form method="post" class="">
+                        {% csrf_token %}
+                        <input type="hidden" name="pedido_id" value="{{ pedido.pedido.id }}">
+                        <button type="submit" name="deletar" class="btn btn-danger">Sim</button>
+                    </form>
+                </div>
+              </div>
+            </div>
+          </div>
             <ul style="list-style: none; padding: 0;" class="container body-content">
 
                 <li style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; display: flex; align-items: center; justify-content: space-between;">
@@ -37,33 +59,14 @@
                                     Cor: {{ pedido.pedido.cor_escolhida }}<br>
                                 </div>
                                 <div class="col-md-6 dropend">
-                                    <button class="btn botoes shadow-lg rounded-pill px-3 dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <button class="btn botoes shadow-lg rounded-pill px-3 dropdown-toggle" data-bs-toggle="dropdown"  aria-expanded="false">
                                         Opções
                                     </button>
                                     <ul class="dropdown-menu">
                                     <li>
-                                        <button  class="btn" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
                                             Cancelar pedido
                                         </button>
-                                        
-                                        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    
-                                                    <div class="modal-body">
-                                                        Tem certeza que deseja cancelar este pedido?
-                                                    </div>
-                                                    <div class="modal-footer" >
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
-                                                        <form method="post" class="">
-                                                            {% csrf_token %}
-                                                            <input type="hidden" name="pedido_id" value="{{ pedido.pedido.id }}">
-                                                            <button type="submit" name="deletar" class="btn btn-primary">Sim</button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>

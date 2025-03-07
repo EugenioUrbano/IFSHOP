@@ -69,6 +69,8 @@ class FiltroProdutoForm(forms.Form):
         required=False,
         widget=forms.Select(attrs={'class': 'form-select form-select-sm d-inline p-2'})
     )
+
+
 ### Filtro ###
 
 class CamisetaForm(forms.ModelForm):
