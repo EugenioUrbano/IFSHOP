@@ -70,7 +70,18 @@ class FiltroProdutoForm(forms.Form):
         widget=forms.Select(attrs={'class': 'form-select form-select-sm d-inline p-2'})
     )
 
-
+class FiltroProdutosForm(forms.Form):
+    status = forms.ChoiceField(
+        choices=[
+            ('', 'Todos os Pedidos'),  
+            ('pendente', 'Pendente'),
+            ('pago', 'Pago'),
+            ('negociando', 'Negociando'),
+        ],
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm d-inline p-2'})
+    )
+    
 ### Filtro ###
 
 class CamisetaForm(forms.ModelForm):

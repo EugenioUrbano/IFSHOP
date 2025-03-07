@@ -10,6 +10,10 @@
   color: white;
   
 }
+.espaco-filtro{
+  margin-bottom: 20px;
+  
+}
 .botoes {
   background-color: #45afe0;
   color: white;
@@ -84,6 +88,7 @@ footer.fixar-rodape{
 
 #filter_bar{
   padding-left: 11%;
+  
 }
 
 #fotos_pro{

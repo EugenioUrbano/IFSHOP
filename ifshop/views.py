@@ -1,4 +1,4 @@
-from .forms import CamisetaForm, PedidoForm, AlterarStatusPedidoForm, FiltroProdutoForm, CadastroUsuarioForm, LoginUsuarioForm, ImagemCamisetaFormSet
+from .forms import CamisetaForm, PedidoForm, AlterarStatusPedidoForm, FiltroProdutoForm, FiltroProdutosForm, CadastroUsuarioForm, LoginUsuarioForm, ImagemCamisetaFormSet
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Camiseta, Pedido, ImagemCamiseta
@@ -230,9 +230,17 @@ def gerenciar_pro(request):
 @login_required
 @user_passes_test(vendedor)
 def gerenciar_pedidos(request):
+    form_filtro = FiltroProdutosForm(request.GET) 
     camisetas_vendedor = Camiseta.objects.filter(vendedor=request.user)
     pedidos = Pedido.objects.filter(camiseta__in=camisetas_vendedor)
 
+    if form_filtro.is_valid():
+        status = form_filtro.cleaned_data.get('status')
+
+        if status:  
+            pedidos = pedidos.filter(status=status)
+
+    
     if request.method == 'POST':
         for pedido in pedidos:
             form = AlterarStatusPedidoForm(request.POST, instance=pedido)
@@ -254,6 +262,7 @@ def gerenciar_pedidos(request):
 
     context = {
         'pedidos_com_forms': pedidos_paginadas,
+        'form_filtro': form_filtro,
         }
     
     return render(request, 'gerenciar_pedidos.html', context)

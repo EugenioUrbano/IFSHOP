@@ -11,11 +11,24 @@
 <div style=" color: black; padding: 10px;" class="d-flex flex-wrap align-items-center justify-content-center ">
     <h1 class="container text-center">Gerencie Pedidos das suas Camisetas</h1>
 </div>
+<section class="b-example-divider filtros-fundo espaco-filtro">
+    <form method="get">
+        <div id="filter_bar " class="row justify-content-center align-items-center">
+            <div class="col-md-4">
+                <div class="container filtros-fundo justify-content-between"></div>
+                {{ form_filtro.status }}
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn botoes shadow-lg rounded-pill px-3">Filtrar</button>
+            </div>
+        </div>
+    </form>
+</section>
 {% if pedidos_com_forms %}
-    <h2 class="container text-center">Pedidos para suas camisetas</h2>
-    <form method="POST">
+    
+    <form method="POST" >
         {% csrf_token %}
-        <table style="width:60% ;margin: 0 auto" class="table">
+        <table style="width:60% ;margin: 0 auto" class="table ">
             <thead>
                 <tr>
                     <th class="border border-black">ID do Pedido</th>
@@ -53,8 +66,8 @@
                 
             </tbody>
         </table>
-        <div class="row justify-content-end">
-            <div class="col-4 text-end">
+        <div class="row justify-content-center">
+            <div class="col-4 text-center">
                 <button type="submit" class=" justfy btn botoes shadow-lg rounded-pill px-3">Salvar Alterações</button>
             </div>
         <div class="pagination justify-content-center align-items-center">
