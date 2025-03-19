@@ -1,6 +1,10 @@
-
+from  decouple import config
 import os
 from pathlib import Path
+
+
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -51,8 +55,15 @@ AUTHENTICATION_BACKENDS = ['ifshop.backends.EmailBackend']
 # CONFIGURAÇÃOM LOGIN
 
 # CONFIGURAÇÃO RESTAURAÇÃO DE SENHA PELO CONSOLE
-
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+ 
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"  # Servidor SMTP do Gmail (ou de outro provedor)
+EMAIL_PORT = 587  # Porta do Gmail (TLS)
+EMAIL_USE_TLS = True  # Segurança
+EMAIL_USE_SSL = False  # Não usar SSL (TLS já é suficiente)
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")  # Carregar do .env
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")  # Carregar do .env
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # CONFIGURAÇÃO RESTAURAÇÃO DE SENHA PELO CONSOLE
 
