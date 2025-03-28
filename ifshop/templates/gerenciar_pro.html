@@ -69,11 +69,7 @@
                     </button>
                     <ul class="dropdown-menu">
                     <li class="p-1"><button class="btn"><a href="{% url 'edit_produto' item.camiseta.id%}" class="nav-link">Editar Camiseta</a></button></li>  
-                    <li class="p-1">
-                        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            Cancelar pedido
-                        </button>
-                    </ul>
+                    <li class="p-1"><button class="btn"><a href="{% url 'excluir_produto' item.camiseta.id%}" class="nav-link">Excluir Camiseta</a></button></li>
                 </div>
             </div>
         </li>

@@ -41,6 +41,7 @@ class UsuarioCustomizado(AbstractUser):
 
 class Camiseta(models.Model):
     TAMANHOS_OPCOES = [
+        ('PP', 'Extra Pequeno'),
         ('P', 'Pequeno'),
         ('M', 'Médio'),
         ('G', 'Grande'),
@@ -48,9 +49,9 @@ class Camiseta(models.Model):
     ]
     
     ESTILOS_OPCOES = [
-        ('babylook', 'BabyLook'),
-        ('normal', 'Normal'),
-        ('infantil', 'Infantil')
+        ('Babylook', 'BabyLook'),
+        ('Normal', 'Normal'),
+        ('Infantil', 'Infantil')
     ]
 
     CURSOS_OPCOES = [
@@ -120,15 +121,15 @@ class ImagemCamiseta(models.Model):
 
 class Pedido(models.Model):
     STATUS_OPCOES = [
-        ('pendente', 'Pendente'),
-        ('pago', 'Pago'),
-        ('negociando', 'Negociando'),
+        ('Pendente', 'Pendente'),
+        ('Pago', 'Pago'),
+        ('Negociando', 'Negociando'),
     ]
     FORMA_PAG_OPCOES = [
-        ('dinheiro', 'Dinheiro'),
-        ('pix', 'Pix'),
-        ('cartão', 'Cartão'),
-        ('em duas vezes', 'Em duas Vezes')
+        ('Dinheiro', 'Dinheiro'),
+        ('Pix', 'Pix'),
+        ('Cartão', 'Cartão'),
+        ('Em duas vezes', 'Em duas Vezes')
     ]
     
     camiseta = models.ForeignKey(Camiseta, on_delete=models.CASCADE)

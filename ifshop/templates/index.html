@@ -2,6 +2,7 @@
 
 {% load static %}
 {% load crispy_forms_filters %}
+{% load tz %}
 
 {% block title %}IFSHOP{% endblock %}
 
@@ -69,9 +70,13 @@
                             <h6 class="text-body-secondary">Data para fazer o pedido até {{ item.camiseta.data_limite_pedidos }}</h6>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="btn-group">
-                                    <a href="{% url 'camiseta' item.camiseta.id %}">
-                                        <button type="button" class="btn botoes shadow-lg rounded px-3">Fazer Pedido</button> 
-                                    </a>
+                                    {% if item.disponivel %}
+                                        <a href="{% url 'camiseta' item.camiseta.id %}">
+                                            <button type="button" class="btn botoes shadow-lg rounded px-3">Fazer Pedido</button> 
+                                        </a>
+                                    {% else %}
+                                        <button type="button" class="btn btn-secondary" disabled>Indisponível</button>
+                                    {% endif %}
                                 </div>
                                 <p class="text-body-secondary">R$ {{ item.camiseta.preco }}</p>
                             </div>

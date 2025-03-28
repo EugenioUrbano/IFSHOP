@@ -5,6 +5,7 @@ from .models import Camiseta, Pedido, ImagemCamiseta
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login, logout
 from django.core.paginator import Paginator
+from django.utils.timezone import now
 from django.http import JsonResponse
 from django.contrib import messages
 from django.db import transaction
@@ -26,14 +27,20 @@ def index(request):
             camisetas = camisetas.filter(cursos=cursos)
             
     camisetas_com_imagens = []
+    data_hoje = now().date()
+    
+    
     for camiseta in camisetas:
         imagem_principal = camiseta.imagens.filter(principal=True).first() or camiseta.imagens.first()
-        camisetas_com_imagens.append({'camiseta': camiseta, 'imagem_principal': imagem_principal})
+        data_limite = camiseta.data_limite_pedidos.date() if hasattr(camiseta.data_limite_pedidos, 'date') else camiseta.data_limite_pedidos
+        disponivel = data_hoje <= data_limite
+        camisetas_com_imagens.append({'camiseta': camiseta, 'imagem_principal': imagem_principal, 'disponivel': disponivel})
     
     paginator = Paginator(camisetas_com_imagens, 9)
     numero_da_pagina = request.GET.get('pagina')  
     camisetas_paginadas = paginator.get_page(numero_da_pagina)
-       
+    
+    
     context = {
         'form': form,
         'camisetas_com_imagens': camisetas_paginadas,
@@ -160,7 +167,7 @@ def camiseta(request, camiseta_id):
 @login_required
 @user_passes_test(vendedor)
 def adicionar_pro(request):
-    camisetas =Camiseta.objects.all()
+    camisetas = Camiseta.objects.all()
     
     camisetas_com_imagens = []
     for camiseta in camisetas:
@@ -202,28 +209,33 @@ def adicionar_pro(request):
 @login_required
 @user_passes_test(vendedor)
 def gerenciar_pro(request):
-    camisetas_com_imagens = []
-    
-    if request.user.is_authenticated:
-        camisetas = Camiseta.objects.filter(vendedor=request.user) 
-        
-        if request.method == "POST" and 'deletar' in request.POST:
-            camiseta_id = request.POST.get('camiseta_id')
-            
-            camiseta_selecionada = Camiseta.objects.get(id=camiseta_id)
-            camiseta_selecionada.delete()
-            return redirect('gerenciar_pro')
-        
-        for camiseta in camisetas:
-            imagem_principal = camiseta.imagens.filter(principal=True).first() or camiseta.imagens.first()
-            camisetas_com_imagens.append({'camiseta': camiseta, 'imagem_principal': imagem_principal})
+    camisetas = Camiseta.objects.filter(vendedor=request.user)  # Filtra apenas camisetas do usuário logado
 
+    camisetas_com_imagens = [
+        {
+            'camiseta': camiseta,
+            'imagem_principal': camiseta.imagens.filter(principal=True).first() or camiseta.imagens.first()
+        }
+        for camiseta in camisetas
+    ]
+    
+    # Paginação
     paginator = Paginator(camisetas_com_imagens, 4)
-    numero_da_pagina = request.GET.get('pagina')  
+    numero_da_pagina = request.GET.get('pagina')
     camisetas_paginadas = paginator.get_page(numero_da_pagina)
 
-    return render(request, 'gerenciar_pro.html', { 'camisetas_com_imagens': camisetas_paginadas,})
+    return render(request, 'gerenciar_pro.html', {'camisetas_com_imagens': camisetas_paginadas})
     
+@login_required
+@user_passes_test(vendedor)
+def excluir_produto(request, camiseta_id):
+    camiseta = get_object_or_404(Camiseta, id=camiseta_id, vendedor=request.user)
+
+    if request.method == "POST" and 'deletar' in request.POST:
+        camiseta.delete()
+        return redirect('gerenciar_pro')
+
+    return render(request, "excluir_produto.html", {'camiseta': camiseta})
 
 ####################################################################################################
 
