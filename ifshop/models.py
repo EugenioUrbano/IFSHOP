@@ -1,9 +1,10 @@
-import os
-from django.db import models
-from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.db.models import JSONField
+from django.conf import settings
+from django.db import models
+import os
 
-     
+
 class UsuarioCustomizado(AbstractUser):
     CURSOS_OPCOES = [
         ('infoweb', 'InfoWeb'),
@@ -62,15 +63,16 @@ class Camiseta(models.Model):
     ]
     
     TURNOS_OPCOES = [
-        ('matutino', 'Matutino'),
-        ('vespertino', 'Vespertino'),
-        ('noturno', 'Noturno'),
+        ('Matutino', 'Matutino'),
+        ('Vespertino', 'Vespertino'),
+        ('Noturno', 'Noturno'),
     ]
     FORMA_PAG_OPCOES = [
-        ('dinheiro', 'Dinheiro'),
-        ('pix', 'Pix'),
-        ('cartão', 'Cartão'),
-        ('em duas vezes', 'Em duas Vezes')
+        ('Dinheiro Físico', 'Dinheiro Físico'),
+        ('Pix', 'Pix'),
+        ('Parcelado 2x Pix', 'Parcelado 2x Pix'),
+        ('Parcelado 2x Fisico', 'Parcelado 2x Fisica'),
+        ('2x Fisico e Pix', 'Parcelado 2x Fisica e Pix')
     ]
 
     titulo = models.CharField(max_length=100)
@@ -78,14 +80,14 @@ class Camiseta(models.Model):
     forma_pag_op = models.CharField(max_length=100,null=True)
     data_limite_pedidos = models.DateField()
     data_para_entrega = models.DateField()
-    tamanhos = models.CharField(max_length=50) 
     turnos = models.CharField(max_length=50)
     cores = models.TextField( null=True, help_text="Digite as cores separadas por vírgula. Ex: azul, vermelho, verde")
     cursos = models.CharField(max_length=50)
     imagem = models.ImageField(blank=False)
     estilos = models.CharField(max_length=50, default="" )
+    tamanhos = JSONField(default=dict)
     vendedor = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE, related_name="camisetas")
-
+    
     def lista_cores(self):
         return [cor.strip() for cor in self.cores.split(",") if cor.strip()]
     
@@ -100,7 +102,16 @@ class Camiseta(models.Model):
     def __str__(self):
         return self.titulo
     
+class EstiloTamanho(models.Model):
+    ESTILOS_OPCOES = Camiseta.ESTILOS_OPCOES
+    TAMANHOS_OPCOES = Camiseta.TAMANHOS_OPCOES
 
+    camiseta = models.ForeignKey(Camiseta, on_delete=models.CASCADE, related_name='estilos_tamanhos')
+    estilo = models.CharField(max_length=20, choices=ESTILOS_OPCOES)
+    tamanho = models.CharField(max_length=5, choices=TAMANHOS_OPCOES)
+
+    def __str__(self):
+        return f"{self.estilo} - {self.tamanho} ({self.camiseta.titulo})"
 
 class ImagemCamiseta(models.Model):
     camiseta = models.ForeignKey(Camiseta, related_name='imagens', on_delete=models.CASCADE)
@@ -122,14 +133,16 @@ class ImagemCamiseta(models.Model):
 class Pedido(models.Model):
     STATUS_OPCOES = [
         ('Pendente', 'Pendente'),
-        ('Pago', 'Pago'),
-        ('Negociando', 'Negociando'),
+        ('Pago Totalmente', 'Pago Totalmente'),
+        ('Pago 1° Parcela', 'Pago 1° Parcela'),
+        
     ]
     FORMA_PAG_OPCOES = [
-        ('Dinheiro', 'Dinheiro'),
+        ('Dinheiro Físico', 'Dinheiro Físico'),
         ('Pix', 'Pix'),
-        ('Cartão', 'Cartão'),
-        ('Em duas vezes', 'Em duas Vezes')
+        ('Parcelado 2x Pix', 'Parcelado 2x Pix'),
+        ('Parcelado 2x Fisico', 'Parcelado 2x Fisica'),
+        ('2x Fisico e Pix', 'Parcelado 2x Fisica e Pix')
     ]
     
     camiseta = models.ForeignKey(Camiseta, on_delete=models.CASCADE)

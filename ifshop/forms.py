@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import modelformset_factory
-from .models import Camiseta, Pedido, UsuarioCustomizado, ImagemCamiseta
+from .models import Camiseta, Pedido, UsuarioCustomizado, ImagemCamiseta, EstiloTamanho
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 
@@ -74,9 +74,9 @@ class FiltroProdutosForm(forms.Form):
     status = forms.ChoiceField(
         choices=[
             ('', 'Todos os Pedidos'),  
-            ('pendente', 'Pendente'),
-            ('pago', 'Pago'),
-            ('negociando', 'Negociando'),
+            ('Pendente', 'Pendente'),
+            ('Pago Totalmente', 'Pago Totalmente'),
+            ('Pago 1° Parcela', 'Pago 1° Parcela'),
         ],
         required=False,
         widget=forms.Select(attrs={'class': 'form-select form-select-sm d-inline p-2'})
@@ -87,13 +87,17 @@ class FiltroProdutosForm(forms.Form):
 class CamisetaForm(forms.ModelForm):
     tamanhos = forms.MultipleChoiceField(
         choices=Camiseta.TAMANHOS_OPCOES,
-        label= 'Tamanhos',
-        widget=forms.CheckboxSelectMultiple(attrs={'class': 'd-inline-block form-check-input' }), required=True)
-    
+        label='Tamanhos',
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
+        required=False
+    )
+
     estilos = forms.MultipleChoiceField(
         choices=Camiseta.ESTILOS_OPCOES,
-        label= 'Estilos' ,
-        widget=forms.CheckboxSelectMultiple(attrs={'class': 'd-inline-block form-check-input '}), required=True)
+        label='Estilos',
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
+        required=True
+    )
     
     data_limite_pedidos = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control rounded-3 ',}), required=True)
@@ -103,10 +107,10 @@ class CamisetaForm(forms.ModelForm):
     
     titulo = forms.CharField(
         max_length=100,
-        widget=forms.TextInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: Camisa De InfoWeb4M...'}))
+        widget=forms.TextInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: Camisa De InfoWeb4M...'}), required=True)
     
     preco = forms.DecimalField(
-        widget=forms.NumberInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: 00,00'}))
+        widget=forms.NumberInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: 00,00'}), required=True)
     
     forma_pag_op = forms.MultipleChoiceField(
         choices=Camiseta.FORMA_PAG_OPCOES,
@@ -115,11 +119,11 @@ class CamisetaForm(forms.ModelForm):
     
     cursos = forms.ChoiceField(
         choices=Camiseta.CURSOS_OPCOES,
-        widget=forms.Select(attrs={'class': 'form-select rounded-3',}))
+        widget=forms.Select(attrs={'class': 'form-select rounded-3',}), required=True)
     
     turnos = forms.ChoiceField(
         choices=Camiseta.TURNOS_OPCOES,
-        widget=forms.Select(attrs={'class': 'form-select rounded-3',}))
+        widget=forms.Select(attrs={'class': 'form-select rounded-3',}), required=True)
     
     class Meta:
         model = Camiseta
@@ -127,6 +131,39 @@ class CamisetaForm(forms.ModelForm):
         widgets = {
             'cores': forms.TextInput(attrs={'placeholder': 'Ex: azul, vermelho, verde'})
         }
+       
+    def clean(self):
+        cleaned_data = super().clean()
+        estilos = cleaned_data.get("estilos", [])
+        tamanhos_por_estilo = {}
+
+        for estilo in estilos:
+            tamanhos = self.data.getlist(f"tamanhos_{estilo}")
+            if tamanhos:
+                tamanhos_por_estilo[estilo] = tamanhos
+
+        cleaned_data['tamanhos'] = tamanhos_por_estilo
+        return cleaned_data   
+        
+    def save(self, commit=True):
+        camiseta = super().save(commit=False)
+        
+        # `tamanhos` já deve vir como dicionário { estilo: [tamanhos] }
+        camiseta.tamanhos = self.cleaned_data['tamanhos']
+        camiseta.estilos = ", ".join(self.cleaned_data['estilos'])
+
+        if commit:
+            camiseta.save()
+            # Limpar estilos anteriores e recriar
+            EstiloTamanho.objects.filter(camiseta=camiseta).delete()
+            for estilo, tamanhos in self.cleaned_data['tamanhos'].items():
+                for tamanho in tamanhos:
+                    EstiloTamanho.objects.create(
+                        camiseta=camiseta,
+                        estilo=estilo,
+                        tamanho=tamanho
+                    )
+        return camiseta
 
     
 ImagemCamisetaFormSet = modelformset_factory(
@@ -154,10 +191,10 @@ class PedidoForm(forms.ModelForm):
         widget=forms.TextInput(attrs={'class': 'card-text mb-auto form-control',}))
     
     tamanho = forms.ChoiceField(
-        widget=forms.Select(attrs={'class': 'card-text mb-auto form-select',}))
+        widget=forms.Select(attrs={'class': 'card-text mb-auto form-select', 'id': 'id_tamanho'}))
     
     estilo = forms.ChoiceField(
-        widget=forms.Select(attrs={'class': 'card-text mb-auto form-select',}))
+        widget=forms.Select(attrs={'class': 'card-text mb-auto form-select', 'id': 'id_estilo'}))
     
     forma_pag = forms.ChoiceField(
         label="Forma de Pagamento",

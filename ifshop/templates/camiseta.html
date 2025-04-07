@@ -8,6 +8,24 @@
 
 {% block content %}
 
+<style>
+.carousel-inner {
+    width: 500px;
+    height: 500px;
+}
+
+.carousel-item {
+    width: 100%;
+    height: 100%;
+}
+
+.carousel-item img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+</style>
+
 <div class="d-flex justify-content-center " style="padding: 5%">
     <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
         <div class="col-auto d-lg-block">
@@ -62,7 +80,36 @@
         
     </div>
   </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tamanhosPorEstilo = {{ tamanhos_por_estilo_json|safe }};
+        const estiloSelect = document.getElementById('id_estilo');
+        const tamanhoSelect = document.getElementById('id_tamanho');
 
+        function atualizarTamanhos(estiloSelecionado) {
+            const tamanhos = tamanhosPorEstilo[estiloSelecionado] || [];
 
-    
+            // Limpar os tamanhos antigos
+            tamanhoSelect.innerHTML = '';
+
+            // Adicionar os novos tamanhos
+            tamanhos.forEach(function (tamanho) {
+                const option = document.createElement('option');
+                option.value = tamanho;
+                option.textContent = tamanho;
+                tamanhoSelect.appendChild(option);
+            });
+        }
+
+        // Quando o estilo for alterado
+        estiloSelect.addEventListener('change', function () {
+            atualizarTamanhos(this.value);
+        });
+
+        // Atualizar tamanhos se já houver um estilo pré-selecionado
+        if (estiloSelect.value) {
+            atualizarTamanhos(estiloSelect.value);
+        }
+    });
+</script>
 {% endblock %}

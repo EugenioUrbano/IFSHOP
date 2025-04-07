@@ -1,7 +1,7 @@
 from .forms import CamisetaForm, PedidoForm, AlterarStatusPedidoForm, FiltroProdutoForm, FiltroProdutosForm, CadastroUsuarioForm, LoginUsuarioForm, ImagemCamisetaFormSet
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Camiseta, Pedido, ImagemCamiseta
+from .models import Camiseta, Pedido, ImagemCamiseta, EstiloTamanho
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login, logout
 from django.core.paginator import Paginator
@@ -9,7 +9,11 @@ from django.utils.timezone import now
 from django.http import JsonResponse
 from django.contrib import messages
 from django.db import transaction
-import os
+import json, os
+
+
+
+
 
 def index(request):
     form = FiltroProdutoForm(request.GET) 
@@ -126,9 +130,16 @@ def carrinho(request):
 
 ####################################################################################################
 
+def tamanhos_por_estilojson(request):
+    camiseta_id = request.GET.get('camiseta_id')
+    estilo = request.GET.get('estilo')
+
+    tamanhos = EstiloTamanho.objects.filter(camiseta_id=camiseta_id, estilo=estilo).values_list('tamanho', flat=True)
+    return JsonResponse(list(tamanhos), safe=False)
+
 def camiseta(request, camiseta_id):
     camiseta = get_object_or_404(Camiseta.objects.prefetch_related('imagens'), id=camiseta_id)
-    tamanhos_opcoes = [t.strip() for t in camiseta.tamanhos.split(',')]
+    tamanhos_opcoes = list({t for lista in camiseta.tamanhos.values() for t in lista})
     estilos_opcoes = [e.strip() for e in camiseta.estilos.split(',')]
     forma_pag_opcoes = [f.strip() for f in camiseta.forma_pag_op.split(',')]
 
@@ -159,8 +170,14 @@ def camiseta(request, camiseta_id):
                 pedido.save()
                 messages.success(request, "Pedido adicionado com sucesso!")
                 return redirect('carrinho')
-
-    return render(request, 'camiseta.html', {'camiseta': camiseta, 'form': form})
+    
+    context = {
+    'form': form,
+    'camiseta': camiseta,
+    'tamanhos_por_estilo_json': json.dumps(camiseta.tamanhos)
+}
+    
+    return render(request, 'camiseta.html', context)
 
 ####################################################################################################
 
@@ -178,13 +195,37 @@ def adicionar_pro(request):
         form = CamisetaForm(request.POST, request.FILES)
         formset = ImagemCamisetaFormSet(request.POST, request.FILES, queryset=ImagemCamiseta.objects.none())
 
+        tamanhos_por_estilo = {}
+            
+        for estilo, _ in Camiseta.ESTILOS_OPCOES:
+            tamanhos_marcados = request.POST.getlist(f'tamanhos_{estilo}')
+            if tamanhos_marcados:
+                tamanhos_por_estilo[estilo] = tamanhos_marcados
+
+        if not request.POST.getlist('estilos'):
+            form.add_error('estilos', 'Você deve selecionar pelo menos um estilo.')
+        
+        if not tamanhos_por_estilo:
+            form.add_error('tamanhos', 'Você deve selecionar pelo menos um tamanho para algum estilo.')
+
         if form.is_valid() and formset.is_valid():
+            print("Form válido!")
             camiseta = form.save(commit=False)
             camiseta.vendedor = request.user
-            camiseta.tamanhos = ', '.join(form.cleaned_data['tamanhos'])
+            
+            form.cleaned_data['tamanhos'] = tamanhos_por_estilo
             camiseta.estilos = ', '.join(form.cleaned_data['estilos'])
             camiseta.forma_pag_op = ', '.join(form.cleaned_data['forma_pag_op'])
             camiseta.save()
+            
+            EstiloTamanho.objects.filter(camiseta=camiseta).delete()
+            for estilo, tamanhos in tamanhos_por_estilo.items():
+                for tamanho in tamanhos:
+                    EstiloTamanho.objects.create(
+                        camiseta=camiseta,
+                        estilo=estilo,
+                        tamanho=tamanho
+                    )
             
             for form in formset:
                 if form.cleaned_data.get('imagem'):
@@ -197,7 +238,9 @@ def adicionar_pro(request):
     else:
         form = CamisetaForm()
         formset = ImagemCamisetaFormSet(queryset=ImagemCamiseta.objects.none())
-    
+        print("Form errors:", form.errors)
+        print("Formset errors:", formset.errors)
+        
     return render(request, 'adicionar_pro.html', {
         'form': form,
         'formset': formset,
@@ -299,7 +342,7 @@ def edit_pedido(request, pedido_id):
     pedido = get_object_or_404(Pedido, id=pedido_id, cliente=request.user)
 
     # Define opções para o formulário (baseadas no modelo relacionado à camiseta)
-    tamanhos_opcoes = [t.strip() for t in pedido.camiseta.tamanhos.split(',')]
+    tamanhos_opcoes = list({t for lista in pedido.camiseta.tamanhos.values() for t in lista})
     estilos_opcoes = [e.strip() for e in pedido.camiseta.estilos.split(',')]
     forma_pag_opcoes = [f.strip() for f in pedido.camiseta.forma_pag_op.split(',')]
 
@@ -313,8 +356,14 @@ def edit_pedido(request, pedido_id):
     else:
         # Inicializa o formulário com os dados atuais do pedido
         form = PedidoForm(instance=pedido,camiseta=pedido.camiseta, tamanhos_opcoes=tamanhos_opcoes, estilos_opcoes=estilos_opcoes, forma_pag_opcoes=forma_pag_opcoes)
-
-    return render(request, 'edit_pedido.html', {'form': form, 'pedido': pedido})
+    context={
+        'tamanhos_por_estilo_json': json.dumps(pedido.camiseta.tamanhos),
+        'form': form, 
+        'pedido': pedido
+    }
+    
+    
+    return render(request, 'edit_pedido.html', context)
 
 @login_required
 @user_passes_test(vendedor)  # Apenas vendedores podem acessar

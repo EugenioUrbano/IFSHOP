@@ -41,7 +41,36 @@
         
     </div>
   </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tamanhosPorEstilo = {{ tamanhos_por_estilo_json|safe }};
+        const estiloSelect = document.getElementById('id_estilo');
+        const tamanhoSelect = document.getElementById('id_tamanho');
 
+        function atualizarTamanhos(estiloSelecionado) {
+            const tamanhos = tamanhosPorEstilo[estiloSelecionado] || [];
 
-    
+            // Limpar os tamanhos antigos
+            tamanhoSelect.innerHTML = '';
+
+            // Adicionar os novos tamanhos
+            tamanhos.forEach(function (tamanho) {
+                const option = document.createElement('option');
+                option.value = tamanho;
+                option.textContent = tamanho;
+                tamanhoSelect.appendChild(option);
+            });
+        }
+
+        // Quando o estilo for alterado
+        estiloSelect.addEventListener('change', function () {
+            atualizarTamanhos(this.value);
+        });
+
+        // Atualizar tamanhos se já houver um estilo pré-selecionado
+        if (estiloSelect.value) {
+            atualizarTamanhos(estiloSelect.value);
+        }
+    });
+</script>
 {% endblock %}
