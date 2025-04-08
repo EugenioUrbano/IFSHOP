@@ -68,11 +68,11 @@ class Camiseta(models.Model):
         ('Noturno', 'Noturno'),
     ]
     FORMA_PAG_OPCOES = [
-        ('Dinheiro Físico', 'Dinheiro Físico'),
         ('Pix', 'Pix'),
+        ('Dinheiro Físico', 'Dinheiro Físico'),
         ('Parcelado 2x Pix', 'Parcelado 2x Pix'),
         ('Parcelado 2x Fisico', 'Parcelado 2x Fisica'),
-        ('2x Fisico e Pix', 'Parcelado 2x Fisica e Pix')
+        ('Negociar Pagamento', 'Negociar Pagamento')
     ]
 
     titulo = models.CharField(max_length=100)
@@ -84,6 +84,10 @@ class Camiseta(models.Model):
     cores = models.TextField( null=True, help_text="Digite as cores separadas por vírgula. Ex: azul, vermelho, verde")
     cursos = models.CharField(max_length=50)
     imagem = models.ImageField(blank=False)
+    pix_qr_code_parcela = models.ImageField(upload_to='qrcode_parcela_camisetas/', null=False, default="")
+    pix_qr_code_total = models.ImageField(upload_to='qrcode_total_camisetas/', null=False, default="")
+    pix_chave_parcela = models.TextField(max_length=300, null=False, default="")
+    pix_chave_total = models.TextField(max_length=300, null=False, default="")
     estilos = models.CharField(max_length=50, default="" )
     tamanhos = JSONField(default=dict)
     vendedor = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE, related_name="camisetas")
@@ -135,14 +139,15 @@ class Pedido(models.Model):
         ('Pendente', 'Pendente'),
         ('Pago Totalmente', 'Pago Totalmente'),
         ('Pago 1° Parcela', 'Pago 1° Parcela'),
+        ('Negociando com Usuario', 'Negociando com Usuario'),
         
     ]
     FORMA_PAG_OPCOES = [
-        ('Dinheiro Físico', 'Dinheiro Físico'),
         ('Pix', 'Pix'),
+        ('Dinheiro Físico', 'Dinheiro Físico'),
         ('Parcelado 2x Pix', 'Parcelado 2x Pix'),
-        ('Parcelado 2x Fisico', 'Parcelado 2x Fisica'),
-        ('2x Fisico e Pix', 'Parcelado 2x Fisica e Pix')
+        ('Parcelado 2x Fisico', 'Parcelado 2x Fisico'),
+        ('Negociar Pagamento', 'Negociar Pagamento')
     ]
     
     camiseta = models.ForeignKey(Camiseta, on_delete=models.CASCADE)
@@ -152,10 +157,14 @@ class Pedido(models.Model):
     tamanho = models.CharField(max_length=10)
     estilo = models.CharField(max_length=20, default="")
     data_pedido = models.DateTimeField(auto_now_add=True)
-    forma_pag = models.CharField(max_length=100,null=True)
+    forma_pag = models.TextField(max_length=300,null=True)
     status = models.CharField(max_length=100, default="Pendente")
     revisado = models.BooleanField(default=True)
     visto = models.BooleanField(default=False)
+    comprovante_total = models.ImageField(upload_to='qrcode_total_camisetas/', null=False, default="")
+    comprovante_parcela1 = models.ImageField(upload_to='qrcode_total_camisetas/', null=False, default="")
+    comprovante_parcela2 = models.ImageField(upload_to='qrcode_total_camisetas/', null=False, default="")
+
     cliente = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE, related_name="pedidos")
 
     def __str__(self):

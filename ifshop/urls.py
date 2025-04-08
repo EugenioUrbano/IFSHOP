@@ -24,9 +24,11 @@ urlpatterns = [
     path('excluir_produto/<int:camiseta_id>/', views.excluir_produto, name='excluir_produto'),
     path('edit_produto/<int:camiseta_id>/', views.edit_produto, name='edit_produto'),
     path('gerenciar_pedidos/', views.gerenciar_pedidos, name="gerenciar_pedidos"),
+    path('exportar-pedidos/', views.exportar_pedidos_excel, name='exportar_pedidos'),
     path('adicionar_pro/', views.adicionar_pro, name='adicionar_pro'),
     ##########################################################################
     path('carrinho/', views.carrinho, name='carrinho'),
+    path('comprovantes/<int:pedido_id>/', views.comprovantes, name='comprovantes'),
     path('edit_pedido/<int:pedido_id>/',views.edit_pedido, name='edit_pedido'),
     path("verificar-pedidos/", verificar_pedidos, name="verificar_pedidos"),
     path("marcar-pedidos-vistos/", marcar_pedidos_vistos, name="marcar_pedidos_vistos"),

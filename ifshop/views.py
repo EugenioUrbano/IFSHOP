@@ -1,4 +1,4 @@
-from .forms import CamisetaForm, PedidoForm, AlterarStatusPedidoForm, FiltroProdutoForm, FiltroProdutosForm, CadastroUsuarioForm, LoginUsuarioForm, ImagemCamisetaFormSet
+from .forms import CamisetaForm, PedidoForm, AlterarStatusPedidoForm, FiltroProdutoForm, FiltroProdutosForm, CadastroUsuarioForm, LoginUsuarioForm, ImagemCamisetaFormSet, AnexoComprovantesPedidoForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Camiseta, Pedido, ImagemCamiseta, EstiloTamanho
@@ -6,13 +6,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login, logout
 from django.core.paginator import Paginator
 from django.utils.timezone import now
+from django.http import HttpResponse
 from django.http import JsonResponse
 from django.contrib import messages
 from django.db import transaction
+from django.utils import timezone
+import openpyxl
 import json, os
-
-
-
 
 
 def index(request):
@@ -117,16 +117,28 @@ def cadastro_usuario(request):
 
 def carrinho(request):
     pedido = Pedido.objects.filter(cliente=request.user) if request.user.is_authenticated else [] 
-
+    
     if request.method == "POST" and 'deletar' in request.POST:
         pedido_id = request.POST.get('pedido_id')
         pedido = get_object_or_404(Pedido, id=pedido_id)
         pedido.delete()
         return redirect('carrinho')
 
-    return render(request, "carrinho.html", {'pedido': pedido})
+    hoje = timezone.localdate()
+    return render(request, "carrinho.html", {'pedido': pedido, 'hoje': hoje})
     
-
+def comprovantes(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id, cliente=request.user)
+    
+    if request.method == 'POST':
+        form = AnexoComprovantesPedidoForm(request.POST, request.FILES,instance=pedido)
+        if form.is_valid():
+            form.save()  
+        return redirect('carrinho')
+    else:
+        form = AnexoComprovantesPedidoForm(instance=pedido)
+        
+    return render(request, 'comprovantes.html', {'form': form, 'pedido': pedido})
 
 ####################################################################################################
 
@@ -252,7 +264,7 @@ def adicionar_pro(request):
 @login_required
 @user_passes_test(vendedor)
 def gerenciar_pro(request):
-    camisetas = Camiseta.objects.filter(vendedor=request.user)  # Filtra apenas camisetas do usuário logado
+    camisetas = Camiseta.objects.filter(vendedor=request.user) 
 
     camisetas_com_imagens = [
         {
@@ -322,6 +334,36 @@ def gerenciar_pedidos(request):
     
     return render(request, 'gerenciar_pedidos.html', context)
 
+def exportar_pedidos_excel(request):
+    camisetas_vendedor = Camiseta.objects.filter(vendedor=request.user)
+    pedidos = Pedido.objects.filter(camiseta__in=camisetas_vendedor, status="Pago Totalmente")
+
+    # Criação do workbook e planilha
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Pedidos Pagos"
+
+    # Cabeçalhos da planilha
+    ws.append(['Nome na Estampa', 'Número na Estampa', 'Estilo', 'Tamanho', 'Opção de Cor'])
+
+    # Adiciona os dados dos pedidos
+    for pedido in pedidos:
+        ws.append([
+            pedido.nome_estampa,
+            pedido.numero_estampa,
+            pedido.estilo,
+            pedido.tamanho,
+            pedido.cor_escolhida
+        ])
+
+    # Prepara a resposta para download
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename=pedidos_pagos.xlsx'
+    wb.save(response)
+    return response
+
 @login_required
 def verificar_pedidos(request):
     pedidos_novos = Pedido.objects.filter(camiseta__vendedor=request.user, visto=False).count()
@@ -341,32 +383,27 @@ def marcar_pedidos_vistos(request):
 def edit_pedido(request, pedido_id):
     pedido = get_object_or_404(Pedido, id=pedido_id, cliente=request.user)
 
-    # Define opções para o formulário (baseadas no modelo relacionado à camiseta)
     tamanhos_opcoes = list({t for lista in pedido.camiseta.tamanhos.values() for t in lista})
     estilos_opcoes = [e.strip() for e in pedido.camiseta.estilos.split(',')]
     forma_pag_opcoes = [f.strip() for f in pedido.camiseta.forma_pag_op.split(',')]
 
     if request.method == 'POST':
-        # Preenche o formulário com os dados enviados para edição
         form = PedidoForm(request.POST, camiseta=pedido.camiseta, instance=pedido, tamanhos_opcoes=tamanhos_opcoes, estilos_opcoes=estilos_opcoes,forma_pag_opcoes=forma_pag_opcoes)
         if form.is_valid():
             form.save()
             messages.success(request, "Pedido atualizado com sucesso!")
-            return redirect('carrinho')  # Redireciona para o carrinho ou outra página
+            return redirect('carrinho') 
     else:
-        # Inicializa o formulário com os dados atuais do pedido
         form = PedidoForm(instance=pedido,camiseta=pedido.camiseta, tamanhos_opcoes=tamanhos_opcoes, estilos_opcoes=estilos_opcoes, forma_pag_opcoes=forma_pag_opcoes)
     context={
         'tamanhos_por_estilo_json': json.dumps(pedido.camiseta.tamanhos),
         'form': form, 
         'pedido': pedido
     }
-    
-    
     return render(request, 'edit_pedido.html', context)
 
 @login_required
-@user_passes_test(vendedor)  # Apenas vendedores podem acessar
+@user_passes_test(vendedor) 
 def edit_produto(request, camiseta_id):
     camiseta = get_object_or_404(Camiseta, id=camiseta_id)
 

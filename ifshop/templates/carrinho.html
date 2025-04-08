@@ -7,11 +7,10 @@
 {% block filtro%} {% endblock %}
 
 {% block content %}
-<h1 style="color: black; padding: 10px;">Seu Carrinho</h1>
 {% if user.is_authenticated %}
     {% if pedidos_feitos %}
         {% for pedido in pedidos_feitos %}
-        <!-- Modal -->
+        <!-- Modals -->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
               <div class="modal-content">
@@ -33,6 +32,48 @@
               </div>
             </div>
           </div>
+          <div class="modal fade" id="exampleModal_pix" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4>Qr Code e Chave Pix Para Pagamento</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img src="{{ pedido.pedido.camiseta.pix_qr_code_total.url }}" class="thumbnail" style="width: 200px; height: 200px;">
+                    <p id="texto1">{{ pedido.pedido.camiseta.pix_chave_total}}<button onclick="copiarTexto2()" class="btn btn-primary">Copiar</button></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal fade" id="exampleModal_pix2x" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4>Qr Code e Chave Pix Para Pagamento</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img src="{{ pedido.pedido.camiseta.pix_qr_code_parcela.url }}" class="thumbnail" style="width: 200px; height: 200px;">
+                    <p id="texto2">{{ pedido.pedido.camiseta.pix_chave_parcela}}<button onclick="copiarTexto2()" class="btn btn-primary">Copiar</button></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal fade" id="exampleModal_fisico" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4>Proucurar na sala 107, Bloco A</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p>Proucurar por Gabriely Souza, Wescley Plinio, Helloar ou Eugênio Urbano
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Resto da Pagina-->
             <ul style="list-style: none; padding: 0;" class="container body-content">
 
                 <li style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; display: flex; align-items: center; justify-content: space-between;">
@@ -70,13 +111,47 @@
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
-                                        <button class="btn">
-                                            <a href="https://wa.me/55{{pedido.pedido.camiseta.vendedor.telefone}}?text=Olá!%20Gostaria%20de%20Negociar/Pagar%20o%20produto%20com%20ID:%20{{pedido.pedido.id}}." class="nav-link"><i class="fab fa-whatsapp"></i>Pagar/Negociar</a>
-                                        </button>
+                                        {% if pedido.pedido.forma_pag == "Pix" %}
+                                            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal_pix">
+                                                Pagar
+                                            </button>
+                                        {% elif pedido.pedido.forma_pag == "Parcelado 2x Pix" %}
+                                            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal_pix2x">
+                                                Pagar
+                                            </button>
+                                        {% elif pedido.pedido.forma_pag == "Negociar Pagamento" %}
+                                            <button class="btn">
+                                                <a href="https://wa.me/558488041418?text=Olá!%20Gostaria%20de%20Negociar%20o%20pagamento%20da%20camiseta,%20ID%20de%20Pedido:%20{{pedido.pedido.id}}." class="nav-link"><i class="fab fa-whatsapp"></i>Negociar Pagamento</a>
+                                            </button>
+                                        {% elif pedido.pedido.forma_pag == "Dinheiro Físico" %}
+                                            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal_fisico">
+                                                Como Pagar
+                                            </button>
+                                        {% elif pedido.pedido.forma_pag == "Parcelado 2x Fisico" %}
+                                            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal_fisico2x">
+                                                Como Pagar
+                                            </button>
+                                        {% endif %}
+                                        
                                     </li>
+                                    {% if pedido.pedido.forma_pag == "Pix" %}
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
-                                        <button class="btn"><a href="{% url 'edit_pedido' pedido.pedido.id %}" class="nav-link">Editar Pedido</a></button>
+                                        <button class="btn"><a href="{% url 'comprovantes' pedido.pedido.id %}" class="nav-link">Anexar Comprovantes</a></button>
+                                    </li>
+                                    {% elif pedido.pedido.forma_pag == "Parcelado 2x Pix" %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <button class="btn"><a href="{% url 'comprovantes' pedido.pedido.id %}" class="nav-link">Anexar Comprovantes</a></button>
+                                    </li>
+                                    {% endif %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        {% if pedido.pedido.camiseta.data_limite_pedidos <= hoje %}
+                                            <button class="btn nav-link" disabled>Editar (Indisponível)</button>
+                                        {% else %}
+                                            <button class="btn"><a href="{% url 'edit_pedido' pedido.pedido.id %}" class="nav-link">Editar Pedido</a></button>
+                                        {% endif %}
                                     </li>
                                     </ul>
                                 </div>
@@ -95,6 +170,19 @@
 {% else %}
     <p>Nenhum pedido feito.</p>
 {% endif %}
-
+<script>
+function copiarTexto1() {
+    const texto = document.getElementById("texto1").innerText;
+    navigator.clipboard.writeText(texto)
+        .then(() => alert("Texto copiado!"))
+        .catch(err => alert("Erro ao copiar: " + err));
+}
+function copiarTexto2() {
+    const texto = document.getElementById("texto2").innerText;
+    navigator.clipboard.writeText(texto)
+        .then(() => alert("Texto copiado!"))
+        .catch(err => alert("Erro ao copiar: " + err));
+}
+</script>
 
 {% endblock %}

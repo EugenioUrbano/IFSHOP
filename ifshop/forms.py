@@ -77,6 +77,7 @@ class FiltroProdutosForm(forms.Form):
             ('Pendente', 'Pendente'),
             ('Pago Totalmente', 'Pago Totalmente'),
             ('Pago 1° Parcela', 'Pago 1° Parcela'),
+            ('Negociando com Usuario', 'Negociando com Usuarip'),
         ],
         required=False,
         widget=forms.Select(attrs={'class': 'form-select form-select-sm d-inline p-2'})
@@ -125,9 +126,27 @@ class CamisetaForm(forms.ModelForm):
         choices=Camiseta.TURNOS_OPCOES,
         widget=forms.Select(attrs={'class': 'form-select rounded-3',}), required=True)
     
+    pix_qr_code_total = forms.ImageField(
+        label= "Imagem Do QrCode Total",
+        widget=forms.FileInput(attrs={'class': 'form-control'}), required= False
+    )
+    pix_qr_code_parcela = forms.ImageField(
+        label= "Imagem Do QrCode Parcela",
+        widget=forms.FileInput(attrs={'class': 'form-control'}), required= False
+    )
+    pix_chave_total = forms.CharField(
+        label= "Coloque a chave pix para o pagamento",
+        widget = forms.TextInput(attrs={'class': 'form-control'}), required= False
+    )
+    pix_chave_parcela = forms.CharField(
+        label= "Coloque a chave pix para o pagamento",
+        widget = forms.TextInput(attrs={'class': 'form-control'}), required= False
+    )
+    
     class Meta:
         model = Camiseta
-        fields = ['titulo', 'preco', 'forma_pag_op', 'cores', 'data_limite_pedidos', 'data_para_entrega', 'cursos', 'turnos', 'tamanhos', 'estilos']
+        fields = ['titulo', 'preco', 'forma_pag_op', 'cores', 'data_limite_pedidos', 'data_para_entrega', 'cursos', 'turnos',
+                  'tamanhos', 'estilos', "pix_qr_code_parcela", "pix_qr_code_total", "pix_chave_parcela", "pix_chave_total"]
         widgets = {
             'cores': forms.TextInput(attrs={'placeholder': 'Ex: azul, vermelho, verde'})
         }
@@ -181,6 +200,21 @@ ImagemCamisetaFormSet = modelformset_factory(
 class PedidoForm(forms.ModelForm):
     cor_escolhida = forms.ChoiceField(label="Escolha a cor", choices=[], required=True)
     
+    comprovante_total = forms.ImageField(
+        label= "Anexe o Comprovante",
+        widget=forms.FileInput(attrs={'class': 'form-control'}), required= False
+    )
+    
+    comprovante_parcela1 = forms.ImageField(
+        label= "Anexe o Comprovante da Primeira Parcela",
+        widget=forms.FileInput(attrs={'class': 'form-control'}), required= False
+    )
+    
+    comprovante_parcela2 = forms.ImageField(
+        label= "Anexe o Comprovante da Segunda Parcela",
+        widget=forms.FileInput(attrs={'class': 'form-control'}), required= False
+    )
+    
     nome_estampa = forms.CharField(
         max_length=100,
         widget=forms.TextInput(attrs={
@@ -202,7 +236,7 @@ class PedidoForm(forms.ModelForm):
 
     class Meta:
         model = Pedido
-        fields = ['nome_estampa', 'numero_estampa', 'tamanho', 'estilo', 'cor_escolhida', "forma_pag"]
+        fields = ['nome_estampa', 'numero_estampa', 'tamanho', 'estilo', 'cor_escolhida', "forma_pag", "comprovante_total", "comprovante_parcela1", "comprovante_parcela2"]
         
     def __init__(self, *args, **kwargs):
         camiseta = kwargs.pop('camiseta', None)
@@ -229,4 +263,22 @@ class AlterarStatusPedidoForm(forms.ModelForm):
     class Meta:
         model = Pedido
         fields = ['status']  # Apenas o campo de status
+
+class AnexoComprovantesPedidoForm(forms.ModelForm):
+    comprovante_total = forms.ImageField(
+        label= "Anexe o Comprovante",
+        widget=forms.FileInput(attrs={'class': 'form-control'}), required= False
+    )
     
+    comprovante_parcela1 = forms.ImageField(
+        label= "Anexe o Comprovante da Primeira Parcela",
+        widget=forms.FileInput(attrs={'class': 'form-control'}), required= False
+    )
+    
+    comprovante_parcela2 = forms.ImageField(
+        label= "Anexe o Comprovante da Segunda Parcela",
+        widget=forms.FileInput(attrs={'class': 'form-control'}), required= False
+    )
+    class Meta:
+        model = Pedido
+        fields = ['comprovante_total','comprovante_parcela1','comprovante_parcela2']  # Apenas o campo de status 

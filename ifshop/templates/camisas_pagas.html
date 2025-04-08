@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load crispy_forms_filters %}
+
+{% block title %}Gerencie Produtos{% endblock %}
+{% block filtro%} {% endblock %}
+
+{% block content %}
+
+<div style=" color: black; padding: 10px;" class="d-flex flex-wrap align-items-center justify-content-center ">
+    <h1 class="container text-center">Transforme em uma planilha Excel</h1>
+</div>
+{% if pedidos_vend %}
+    
+    <form method="POST" >
+        {% csrf_token %}
+        <table style="width:60% ;margin: 0 auto" class="table ">
+            <thead>
+                <tr>
+                    <th class="border border-black">Título do Produto</th>
+                    <th class="border border-black">Opção de Cor</th>
+                    <th class="border border-black">Nome na Estampa</th>
+                    <th class="border border-black">Número na Estampa</th>
+                    <th class="border border-black">Tamanho</th>
+                    <th class="border border-black">Estilo</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                {% for pedido in pedidos_vend %}
+                    <tr class="border-end border-start">
+                        <td class="border border-black ">{{ pedido.camiseta.titulo }}</td>
+                        <td class="border border-black ">{{ pedido.cor_escolhida }}</td>
+                        <td class="border border-black ">{{ pedido.nome_estampa }}</td>
+                        <td class="border border-black ">{{ pedido.numero_estampa }}</td>
+                        <td class="border border-black ">{{ pedido.estilo }}</td>
+                        <td class="border border-black ">{{ pedido.tamanho }}</td>
+                    </tr>
+                {% endfor %}
+                
+            </tbody>
+        </table>
+        <div class="row justify-content-center">
+            <div class="col-4 text-center">
+                <button type="submit" class=" justfy btn botoes shadow-lg rounded-pill px-3">Salvar Alterações</button>
+            </div>
+        <div class="pagination justify-content-center align-items-center">
+            <span class="step-links">
+                {% if pedidos_vend.has_previous %}
+                    <button type="button" class="btn botoes_paginacao"><a href="?pagina=1" class="nav-link">&laquo; Início</a></button>
+                    <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ pedidos_vend.previous_page_number }} " class="nav-link">Anterior</a></button>
+                    
+                {% endif %}
+        
+                
+                <span class="current">
+                    Página {{ pedidos_vend.number }} de {{ pedidos_vend.paginator.num_pages }}
+                </span>
+                
+        
+                {% if pedidos_v.has_next %}
+                    <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ pedidos_vend.next_page_number }}" class="nav-link">Próxima</a></button>
+                    <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ pedidos_vend.paginator.num_pages }}" class="nav-link">Última &raquo;</a></button>
+                {% endif %}
+            </span>
+        </div>
+        
+    </form>
+
+    
+{% else %}
+    <p class="container text-center">Nenhum pedido foi confirmado como pago.</p>
+{% endif %}
+{% endblock %}

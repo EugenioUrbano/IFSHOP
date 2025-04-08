@@ -55,6 +55,10 @@
     </div>
     <div class="text-end col-4">
         <button type="button" class="btn botoes shadow-lg rounded-pill px-3 "><a href="{% url 'gerenciar_pedidos' %}" class="nav-link">Gerencie seus Pedidos</a></button>
+        <a href="{% url 'exportar_pedidos' %}" class="btn botoes shadow-lg rounded-pill px-3 ">
+          Exportar pedidos em Excel
+        </a>
+    
     </div>
     <div class="text-center" id="notificacao-pedidos" style="display: none; color: red;">Novo pedido!</div>
   </div>

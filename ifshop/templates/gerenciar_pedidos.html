@@ -42,6 +42,8 @@
                     <th class="border border-black">Tamanho</th>
                     <th class="border border-black">Estilo</th>
                     <th class="border border-black">Status</th>
+                    <th class="border border-black">Comprovante</th>
+                    
                 </tr>
             </thead>
             <tbody>
@@ -59,8 +61,16 @@
                         <td class="border border-black ">{{ item.pedido.estilo }}</td>
                         <td class="border border-black ">
                             <!-- Campo select para alterar o status -->
-                            {{ item.form.status }}
+                            {{ item.form.status}}
                         </td>
+                        {% if item.pedido.forma_pag == "Pix" %}
+                        <td class="border border-black"><a href="{{ item.pedido.comprovante_total.url }}" target="_blank">Ver Comprovante</a></td>
+                        {% elif item.pedido.forma_pag == "Parcelado 2x Pix" %}
+                        <td class="border border-black"><a href="{{ item.pedido.comprovante_parcela1.url }}" target="_blank">Primeira Parcela</a><li><hr class="dropdown-divider"></li><a href="{{ item.pedido.comprovante_parcela2.url }}" target="_blank">Segunda Parcela</a></td>
+                        {% else %}
+                        <td class="border border-black">Outra Forma de Pagamento</td>
+                        {% endif %}
+
                     </tr>
                 {% endfor %}
                 
