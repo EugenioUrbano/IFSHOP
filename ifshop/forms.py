@@ -27,10 +27,6 @@ class CadastroUsuarioForm(UserCreationForm):
         label="Confirme a senha",
         widget=forms.PasswordInput(attrs={'class': 'form-control rounded-3 '}))
     
-    matricula_cpf = forms.CharField(
-        label="Matricula ou CPF",
-        widget=forms.TextInput(attrs={'class': 'form-control rounded-3', 'placeholder': 'Somente numeros sem espaço', 'type': 'number'}))
-    
     telefone = forms.CharField(
         min_length=10,
         max_length=100,
@@ -38,7 +34,7 @@ class CadastroUsuarioForm(UserCreationForm):
     
     class Meta:
         model = UsuarioCustomizado
-        fields = ['nome', 'email', 'telefone', 'matricula_cpf', 'curso', 'password1', 'password2' ]
+        fields = ['nome', 'email', 'telefone', 'curso', 'password1', 'password2' ]
         
     
         
@@ -113,6 +109,9 @@ class CamisetaForm(forms.ModelForm):
     preco = forms.DecimalField(
         widget=forms.NumberInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: 00,00'}), required=True)
     
+    preco_parcela = forms.DecimalField(
+        widget=forms.NumberInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: 00,00'}), required=False)
+    
     forma_pag_op = forms.MultipleChoiceField(
         choices=Camiseta.FORMA_PAG_OPCOES,
         label= 'Formas de Pagamento Disponivel' ,
@@ -145,8 +144,8 @@ class CamisetaForm(forms.ModelForm):
     
     class Meta:
         model = Camiseta
-        fields = ['titulo', 'preco', 'forma_pag_op', 'cores', 'data_limite_pedidos', 'data_para_entrega', 'cursos', 'turnos',
-                  'tamanhos', 'estilos', "pix_qr_code_parcela", "pix_qr_code_total", "pix_chave_parcela", "pix_chave_total"]
+        fields = ['titulo', 'preco', 'preco_parcela', 'forma_pag_op', 'cores', 'data_limite_pedidos', 'data_para_entrega', 'cursos', 
+                  'turnos', 'tamanhos', 'estilos', "pix_qr_code_parcela", "pix_qr_code_total", "pix_chave_parcela", "pix_chave_total"]
         widgets = {
             'cores': forms.TextInput(attrs={'placeholder': 'Ex: azul, vermelho, verde'})
         }

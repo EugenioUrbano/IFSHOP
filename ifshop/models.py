@@ -14,7 +14,6 @@ class UsuarioCustomizado(AbstractUser):
     ]
     email = models.EmailField(max_length=100, blank=False, null=True, unique=True)
     telefone = models.CharField(max_length=15, blank=False, null=True)
-    matricula_cpf = models.CharField(max_length=15, blank=False, null=True, unique=True)
     curso = models.CharField(max_length=50, blank=False, null=True)
     vendedor = models.BooleanField(default=False)
     nome = models.CharField(max_length=150)
@@ -78,6 +77,7 @@ class Camiseta(models.Model):
 
     titulo = models.CharField(max_length=100)
     preco = models.DecimalField(max_digits=10, decimal_places=2)
+    preco_parcela = models.DecimalField(max_digits=10, decimal_places=2)
     forma_pag_op = models.CharField(max_length=200,null=True)
     data_limite_pedidos = models.DateField()
     data_para_entrega = models.DateField()

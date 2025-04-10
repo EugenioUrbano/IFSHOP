@@ -29,13 +29,10 @@
                     </div>
                     <div class=" col-md-6">
                         {{ form.email|as_crispy_field }}
+                        <span id="email-status"></span>
                     </div>
                     <div class=" col-md-6">
                         {{ form.telefone|as_crispy_field }}
-                    </div>
-                    <div class=" col-md-6">
-                        {{ form.matricula_cpf|as_crispy_field }}
-                        <span id="matricula_cpf-status"></span>
                     </div>
                     <div class="col-md-6">
                         {{ form.curso|as_crispy_field }}
@@ -75,18 +72,18 @@
         }
     }
     // senhas //
-    document.getElementById("matricula_cpf").addEventListener("input", function() {
-        let matricula_cpf = this.value;
-        if (matricula_cpf.length > 3) {
-            fetch(`/validar-matricula-cpf/?matricula_cpf=${matricula_cpf}`)
+    document.getElementById("email").addEventListener("input", function() {
+        let email = this.value;
+        if (email.length > 3) {
+            fetch(`/validar-email/?email=${email}`)
                 .then(response => response.json())
                 .then(data => {
-                    let status = document.getElementById("matricula_cpf-status");
+                    let status = document.getElementById("email-status");
                     if (data.existe) {
-                        status.innerText = "Matricula ou CPF já cadastrado!";
+                        status.innerText = "Email já cadastrado!";
                         status.style.color = "red";
                     } else {
-                        status.innerText = "Matricula ou CPF disponível!";
+                        status.innerText = "Email disponível!";
                         status.style.color = "green";
                     }
                 });

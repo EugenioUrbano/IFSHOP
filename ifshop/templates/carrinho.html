@@ -51,6 +51,20 @@
                 </div>
               </div>
 
+              <div class="modal fade" id="exampleModal_cartao" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h4>Você escolheu pagar com cartão. Nos procure na sala A107.</h4>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                      <p>Alunos responsáveis: Gabriely Souza, Wescley Plinio, Helloar ou Eugênio Urbano</p>
+                      <p class="bs-danger">Preço sujeito a taxa, confirme com quem estiver lhe atendendo.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             <!-- Resto da Pagina -->
             <ul style="list-style: none; padding: 0;" class="container body-content">
               <li style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; display: flex; align-items: center; justify-content: space-between;">
@@ -86,6 +100,8 @@
                             <button class="btn botoes rounded-pill shadow-lg">
                                 <a href="https://wa.me/55{{pedido.pedido.camiseta.vendedor.telefone}}?text=Olá!%20Gostaria%20de%20Negociar%20o%20pagamento%20da%20camiseta,%20ID%20de%20Pedido:%20{{pedido.pedido.id}}." class="nav-link"><i class="fab fa-whatsapp"></i>Negociar Pagamento</a>
                             </button>
+                            {% elif pedido.pedido.forma_pag == "Cartão Debito/Credito"%}
+                            <button class="btn botoes rounded-pill shadow-lg" data-bs-toggle="modal" data-bs-target="#exampleModal_cartao">Veja como pagar</button>
                             {% else %}
                             <button class="btn botoes rounded-pill shadow-lg" data-bs-toggle="modal" data-bs-target="#exampleModal_fisico">Veja como pagar</button>
                             {% endif %}

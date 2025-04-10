@@ -157,8 +157,11 @@
                                     <div class="modal-body">
                                         {{ form.pix_qr_code_total|as_crispy_field }}
                                         {{ form.pix_chave_total|as_crispy_field }}
+                                        <li><hr class="dropdown-divider" /></li>
                                         {{ form.pix_qr_code_parcela|as_crispy_field }}
                                         {{ form.pix_chave_parcela|as_crispy_field }}
+                                        <li><hr class="dropdown-divider" /></li>
+                                        {{ form.preco_parcela|as_crispy_field }}
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
