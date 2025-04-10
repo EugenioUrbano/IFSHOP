@@ -72,12 +72,13 @@ class Camiseta(models.Model):
         ('Dinheiro Físico', 'Dinheiro Físico'),
         ('Parcelado 2x Pix', 'Parcelado 2x Pix'),
         ('Parcelado 2x Fisico', 'Parcelado 2x Fisica'),
-        ('Negociar Pagamento', 'Negociar Pagamento')
+        ('Negociar Pagamento', 'Negociar Pagamento'),
+        ('Cartão Debito/Credito', 'Cartão Debito/Credito'),
     ]
 
     titulo = models.CharField(max_length=100)
     preco = models.DecimalField(max_digits=10, decimal_places=2)
-    forma_pag_op = models.CharField(max_length=100,null=True)
+    forma_pag_op = models.CharField(max_length=200,null=True)
     data_limite_pedidos = models.DateField()
     data_para_entrega = models.DateField()
     turnos = models.CharField(max_length=50)
@@ -147,7 +148,8 @@ class Pedido(models.Model):
         ('Dinheiro Físico', 'Dinheiro Físico'),
         ('Parcelado 2x Pix', 'Parcelado 2x Pix'),
         ('Parcelado 2x Fisico', 'Parcelado 2x Fisico'),
-        ('Negociar Pagamento', 'Negociar Pagamento')
+        ('Negociar Pagamento', 'Negociar Pagamento'),
+        ('Cartão Debito/Credito', 'Cartão Debito/Credito'),
     ]
     
     camiseta = models.ForeignKey(Camiseta, on_delete=models.CASCADE)

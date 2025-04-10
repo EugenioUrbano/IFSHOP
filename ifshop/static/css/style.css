@@ -5,6 +5,11 @@
   width: 100%;
 }
 
+.img-fluid2 {
+  max-width: 200px;
+  max-height: 200px;
+}
+
 .custom-footer{ /** mudei o nome do footer de custom-header pra custom-footer pq atrapalhou na hora de colocar a barrinha**/
   background-color:#2671bc;
   color: white;
@@ -17,6 +22,7 @@
 .botoes {
   background-color: #45afe0;
   color: white;
+  white-space: nowrap;
 }
 .filtros-fundo {
   background-color: #ffffff;

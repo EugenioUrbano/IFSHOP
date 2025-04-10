@@ -77,7 +77,7 @@ class FiltroProdutosForm(forms.Form):
             ('Pendente', 'Pendente'),
             ('Pago Totalmente', 'Pago Totalmente'),
             ('Pago 1° Parcela', 'Pago 1° Parcela'),
-            ('Negociando com Usuario', 'Negociando com Usuarip'),
+            ('Negociando com Usuario', 'Negociando com Usuario'),
         ],
         required=False,
         widget=forms.Select(attrs={'class': 'form-select form-select-sm d-inline p-2'})

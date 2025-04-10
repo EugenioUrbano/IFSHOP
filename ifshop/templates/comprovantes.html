@@ -1,35 +1,118 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% load static %}
 {% load crispy_forms_filters %}
 
-{% block title %}Anexo Comprovantes{% endblock %}
-{% block filtro %} {% endblock %}
+{% block title %}
+  Realizar pagamento
+{% endblock %}
+{% block filtro %}
+
+{% endblock %}
 
 {% block content %}
-<div class="p-5">
-    <div class="modal modal-sheet position-static d-block p-4 py-md-5 " tabindex="-1" role="dialog" id="modalSignin">
-        <div class="modal-dialog" role="document">
-        <div class="modal-content rounded-4 shadow login-cadastro">
-            <div class="modal-header">
-            <h1>Aqui você ira anexar os comprovantes</h1>
-            </div>
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="modal-body">
-                    {% if pedido.forma_pag == "Pix" %}
-                        {{ form.comprovante_total|as_crispy_field }}
-                    {% elif pedido.forma_pag == "Parcelado 2x Pix" %}
-                        {{ form.comprovante_parcela1|as_crispy_field }}
-                        {{ form.comprovante_parcela2|as_crispy_field }}
-                    {% endif %}
-                    <button class="btn botoes shadow-lg rounded px-3 d-flex justify-content-center" type="submit">Salvar</button>
-                </div>
-                <div class="modal-footer">
-                    
-                </div>
+{% if pedido.camiseta.pix_chave_total.url != null %}
+  <div class="modal fade" id="exampleModal_pix" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4>Qr Code e Chave Pix Para Pagamento</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+        <div class="modal-body text-center">
+          <img src="{{ pedido.camiseta.pix_qr_code_total.url }}" class="thumbnail" style="width: 200px; height: 200px;" />
+          <p id="texto1">
+            {{ pedido.camiseta.pix_chave_total }}<button onclick="copiarTexto2()" class="btn btn-primary">Copiar</button>
+          </p>
         </div>
+      </div>
     </div>
   </div>
+{% else %}
+<div class="modal fade" id="exampleModal_pix" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4>Não tem Qr Code e nem Chave Pix</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% if pedido.camiseta.pix_chave_parcela.url != null%}
+  <div class="modal fade" id="exampleModal_pix2x" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4>Qr Code e Chave Pix Para Pagamento</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center">
+          <img src="{{ pedido.camiseta.pix_qr_code_parcela.url }}" class="thumbnail" style="width: 200px; height: 200px;" />
+          <p id="texto2">
+            {{ pedido.camiseta.pix_chave_parcela }}<button onclick="copiarTexto2()" class="btn btn-primary">Copiar</button>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="modal fade" id="exampleModal_pix2x" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4>Não tem Qr Code e nem Chave Pix</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  <div class="p-5">
+    <div class="modal modal-sheet position-static d-block p-4 py-md-5" tabindex="-1" role="dialog" id="modalSignin">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content rounded-4 shadow login-cadastro">
+          <div class="modal-header">
+            <h1>Realizar Pagamento</h1>
+          </div>
+          {% if pedido.forma_pag == "Pix" %}
+          <a type="button" class="w-50 mx-auto mt-3 btn botoes shadow-lg" data-bs-toggle="modal" data-bs-target="#exampleModal_pix">Ver chave pix</a>
+          {% elif pedido.forma_pag == "Parcelado 2x Pix" %}
+          <a type="button" class="w-50 mx-auto mt-3 btn botoes shadow-lg" data-bs-toggle="modal" data-bs-target="#exampleModal_pix2x">Ver chave pix</a>
+          {% endif %}
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="modal-body">
+              {% if pedido.forma_pag == 'Pix' %}
+                {{ form.comprovante_total|as_crispy_field }}
+              {% elif pedido.forma_pag == 'Parcelado 2x Pix' %}
+                {{ form.comprovante_parcela1|as_crispy_field }}
+                {{ form.comprovante_parcela2|as_crispy_field }}
+              {% endif %}
+              <button class="btn botoes shadow-lg rounded px-3 d-flex justify-content-center mt-3" type="submit">Salvar</button>
+            </div>
+            <div class="modal-footer"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function copiarTexto1() {
+      const texto = document.getElementById('texto1').innerText
+      navigator.clipboard
+        .writeText(texto)
+        .then(() => alert('Texto copiado!'))
+        .catch((err) => alert('Erro ao copiar: ' + err))
+    }
+    function copiarTexto2() {
+      const texto = document.getElementById('texto2').innerText
+      navigator.clipboard
+        .writeText(texto)
+        .then(() => alert('Texto copiado!'))
+        .catch((err) => alert('Erro ao copiar: ' + err))
+    }
+  </script>
 {% endblock %}

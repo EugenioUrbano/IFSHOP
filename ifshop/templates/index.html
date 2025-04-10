@@ -31,19 +31,19 @@
 {% endblock %}
 
 {% block filtro %}
-    <section class="b-example-divider filtros-fundo">
-        <form method="get">
-            <div id="filter_bar" class="row justify-content-center align-items-center">
-                <div class="col-md-4">
-                    <div class="container filtros-fundo justify-content-between"></div>
+    <section class="b-example-divider filtros-fundo container my-5">
+        <form method="get d-flex">
+            <div id="filter_bar" class="row g-1 mx-auto p-0">
+                <div class="col-md-5">
+                    <div class="container filtros-fundo "></div>
                     {{ form.turnos }}
                 </div>
-                <div class="col-md-4">
-                    <div class="container filtros-fundo justify-content-end"></div>
+                <div class="col-md-5">
+                    <div class="container filtros-fundo "></div>
                     {{ form.cursos }}
                 </div>
                 <div class="col-md-2">
-                    <button type="submit" class="btn botoes shadow-lg rounded-pill px-3">Filtrar</button>
+                    <button type="submit" class="btn w-100 botoes shadow-lg rounded-pill px-3">Filtrar</button>
                 </div>
             </div>
         </form>

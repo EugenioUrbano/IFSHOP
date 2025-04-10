@@ -10,8 +10,8 @@
 
 <style>
 .carousel-inner {
-    width: 500px;
-    height: 500px;
+    max-width: 500px;
+    max-height: 500px;
 }
 
 .carousel-item {
@@ -33,7 +33,7 @@
                 <div class="carousel-inner">
                     {% for imagem in camiseta.imagens.all %}
                         <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                            <img src="{{ imagem.imagem.url }}" style="width: 500px ;  height: 500px" alt="Imagem de {{ camiseta.nome }}">
+                            <img src="{{ imagem.imagem.url }}" class="img-fluid" alt="Imagem de {{ camiseta.nome }}">
                         </div>
                     {% endfor %}
                 </div>
