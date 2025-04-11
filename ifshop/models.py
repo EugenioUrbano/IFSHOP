@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.utils.timezone import now
 from django.db.models import JSONField
 from django.conf import settings
 from django.db import models
@@ -79,7 +80,6 @@ class Camiseta(models.Model):
     preco_parcela = models.DecimalField(max_digits=10, decimal_places=2, null=False, default=0.00)
     forma_pag_op = models.CharField(max_length=200,null=True)
     data_limite_pedidos = models.DateField()
-    data_para_entrega = models.DateField(null=False, blank=False)
     data_pag1 = models.DateField()
     data_pag2 = models.DateField(null=False, blank=False)
     turnos = models.CharField(max_length=50)

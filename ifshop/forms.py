@@ -99,9 +99,6 @@ class CamisetaForm(forms.ModelForm):
     data_limite_pedidos = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control rounded-3 ',}), required=True)
     
-    data_para_entrega = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control rounded-3',}), required=False, )
-    
     data_pag1 = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control rounded-3 ',}), required=True)
     
