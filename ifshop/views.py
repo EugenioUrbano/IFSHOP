@@ -130,6 +130,8 @@ def carrinho(request):
 def comprovantes(request, pedido_id):
     pedido = get_object_or_404(Pedido, id=pedido_id, cliente=request.user)
     
+    hoje = timezone.localdate()
+    
     if request.method == 'POST':
         form = AnexoComprovantesPedidoForm(request.POST, request.FILES,instance=pedido)
         if form.is_valid():
@@ -138,7 +140,7 @@ def comprovantes(request, pedido_id):
     else:
         form = AnexoComprovantesPedidoForm(instance=pedido)
         
-    return render(request, 'comprovantes.html', {'form': form, 'pedido': pedido})
+    return render(request, 'comprovantes.html', {'form': form, 'pedido': pedido, 'hoje': hoje})
 
 ####################################################################################################
 

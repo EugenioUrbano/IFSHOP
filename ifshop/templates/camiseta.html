@@ -52,6 +52,7 @@
             <strong class="d-inline-block mb-2 text-primary-emphasis">Data para Pedidos até {{ camiseta.data_limite_pedidos }}</strong>
                 <h3 class="mb-0">{{ camiseta.titulo }}</h3>
                 <div class="mb-1 text-body-secondary">Preço: R$ {{ camiseta.preco }}</div>
+                <div class="mb-1 text-body-secondary">Preço: R$ {{ camiseta.preco_parcela }}</div>
                 <form method="post" class="row g-3">
                     {% csrf_token %}
                     <div class=" col-md-6">

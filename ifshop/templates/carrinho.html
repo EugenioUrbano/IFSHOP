@@ -80,6 +80,13 @@
                   <div class="col-md-9 col-sm-12 col-lg-6 themed-grid-col">
                     <div class="pb-3">
                       <h3><strong>{{ pedido.pedido.camiseta.titulo }}</strong></h3>
+                      Data limite para pagamentos total ou primeira parcela: {{ pedido.pedido.camiseta.data_pag1 }}<br />
+                      {% if pedido.pedido.camiseta.data_pag2 %}
+                        {% if pedido.pedido.camiseta.forma_pag == "Parcelado 2x Pix" or pedido.pedido.camiseta.forma_pag == "Parcelado 2x Fisico" or pedido.pedido.camiseta.forma_pag == "Negociar Pagamento"%}
+                        Data limite para pagamentos segunda parcela: {{ pedido.pedido.camiseta.data_pag2 }}<br />
+                      {% else %}
+                      Data limite para pagamentos segunda parcela: à definir <br />
+                      {% endif%}
                     </div>
                     <div class="row">
                       <div class="col-sm-12 col-md-6">
@@ -94,6 +101,7 @@
                       </div>
                       <div class="col-sm-12 col-md-6">
                         <div class="d-flex justify-content-around mt-2">
+
                             {% if pedido.pedido.forma_pag == "Pix" or pedido.pedido.forma_pag == "Parcelado 2x Pix" %}
                             <button class="btn botoes rounded-pill shadow-lg"><a href="{% url 'comprovantes' pedido.pedido.id %}" class="nav-link">Pagar</a></button>
                             {% elif pedido.pedido.forma_pag == "Negociar Pagamento" %}

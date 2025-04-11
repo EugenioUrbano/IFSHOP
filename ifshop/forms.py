@@ -100,7 +100,14 @@ class CamisetaForm(forms.ModelForm):
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control rounded-3 ',}), required=True)
     
     data_para_entrega = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control rounded-3',}), required=True)
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control rounded-3',}), required=False, )
+    
+    data_pag1 = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control rounded-3 ',}), required=True)
+    
+    data_pag2 = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control rounded-3',}), required=False, )
+    
     
     titulo = forms.CharField(
         max_length=100,
@@ -145,7 +152,8 @@ class CamisetaForm(forms.ModelForm):
     class Meta:
         model = Camiseta
         fields = ['titulo', 'preco', 'preco_parcela', 'forma_pag_op', 'cores', 'data_limite_pedidos', 'data_para_entrega', 'cursos', 
-                  'turnos', 'tamanhos', 'estilos', "pix_qr_code_parcela", "pix_qr_code_total", "pix_chave_parcela", "pix_chave_total"]
+                  'turnos', 'tamanhos', 'estilos', "pix_qr_code_parcela", "pix_qr_code_total", "pix_chave_parcela", "pix_chave_total",
+                  "data_pag1", "data_pag2"]
         widgets = {
             'cores': forms.TextInput(attrs={'placeholder': 'Ex: azul, vermelho, verde'})
         }

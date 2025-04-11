@@ -72,15 +72,16 @@ class Camiseta(models.Model):
         ('Parcelado 2x Pix', 'Parcelado 2x Pix'),
         ('Parcelado 2x Fisico', 'Parcelado 2x Fisica'),
         ('Negociar Pagamento', 'Negociar Pagamento'),
-        ('Cartão Debito/Credito', 'Cartão Debito/Credito'),
     ]
 
     titulo = models.CharField(max_length=100)
     preco = models.DecimalField(max_digits=10, decimal_places=2)
-    preco_parcela = models.DecimalField(max_digits=10, decimal_places=2)
+    preco_parcela = models.DecimalField(max_digits=10, decimal_places=2, null=False, default=0.00)
     forma_pag_op = models.CharField(max_length=200,null=True)
     data_limite_pedidos = models.DateField()
-    data_para_entrega = models.DateField()
+    data_para_entrega = models.DateField(null=False, blank=False)
+    data_pag1 = models.DateField()
+    data_pag2 = models.DateField(null=False, blank=False)
     turnos = models.CharField(max_length=50)
     cores = models.TextField( null=True, help_text="Digite as cores separadas por vírgula. Ex: azul, vermelho, verde")
     cursos = models.CharField(max_length=50)
@@ -149,7 +150,6 @@ class Pedido(models.Model):
         ('Parcelado 2x Pix', 'Parcelado 2x Pix'),
         ('Parcelado 2x Fisico', 'Parcelado 2x Fisico'),
         ('Negociar Pagamento', 'Negociar Pagamento'),
-        ('Cartão Debito/Credito', 'Cartão Debito/Credito'),
     ]
     
     camiseta = models.ForeignKey(Camiseta, on_delete=models.CASCADE)

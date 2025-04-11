@@ -85,10 +85,29 @@
             {% csrf_token %}
             <div class="modal-body">
               {% if pedido.forma_pag == 'Pix' %}
-                {{ form.comprovante_total|as_crispy_field }}
+                {% if pedido.camiseta.data_pag1 <= hoje %}
+                    {{ form.comprovante_total|as_crispy_field }}
+                {% else %}
+                <h3>Você não pode mais anexar um comprovante</h3>
+                <h4>Negocie com:</h4>
+                <p>Alunos responsáveis: Gabriely Souza, Wescley Plinio, Helloar ou Eugênio Urbano</p>
+                {% endif %}
+
               {% elif pedido.forma_pag == 'Parcelado 2x Pix' %}
-                {{ form.comprovante_parcela1|as_crispy_field }}
-                {{ form.comprovante_parcela2|as_crispy_field }}
+                {% if pedido.camiseta.data_pag1 < hoje %}
+                  {{ form.comprovante_parcela1|as_crispy_field }}
+                {% else %}
+                <h3>Você não pode mais anexar um comprovante</h3>
+                <h4>Negocie com:</h4>
+                <p>Alunos responsáveis: Gabriely Souza, Wescley Plinio, Helloar ou Eugênio Urbano</p>
+                {% endif %}
+                {% if pedido.camiseta.data_pag2 < hoje %}
+                  {{ form.comprovante_parcela2|as_crispy_field }}
+                {% else %}
+                <h3>Você não pode mais anexar um comprovante</h3>
+                <h4>Negocie com:</h4>
+                <p>Alunos responsáveis: Gabriely Souza, Wescley Plinio, Helloar ou Eugênio Urbano</p>
+                {% endif %}
               {% endif %}
               <button class="btn botoes shadow-lg rounded px-3 d-flex justify-content-center mt-3" type="submit">Salvar</button>
             </div>
