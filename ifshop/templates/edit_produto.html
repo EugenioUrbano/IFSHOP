@@ -7,11 +7,9 @@
 {% block filtro%} {% endblock %}
 
 {% block content %}
-
-
-<div class="card-body py-5 px-md-5">
-    <div class="row d-flex justify-content-center">
-        <div class="col-lg-8 border rounded-3 py-4 shadow mx-md-n5">
+<div class="card-body py-5 px-md-5 ">
+    <div class="row d-flex justify-content-center ">
+        <div class="col-lg-8 border rounded-3 py-4 shadow mx-md-n5 ">
             <div class="container">
                 <div class=" col-md-6">
                     <a href="{% url 'gerenciar_pro' %}" class="">
@@ -19,14 +17,26 @@
                             <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"></path>
                         </svg>
                     </a>
-                    <h2 class="fw-bold mb-5 ">Editar Camiseta</h2>
+                    <h2 class="fw-bold mb-5 ">Cadastrar Camiseta</h2>
                 </div>
                 <form class="row g-3" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    {% if form.non_field_errors %}
-                    <div class="alert alert-danger">
-                        {{ form.non_field_errors }}
-                    </div>
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <strong>Erros no formulário:</strong>
+                            <ul>
+                                {% for field, errors in form.errors.items %}
+                                    <li>{{ field }}: {{ errors }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    {% if formset.non_form_errors %}
+                        <div class="alert alert-danger">
+                            <strong>Erros no formset:</strong>
+                            {{ formset.non_form_errors }}
+                        </div>
                     {% endif %}
                     <div class=" col-12">
                         {{ form.titulo|as_crispy_field }}
@@ -35,7 +45,9 @@
                     <div class=" col-md-6">
                         {{ form.preco|as_crispy_field }}
                     </div>
-
+                    <div class=" col-md-6">
+                        {{ form.preco_parcela|as_crispy_field }}
+                    </div>
                     <div class=" col-md-6">
                         {{ form.cores|as_crispy_field }}
                     </div>
@@ -43,8 +55,7 @@
                     <div class="col-md-6">
                         {{ form.data_limite_pedidos|as_crispy_field }}
                     </div>
-
-                    </div>
+                    
                     <div class="col-md-6">
                         {{ form.data_pag1|as_crispy_field }}
                     </div>
@@ -52,6 +63,7 @@
                     <div class=" col-md-6">
                         {{ form.data_pag2|as_crispy_field }}
                     </div>
+
                     <div class=" col-md-6">
                         {{ form.cursos|as_crispy_field }}
                     </div>
@@ -121,20 +133,23 @@
 
                     <div class="col-md-6" >
                         <button type="button" class="btn botoes shadow-lg rounded  d-block" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                            Altere as imagens aqui
+                            Adicione as imagens aqui
                         </button>
                         
                         <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Altere as imagens da forma que quiser</h1>
+                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Precisa adicionar no minimo uma imagem</h1>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         {{ formset.management_form }}
                                         {% for form in formset %}
-                                            {{ form.as_p }}
+                                            <div class="form-row">
+                                                {{ form.imagem.label_tag }} {{ form.imagem }}
+                                                {{ form.principal.label_tag }} {{ form.principal }}
+                                            </div>
                                         {% endfor %}
                                     </div>
                                     <div class="modal-footer">
@@ -144,7 +159,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-6" >
                         <button type="button" class="btn botoes shadow-lg rounded  d-block" data-bs-toggle="modal" data-bs-target="#staticBackdrop0">
                             Adicione os QrCodes e Chaves Pix aqui
@@ -160,11 +174,8 @@
                                     <div class="modal-body">
                                         {{ form.pix_qr_code_total|as_crispy_field }}
                                         {{ form.pix_chave_total|as_crispy_field }}
-                                        <li><hr class="dropdown-divider" /></li>
                                         {{ form.pix_qr_code_parcela|as_crispy_field }}
                                         {{ form.pix_chave_parcela|as_crispy_field }}
-                                        <li><hr class="dropdown-divider" /></li>
-                                        {{ form.preco_parcela|as_crispy_field }}
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
@@ -175,35 +186,35 @@
                     </div>
 
                     <div class="col-md-6" >
-                        <button type="submit" class="btn botoes shadow-lg rounded px-3 d-flex ">Salvar</button>
+                        <button type="submit" class="btn botoes shadow-lg rounded px-3 d-flex justify-content-center">Cadastrar Camiseta</button>
                     </div>
                 </form>
-                
             </div>
         </div>
     </div>
-</div>
+</div> 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const estiloCheckboxes = document.querySelectorAll('input[name="estilos"]');
-        const blocosTamanhos = document.querySelectorAll('.tamanhos-estilo');
-    
-        function atualizarVisibilidadeTamanhos() {
-            blocosTamanhos.forEach(div => div.style.display = 'none');
-            estiloCheckboxes.forEach(checkbox => {
-                if (checkbox.checked) {
-                    const estilo = checkbox.value;
-                    const div = document.querySelector(`.tamanhos-estilo[data-estilo="${estilo}"]`);
-                    if (div) {
-                        div.style.display = 'block';
-                    }
-                }
-            });
-        }
-        atualizarVisibilidadeTamanhos();
-        estiloCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', atualizarVisibilidadeTamanhos);
+document.addEventListener('DOMContentLoaded', function () {
+    const estiloCheckboxes = document.querySelectorAll('.estilo-checkbox');
+
+    estiloCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            const estilo = checkbox.value;
+            const tamanhosDiv = document.querySelector(`.tamanhos-estilo[data-estilo="${estilo}"]`);
+            if (tamanhosDiv) {
+                tamanhosDiv.style.display = checkbox.checked ? 'block' : 'none';
+            }
         });
+
+        // Garantir que ao recarregar (como ao voltar do erro), continue visível se estiver marcado
+        if (checkbox.checked) {
+            const estilo = checkbox.value;
+            const tamanhosDiv = document.querySelector(`.tamanhos-estilo[data-estilo="${estilo}"]`);
+            if (tamanhosDiv) {
+                tamanhosDiv.style.display = 'block';
+            }
+        }
     });
-    </script>
+});
+</script>
 {% endblock %}

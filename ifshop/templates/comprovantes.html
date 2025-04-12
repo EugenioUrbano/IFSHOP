@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-{% if pedido.camiseta.pix_chave_total.url != null %}
+{% if pedido.camiseta.pix_chave_total or pedido.camiseta.pix_qr_code_total %}
   <div class="modal fade" id="exampleModal_pix" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -20,9 +20,17 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body text-center">
+          {% if pedido.camiseta.pix_qr_code_total %}
           <img src="{{ pedido.camiseta.pix_qr_code_total.url }}" class="thumbnail" style="width: 200px; height: 200px;" />
+          {% else %}
+          <p>Não tem Qr Code</p>
+          {% endif %}
+          {% if pedido.camiseta.pix_chave_total %}
           <p id="texto1">
             {{ pedido.camiseta.pix_chave_total }}<button onclick="copiarTexto2()" class="btn btn-primary">Copiar</button>
+          {% else %}
+          <p>Não tem Chave Pix</p>
+          {% endif %}
           </p>
         </div>
       </div>
@@ -40,7 +48,7 @@
   </div>
 </div>
 {% endif %}
-{% if pedido.camiseta.pix_chave_parcela.url != null%}
+{% if pedido.camiseta.pix_chave_parcela or pedido.camiseta.pix_qr_code_parcela %}
   <div class="modal fade" id="exampleModal_pix2x" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -49,10 +57,18 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body text-center">
+          {% if pedido.camiseta.pix_qr_code_parcela %}
           <img src="{{ pedido.camiseta.pix_qr_code_parcela.url }}" class="thumbnail" style="width: 200px; height: 200px;" />
+          {% else %}
+          <p>Não tem Qr Code</p>
+          {% endif %}
+          {% if pedido.camiseta.pix_chave_total %}
           <p id="texto2">
             {{ pedido.camiseta.pix_chave_parcela }}<button onclick="copiarTexto2()" class="btn btn-primary">Copiar</button>
           </p>
+          {% else %}
+          <p>Não tem Chave Pix</p>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -77,15 +93,15 @@
             <h1>Realizar Pagamento</h1>
           </div>
           {% if pedido.forma_pag == "Pix" %}
-          <a type="button" class="w-50 mx-auto mt-3 btn botoes shadow-lg" data-bs-toggle="modal" data-bs-target="#exampleModal_pix">Ver chave pix</a>
+          <a type="button" class="mx-auto mt-3 btn botoes shadow-lg" data-bs-toggle="modal" data-bs-target="#exampleModal_pix">Ver chave</a>
           {% elif pedido.forma_pag == "Parcelado 2x Pix" %}
-          <a type="button" class="w-50 mx-auto mt-3 btn botoes shadow-lg" data-bs-toggle="modal" data-bs-target="#exampleModal_pix2x">Ver chave pix</a>
+          <a type="button" class="mx-auto mt-3 btn botoes shadow-lg" data-bs-toggle="modal" data-bs-target="#exampleModal_pix2x">Ver chave</a>
           {% endif %}
           <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="modal-body">
               {% if pedido.forma_pag == 'Pix' %}
-                {% if pedido.camiseta.data_pag1 <= hoje %}
+                {% if  hoje <= pedido.camiseta.data_pag1  %}
                     {{ form.comprovante_total|as_crispy_field }}
                 {% else %}
                 <h3>Você não pode mais anexar um comprovante</h3>

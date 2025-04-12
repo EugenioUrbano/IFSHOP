@@ -100,9 +100,11 @@ class CamisetaForm(forms.ModelForm):
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control rounded-3 ',}), required=True)
     
     data_pag1 = forms.DateField(
+        label="Data para pagamento",
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control rounded-3 ',}), required=True)
     
     data_pag2 = forms.DateField(
+        label="Data para pagamento da segunda parcela",
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control rounded-3',}), required=False, )
     
     
@@ -111,9 +113,11 @@ class CamisetaForm(forms.ModelForm):
         widget=forms.TextInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: Camisa De InfoWeb4M...'}), required=True)
     
     preco = forms.DecimalField(
+        label="Preço Total",
         widget=forms.NumberInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: 00,00'}), required=True)
     
     preco_parcela = forms.DecimalField(
+        label="Preço Parcelas",
         widget=forms.NumberInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: 00,00'}), required=False)
     
     forma_pag_op = forms.MultipleChoiceField(
@@ -148,7 +152,7 @@ class CamisetaForm(forms.ModelForm):
     
     class Meta:
         model = Camiseta
-        fields = ['titulo', 'preco', 'preco_parcela', 'forma_pag_op', 'cores', 'data_limite_pedidos', 'data_para_entrega', 'cursos', 
+        fields = ['titulo', 'preco', 'preco_parcela', 'forma_pag_op', 'cores', 'data_limite_pedidos', 'cursos', 
                   'turnos', 'tamanhos', 'estilos', "pix_qr_code_parcela", "pix_qr_code_total", "pix_chave_parcela", "pix_chave_total",
                   "data_pag1", "data_pag2"]
         widgets = {
