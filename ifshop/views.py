@@ -62,7 +62,7 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()  
             login(request, user)
-            return redirect('perfil')  
+            return redirect('index')  
     else:
         form = LoginUsuarioForm()
     return render(request, 'login.html', {'form': form})
@@ -129,18 +129,25 @@ def carrinho(request):
     
 def comprovantes(request, pedido_id):
     pedido = get_object_or_404(Pedido, id=pedido_id, cliente=request.user)
-    
     hoje = timezone.localdate()
-    
+
     if request.method == 'POST':
-        form = AnexoComprovantesPedidoForm(request.POST, request.FILES,instance=pedido)
+        form = AnexoComprovantesPedidoForm(request.POST, request.FILES, instance=pedido)
         if form.is_valid():
-            form.save()  
-        return redirect('carrinho')
+            form.save()
+            messages.success(request, "Comprovante enviado com sucesso!")
+        else:
+            messages.error(request, "Erro ao enviar o comprovante. Verifique os campos.")
+        return redirect('comprovantes', pedido_id=pedido.id)
+
     else:
         form = AnexoComprovantesPedidoForm(instance=pedido)
-        
-    return render(request, 'comprovantes.html', {'form': form, 'pedido': pedido, 'hoje': hoje})
+
+    return render(request, 'comprovantes.html', {
+        'form': form,
+        'pedido': pedido,
+        'hoje': hoje
+    })
 
 ####################################################################################################
 
@@ -299,46 +306,53 @@ def excluir_produto(request, camiseta_id):
 @login_required
 @user_passes_test(vendedor)
 def gerenciar_pedidos(request):
-    form_filtro = FiltroProdutosForm(request.GET) 
-    camisetas_vendedor = Camiseta.objects.filter(vendedor=request.user)
-    pedidos = Pedido.objects.filter(camiseta__in=camisetas_vendedor)
+    pedidos = Pedido.objects.filter(camiseta__vendedor=request.user).order_by('-data_pedido')
 
+    form_filtro = FiltroProdutosForm(request.GET or None)
     if form_filtro.is_valid():
         status = form_filtro.cleaned_data.get('status')
-
-        if status:  
+        if status:
             pedidos = pedidos.filter(status=status)
 
-    
+    # Se é um POST, estamos atualizando 1 pedido só
     if request.method == 'POST':
-        for pedido in pedidos:
-            form = AlterarStatusPedidoForm(request.POST, instance=pedido)
-            if form.is_valid():
-                form.save()  
-                messages.success(request, f"Status do pedido {pedido.id} atualizado com sucesso!")
-            else:
-                messages.error(request, f"Erro ao atualizar o status do pedido {pedido.id}.")
-        return redirect('gerenciar_pedidos')
+        pedido_id = request.POST.get('pedido_id')
+        if pedido_id:
+            try:
+                pedido = Pedido.objects.get(id=pedido_id, camiseta__vendedor=request.user)
+                form = AlterarStatusPedidoForm(request.POST, instance=pedido)
+                if form.is_valid():
+                    form.save()
+                    messages.success(request, f"Status do pedido {pedido_id} atualizado com sucesso!")
+                    return redirect('gerenciar_pedidos')  # Redireciona para limpar POST
+                else:
+                    messages.error(request, f"Erro ao atualizar o pedido {pedido_id}.")
+            except Pedido.DoesNotExist:
+                messages.error(request, f"Pedido {pedido_id} não encontrado.")
 
+    # Recria os formulários (GET ou após POST com redirect)
     pedidos_com_forms = []
     for pedido in pedidos:
         form = AlterarStatusPedidoForm(instance=pedido)
         pedidos_com_forms.append({'pedido': pedido, 'form': form})
-        
-    paginator = Paginator(pedidos_com_forms, 20)
-    numero_da_pagina = request.GET.get('pagina')  
-    pedidos_paginadas = paginator.get_page(numero_da_pagina)
 
-    context = {
-        'pedidos_com_forms': pedidos_paginadas,
+    # Paginação (se estiver usando)
+    paginator = Paginator(pedidos_com_forms, 10)  # exemplo: 10 por página
+    page = request.GET.get("pagina")
+    pedidos_paginados = paginator.get_page(page)
+
+    return render(request, 'gerenciar_pedidos.html', {
+        'pedidos_com_forms': pedidos_paginados,
         'form_filtro': form_filtro,
-        }
-    
-    return render(request, 'gerenciar_pedidos.html', context)
+    })
 
 def exportar_pedidos_excel(request):
     camisetas_vendedor = Camiseta.objects.filter(vendedor=request.user)
-    pedidos = Pedido.objects.filter(camiseta__in=camisetas_vendedor, status="Pago Totalmente")
+    
+    pedidos = Pedido.objects.filter(
+        camiseta__in=camisetas_vendedor,
+        status__in=["Pago Totalmente", "Pago 1° Parcela"]
+    )
 
     # Criação do workbook e planilha
     wb = openpyxl.Workbook()

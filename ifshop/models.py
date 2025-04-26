@@ -42,11 +42,13 @@ class UsuarioCustomizado(AbstractUser):
 
 class Camiseta(models.Model):
     TAMANHOS_OPCOES = [
-        ('PP', 'Extra Pequeno'),
-        ('P', 'Pequeno'),
-        ('M', 'Médio'),
-        ('G', 'Grande'),
-        ('GG', 'Extra Grande')
+        ('PP', 'PP'),
+        ('P', 'P'),
+        ('M', 'M'),
+        ('G', 'G'),
+        ('GG', 'GG'),
+	('XG', 'XG'),
+	('XGG', 'XGG')
     ]
     
     ESTILOS_OPCOES = [
@@ -138,11 +140,10 @@ class ImagemCamiseta(models.Model):
 
 class Pedido(models.Model):
     STATUS_OPCOES = [
-        ('Pendente', 'Pendente'),
+	('Pendente', 'Pendente'),
         ('Pago Totalmente', 'Pago Totalmente'),
         ('Pago 1° Parcela', 'Pago 1° Parcela'),
-        ('Negociando com Usuario', 'Negociando com Usuario'),
-        
+        ('Negociando com Usuario', 'Negociando com Usuario'),        
     ]
     FORMA_PAG_OPCOES = [
         ('Pix', 'Pix'),

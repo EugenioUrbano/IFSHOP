@@ -88,6 +88,7 @@
                       {% else %}
                       <p class="small">Data limite para pagamentos segunda parcela: à definir </p>
                       {% endif%}
+		      Status: {{ pedido.pedido.status }}<br />
                     </div>
                     <div class="row">
                       <div class="col-sm-12 col-md-6">
@@ -99,6 +100,7 @@
                         Estilo: {{ pedido.pedido.estilo }}<br />
                         Preço: R$ {{ pedido.pedido.camiseta.preco }}<br />
                         Cor: {{ pedido.pedido.cor_escolhida }}<br />
+			
                       </div>
                       <div class="col-sm-12 col-md-6">
                         <div class="d-flex justify-content-around mt-2">
@@ -114,22 +116,12 @@
                             {% else %}
                             <button class="btn botoes rounded-pill shadow-lg" data-bs-toggle="modal" data-bs-target="#exampleModal_fisico">Veja como pagar</button>
                             {% endif %}
-                            <button class="btn btn-warning text-white shadow-lg rounded-pill px-3 dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Opções</button>
-                            <ul class="dropdown-menu">
-                              <li>
-                                <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal">Cancelar pedido</button>
-                              </li>
-                              <li>
-                                <hr class="dropdown-divider" />
-                              </li>
-                              <li>
-                                {% if pedido.pedido.camiseta.data_limite_pedidos <= hoje %}
-                                  <button class="btn nav-link" disabled>Editar (Indisponível)</button>
-                                {% else %}
-                                  <button class="btn"><a href="{% url 'edit_pedido' pedido.pedido.id %}" class="nav-link">Editar Pedido</a></button>
-                                {% endif %}
-                              </li>
-                            </ul>
+                            {% if pedido.pedido.camiseta.data_limite_pedidos <= hoje %}
+                              <button class="btn nav-link" disabled>Editar (Indisponível)</button>
+                            {% else %}
+                              <button class="btn btn-warning text-white shadow-lg rounded-pill"><a href="{% url 'edit_pedido' pedido.pedido.id %}" class="nav-link">Editar</a></button>
+                            {% endif %}
+			    <button type="button" class="btn btn-warning text-white shadow-lg rounded-pill" data-bs-toggle="modal" data-bs-target="#exampleModal">Cancelar</button>
                         </div>
                       </div>
                     </div>

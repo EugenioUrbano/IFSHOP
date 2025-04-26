@@ -1,7 +1,7 @@
 from  decouple import config
 import os
 from pathlib import Path
-
+from django.contrib.messages import constants as messages
 
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
@@ -17,11 +17,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-qbv1*5j=rxzji_@%1ma_3d9&$fz$o315!xwv0g#x*9dob&nmgj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['ifshop.northeurope.cloudapp.azure.com', '20.107.247.61', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['ifshopweb.northeurope.cloudapp.azure.com', '52.158.32.93', '127.0.0.1', 'localhost']
 
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
+MESSAGE_TAGS = {
+    messages.DEBUG: 'secondary',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',
+}
 
 # Application definition
 
@@ -150,10 +158,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = '/var/www/html/IFSHOP-PROJETO_FINAL/media/'
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = '/var/www/html/IFSHOP-PROJETO_FINAL/static/'
 
 
 

@@ -7,7 +7,19 @@
 {% block filtro%} {% endblock %}
 
 {% block content %}
-
+{% if messages %}
+  <div class="container mt-3">
+    {% for message in messages %}
+      <div 
+        class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% else %}alert-info{% endif %} alert-dismissible fade show" 
+        role="alert"
+      >
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
 <div style=" color: black; padding: 10px;" class="d-flex flex-wrap align-items-center justify-content-center ">
     <h1 class="container text-center">Gerencie Pedidos das suas Camisetas</h1>
 </div>
@@ -25,94 +37,94 @@
     </form>
 </section>
 {% if pedidos_com_forms %}
-    
-    <form method="POST" >
-        {% csrf_token %}
-        <table style="width:60% ;margin: 0 auto" class="table ">
-            <thead>
-                <tr>
-                    <th class="border border-black">ID do Pedido</th>
-                    <th class="border border-black">Cliente</th>
-                    <th class="border border-black">Numero Cliente</th>
-                    <th class="border border-black">Título do Produto</th>
-                    <th class="border border-black">Data</th>
-                    <th class="border border-black">Opção de Cor</th>
-                    <th class="border border-black">Nome na Estampa</th>
-                    <th class="border border-black">Número na Estampa</th>
-                    <th class="border border-black">Tamanho</th>
-                    <th class="border border-black">Estilo</th>
-                    <th class="border border-black">Status</th>
-                    <th class="border border-black">Forma de Pagamento</th>
-                    <th class="border border-black">Comprovante</th>
-                    
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in pedidos_com_forms %}
-                    <tr class="border-end border-start">
-                        <td class="border border-black ">{{ item.pedido.id }}</td>
-                        <td class="border border-black ">{{ item.pedido.cliente }}</td>
-                        <td class="border border-black ">{{ item.pedido.cliente.telefone }}</td>
-                        <td class="border border-black ">{{ item.pedido.camiseta.titulo }}</td>
-                        <td class="border border-black ">{{ item.pedido.data_pedido }}</td>
-                        <td class="border border-black ">{{ item.pedido.cor_escolhida }}</td>
-                        <td class="border border-black ">{{ item.pedido.nome_estampa }}</td>
-                        <td class="border border-black ">{{ item.pedido.numero_estampa }}</td>
-                        <td class="border border-black ">{{ item.pedido.tamanho }}</td>
-                        <td class="border border-black ">{{ item.pedido.estilo }}</td>
-                        <td class="border border-black ">
-                            {{ item.form.status}}
-                        </td>
-                        <td class="border border-black ">{{ item.pedido.forma_pag }}</td>
-                        {% if item.pedido.forma_pag == "Pix" %}
-                            {% if item.pedido.comprovante_total.url != null%}
-                            <td class="border border-black"><a href="{{ item.pedido.comprovante_total.url }}" target="_blank">Ver Comprovante</a></td>
-                            {% else %}
-                            <td class="border border-black">Nenhum Comprovante Cadastrado</td>
-                            {% endif %}
-                        {% elif item.pedido.forma_pag == "Parcelado 2x Pix" %}
-                            {% if item.pedido.comprovante_parcela1.url != null or item.pedido.comprovante_parcela2.url != null %}
-                            <td class="border border-black"><a href="{{ item.pedido.comprovante_parcela1.url }}" target="_blank">Primeira Parcela</a><li><hr class="dropdown-divider"></li><a href="{{ item.pedido.comprovante_parcela2.url }}" target="_blank">Segunda Parcela</a></td>
-                            {% else %}
-                            <td class="border border-black">Nenhum Comprovante Cadastrado</td>
-                            {% endif %}
+<table style="width:60% ;margin: 0 auto" class="table ">
+    <thead>
+        <tr>
+            <th class="border border-black">ID do Pedido</th>
+            <th class="border border-black">Cliente</th>
+            <th class="border border-black">Numero Cliente</th>
+            <th class="border border-black">Título do Produto</th>
+            <th class="border border-black">Data</th>
+            <th class="border border-black">Opção de Cor</th>
+            <th class="border border-black">Nome na Estampa</th>
+            <th class="border border-black">Número na Estampa</th>
+            <th class="border border-black">Tamanho</th>
+            <th class="border border-black">Estilo</th>
+            <th class="border border-black">Status</th>
+            <th class="border border-black">Forma de Pagamento</th>
+            <th class="border border-black">Comprovante</th>
+            
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in pedidos_com_forms %}
+            <tr class="border-end border-start">
+                <form method="POST">
+                    {% csrf_token %}
+                    <td class="border border-black ">{{ item.pedido.id }}</td>
+                    <td class="border border-black ">{{ item.pedido.cliente }}</td>
+                    <td class="border border-black ">{{ item.pedido.cliente.telefone }}</td>
+                    <td class="border border-black ">{{ item.pedido.camiseta.titulo }}</td>
+                    <td class="border border-black ">{{ item.pedido.data_pedido }}</td>
+                    <td class="border border-black ">{{ item.pedido.cor_escolhida }}</td>
+                    <td class="border border-black ">{{ item.pedido.nome_estampa }}</td>
+                    <td class="border border-black ">{{ item.pedido.numero_estampa }}</td>
+                    <td class="border border-black ">{{ item.pedido.tamanho }}</td>
+                    <td class="border border-black ">{{ item.pedido.estilo }}</td>
+                    <td class="border border-black">
+                        {{ item.form.status }}
+                        <input type="hidden" name="pedido_id" value="{{ item.pedido.id }}">
+                    </td>
+                    <td class="border border-black ">{{ item.pedido.forma_pag }}</td>
+                    {% if item.pedido.forma_pag == "Pix" %}
+                        {% if item.pedido.comprovante_total %}
+                        <td class="border border-black"><a href="{{ item.pedido.comprovante_total.url }}" target="_blank">Ver Comprovante</a></td>
                         {% else %}
-                        <td class="border border-black">Outra Forma de Pagamento</td>
+                        <td class="border border-black">Nenhum Comprovante Cadastrado</td>
                         {% endif %}
+                    {% elif item.pedido.forma_pag == "Parcelado 2x Pix" %}
+                        {% if item.pedido.comprovante_parcela1 or item.pedido.comprovante_parcela2 %}
+                        <td class="border border-black">
+                            {% if item.pedido.comprovante_parcela1 %}<a href="{{ item.pedido.comprovante_parcela1.url }}" target="_blank">Primeira Parcela</a>
+                            {% else %}<p>Sem 1° Comprovante</p>{% endif %}<li><hr class="dropdown-divider"></li>
+                            {% if item.pedido.comprovante_parcela2 %}<a href="{{ item.pedido.comprovante_parcela2.url }}" target="_blank">Segunda Parcela</a>
+                            {% else %}<p>Sem 2° Comprovante</p>{% endif %}
+                        </td>
+                        {% else %}
+                        <td class="border border-black">Nenhum Comprovante Cadastrado</td>
+                        {% endif %}
+                    {% else %}
+                    <td class="border border-black">Outra Forma de Pagamento</td>
+                    {% endif %}
+                    <td>
+                        <button type="submit" class="btn botoes shadow-lg rounded-pill px-2 py-1">Salvar</button>
+                    </td>
+                </form> 
+            </tr>
+        {% endfor %}
+        
+    </tbody>
+</table>
+<div class="pagination justify-content-center align-items-center">
+    <span class="step-links">
+        {% if pedidos_com_forms.has_previous %}
+            <button type="button" class="btn botoes_paginacao"><a href="?pagina=1" class="nav-link">&laquo; Início</a></button>
+            <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ pedidos_com_forms.previous_page_number }} " class="nav-link">Anterior</a></button>
+            
+        {% endif %}
 
-                    </tr>
-                {% endfor %}
-                
-            </tbody>
-        </table>
-        <div class="row justify-content-center">
-            <div class="col-4 text-center">
-                <button type="submit" class=" justfy btn botoes shadow-lg rounded-pill px-3">Salvar Alterações</button>
-            </div>
-        <div class="pagination justify-content-center align-items-center">
-            <span class="step-links">
-                {% if pedidos_com_forms.has_previous %}
-                    <button type="button" class="btn botoes_paginacao"><a href="?pagina=1" class="nav-link">&laquo; Início</a></button>
-                    <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ pedidos_com_forms.previous_page_number }} " class="nav-link">Anterior</a></button>
-                    
-                {% endif %}
         
-                
-                <span class="current">
-                    Página {{ pedidos_com_forms.number }} de {{ pedidos_com_forms.paginator.num_pages }}
-                </span>
-                
+        <span class="current">
+            Página {{ pedidos_com_forms.number }} de {{ pedidos_com_forms.paginator.num_pages }}
+        </span>
         
-                {% if pedidos_com_forms.has_next %}
-                    <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ pedidos_com_forms.next_page_number }}" class="nav-link">Próxima</a></button>
-                    <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ pedidos_com_forms.paginator.num_pages }}" class="nav-link">Última &raquo;</a></button>
-                {% endif %}
-            </span>
-        </div>
-        
-    </form>
 
-    
+        {% if pedidos_com_forms.has_next %}
+            <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ pedidos_com_forms.next_page_number }}" class="nav-link">Próxima</a></button>
+            <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ pedidos_com_forms.paginator.num_pages }}" class="nav-link">Última &raquo;</a></button>
+        {% endif %}
+    </span>
+</div>    
 {% else %}
     <p class="container text-center">Nenhum pedido encontrado para suas camisetas.</p>
 {% endif %}

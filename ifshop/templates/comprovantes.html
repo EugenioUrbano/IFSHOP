@@ -11,6 +11,15 @@
 {% endblock %}
 
 {% block content %}
+{% if messages %}
+  <div class="container mt-3">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
 {% if pedido.camiseta.pix_chave_total or pedido.camiseta.pix_qr_code_total %}
   <div class="modal fade" id="exampleModal_pix" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -25,9 +34,13 @@
           {% else %}
           <p>Não tem Qr Code</p>
           {% endif %}
+	  <li>
+	      <hr class="dropdown-divider" />
+          </li>
           {% if pedido.camiseta.pix_chave_total %}
-          <p id="texto1">
-            {{ pedido.camiseta.pix_chave_total }}<button onclick="copiarTexto2()" class="btn btn-primary">Copiar</button>
+          <p>
+   	     <span id="texto1">{{ pedido.camiseta.pix_chave_total }}</span>
+	  </p>
           {% else %}
           <p>Não tem Chave Pix</p>
           {% endif %}
@@ -62,10 +75,13 @@
           {% else %}
           <p>Não tem Qr Code</p>
           {% endif %}
+	  <li>
+              <hr class="dropdown-divider" />
+          </li>
           {% if pedido.camiseta.pix_chave_total %}
-          <p id="texto2">
-            {{ pedido.camiseta.pix_chave_parcela }}<button onclick="copiarTexto2()" class="btn btn-primary">Copiar</button>
-          </p>
+          <p>
+  	     <span id="texto2">{{ pedido.camiseta.pix_chave_parcela }}</span>
+	  </p>
           {% else %}
           <p>Não tem Chave Pix</p>
           {% endif %}
@@ -101,7 +117,7 @@
             {% csrf_token %}
             <div class="modal-body">
               {% if pedido.forma_pag == 'Pix' %}
-                {% if  hoje <= pedido.camiseta.data_pag1  %}
+                {% if hoje < pedido.camiseta.data_pag1 %}
                     {{ form.comprovante_total|as_crispy_field }}
                 {% else %}
                 <h3>Você não pode mais anexar um comprovante</h3>
@@ -110,22 +126,25 @@
                 {% endif %}
 
               {% elif pedido.forma_pag == 'Parcelado 2x Pix' %}
-                {% if pedido.camiseta.data_pag1 < hoje %}
+                {% if hoje <= pedido.camiseta.data_pag1 %}
                   {{ form.comprovante_parcela1|as_crispy_field }}
                 {% else %}
-                <h3>Você não pode mais anexar um comprovante</h3>
+                <h3>Você ainda não pode anexar um comprovante (ou não pode mais)</h3>
                 <h4>Negocie com:</h4>
                 <p>Alunos responsáveis: Gabriely Souza, Wescley Plinio, Helloar ou Eugênio Urbano</p>
                 {% endif %}
-                {% if pedido.camiseta.data_pag2 < hoje %}
+                {% if hoje <= pedido.camiseta.data_pag2 %}
                   {{ form.comprovante_parcela2|as_crispy_field }}
                 {% else %}
-                <h3>Você não pode mais anexar um comprovante</h3>
+                <h3>Você ainda não pode anexar um comprovante (ou não pode mais)</h3>
                 <h4>Negocie com:</h4>
                 <p>Alunos responsáveis: Gabriely Souza, Wescley Plinio, Helloar ou Eugênio Urbano</p>
                 {% endif %}
               {% endif %}
-              <button class="btn botoes shadow-lg rounded px-3 d-flex justify-content-center mt-3" type="submit">Salvar</button>
+	      <div class="col-md-6">
+	         <a href="{% url 'carrinho' %}" class="btn btn-secondary ">Voltar</a>
+                 <button class="btn botoes shadow-lg rounded px-3  " type="submit">Salvar</button>
+	      </div>
             </div>
             <div class="modal-footer"></div>
           </form>
@@ -133,21 +152,4 @@
       </div>
     </div>
   </div>
-
-  <script>
-    function copiarTexto1() {
-      const texto = document.getElementById('texto1').innerText
-      navigator.clipboard
-        .writeText(texto)
-        .then(() => alert('Texto copiado!'))
-        .catch((err) => alert('Erro ao copiar: ' + err))
-    }
-    function copiarTexto2() {
-      const texto = document.getElementById('texto2').innerText
-      navigator.clipboard
-        .writeText(texto)
-        .then(() => alert('Texto copiado!'))
-        .catch((err) => alert('Erro ao copiar: ' + err))
-    }
-  </script>
 {% endblock %}
