@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title%}Excluir Camiseta{% endblock %}
+{% block filtro%} {% endblock %}
+
+{% block content %}
+
+<div class="p-5">
+    <div class="modal modal-sheet position-static d-block p-4 py-md-5 " tabindex="-1" role="dialog" id="modalSignin">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content rounded-4 shadow login-cadastro">
+            <div class="modal-header">
+            <h1>Tem certeza que deseja excluir produto?</h1>
+            </div>
+            <div class="modal-body">
+                Isso irá fazer com que todos os pedidos deste produto sejam excluidos juntos?
+            </div>
+            <div class="modal-footer">
+                <a href="{% url 'gerenciar_pro' %}" class="btn btn-secondary ">Não</a>
+                <form method="post" >
+                    {% csrf_token %}
+                    <input type="hidden" name="camiseta_id" value="{{ camiseta.id }}">
+                    <button class="btn btn-danger " type="submit" name="deletar">Sim</button>
+                </form>
+            </div>
+        </div>
+        </div>
+    </div>
+  </div>
+{% endblock %}

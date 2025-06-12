@@ -65,38 +65,44 @@
   
     
   {% if pedidos_recebidos %}
-    <table style="width:60% ;margin: 0 auto" class="table">
-        <thead>
-            <tr>
-                <th class="border border-black">ID do Pedido</th>
-                <th class="border border-black">Cliente</th>
-                <th class="border border-black">Titulo do Produto</th>
-                <th class="border border-black">Data</th>
-                <th class="border border-black">Opção de Cor</th>
-                <th class="border border-black">Nome na Estampa</th>
-                <th class="border border-black">Numero na Estampa</th>
-                <th class="border border-black">Tamanho</th>
-                <th class="border border-black">Estilo</th>
-                <th class="border border-black">Status</th>
-            </tr>
+    <div class="table-responsive ">
+      <table class="table table-striped table-hover table-bordered align-middle text-center">
+        <thead class="">
+           <tr>
+              <th>ID do Pedido</th>
+              <th>Cliente</th>
+              <th>Numero Cliente</th>
+              <th>Título do Produto</th>
+              <th>Data</th>
+              <th>Opção de Cor</th>
+              <th>Nome na Estampa</th>
+              <th>Número na Estampa</th>
+              <th>Tamanho</th>
+              <th>Estilo</th>
+              <th>Forma de Pagamento</th>
+              <th>Status</th>
+           </tr>
         </thead>
-        <tbody >
-            {% for pedido in pedidos_recebidos|slice:":3" %}
-                <tr class="border- border-start">
-                    <td class="border border-black border-top-0 border-bottom-40px">{{ pedido.id }}</td>
-                    <td class="border border-black border-top-0 border-bottom-40px">{{ pedido.cliente }}</td>
-                    <td class="border border-black border-top-0 border-bottom-40px">{{ pedido.camiseta.titulo }}</td>
-                    <td class="border border-black border-top-0 border-bottom-40px">{{ pedido.data_pedido }}</td>
-                    <td class="border border-black border-top-0 border-bottom-40px">{{ pedido.cor_escolhida }}</td>
-                    <td class="border border-black border-top-0 border-bottom-40px">{{ pedido.nome_estampa }}</td>
-                    <td class="border border-black border-top-0 border-bottom-40px">{{ pedido.numero_estampa }}</td>
-                    <td class="border border-black border-top-0 border-bottom-40px">{{ pedido.tamanho }}</td>
-                    <td class="border border-black border-top-0 border-bottom-40px">{{ pedido.estilo }}</td>
-                    <td class="border border-black border-top-0 border-bottom-40px">{{ pedido.status }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+       <tbody class="table-group-divider">
+        {%  for pedido in pedidos_recebidos|slice:":3" %}
+        <tr>
+            <td>{{ pedido.id }}</td>
+            <td>{{ pedido.cliente }}</td>
+            <td>{{ pedido.cliente.telefone }}</td>
+            <td>{{ pedido.camiseta.titulo }}</td>
+            <td>{{ pedido.data_pedido }}</td>
+            <td>{{ pedido.cor_escolhida }}</td>
+            <td>{{ pedido.nome_estampa }}</td>
+            <td>{{ pedido.numero_estampa }}</td>
+            <td>{{ pedido.tamanho }}</td>
+            <td>{{ pedido.estilo }}</td>
+            <td>{{ pedido.forma_pag }}</td>
+            <td>{{ pedido.status }}</td>
+        </tr>
+        {% endfor %}
+       </tbody>
+     </table>
+   </div>
   {% else %}
     <p class="container text-center">Nenhum pedido encontrado para suas camisetas.</p>
   {% endif %}

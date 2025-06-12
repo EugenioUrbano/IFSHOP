@@ -78,7 +78,7 @@
 	  <li>
               <hr class="dropdown-divider" />
           </li>
-          {% if pedido.camiseta.pix_chave_total %}
+          {% if pedido.camiseta.pix_chave_parcela %}
           <p>
   	     <span id="texto2">{{ pedido.camiseta.pix_chave_parcela }}</span>
 	  </p>
@@ -120,8 +120,8 @@
                 {% if hoje < pedido.camiseta.data_pag1 %}
                     {{ form.comprovante_total|as_crispy_field }}
                 {% else %}
-                <h3>Você não pode mais anexar um comprovante</h3>
-                <h4>Negocie com:</h4>
+                <h4>Você não pode mais anexar o comprovante da primeira parcela</h4>
+                <h5>Negocie com:</h5>
                 <p>Alunos responsáveis: Gabriely Souza, Wescley Plinio, Helloar ou Eugênio Urbano</p>
                 {% endif %}
 
@@ -129,8 +129,8 @@
                 {% if hoje <= pedido.camiseta.data_pag1 %}
                   {{ form.comprovante_parcela1|as_crispy_field }}
                 {% else %}
-                <h3>Você ainda não pode anexar um comprovante (ou não pode mais)</h3>
-                <h4>Negocie com:</h4>
+                <h4>Você ainda não pode ou não pode mais anexar primeira parcela.</h4>
+                <h5>Negocie com:</h5>
                 <p>Alunos responsáveis: Gabriely Souza, Wescley Plinio, Helloar ou Eugênio Urbano</p>
                 {% endif %}
                 {% if hoje <= pedido.camiseta.data_pag2 %}

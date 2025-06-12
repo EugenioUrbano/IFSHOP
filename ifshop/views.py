@@ -126,6 +126,15 @@ def carrinho(request):
 
     hoje = timezone.localdate()
     return render(request, "carrinho.html", {'pedido': pedido, 'hoje': hoje})
+
+def excluir_pedido(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id, cliente=request.user)
+
+    if request.method == "POST" and 'deletar' in request.POST:
+        pedido.delete()
+        return redirect('carrinho')
+
+    return render(request, "excluir_pedido.html", {'pedido': pedido})
     
 def comprovantes(request, pedido_id):
     pedido = get_object_or_404(Pedido, id=pedido_id, cliente=request.user)
@@ -306,14 +315,22 @@ def excluir_produto(request, camiseta_id):
 @login_required
 @user_passes_test(vendedor)
 def gerenciar_pedidos(request):
-    pedidos = Pedido.objects.filter(camiseta__vendedor=request.user).order_by('-data_pedido')
+    pedidos_all = Pedido.objects.filter(camiseta__vendedor=request.user).order_by('-data_pedido')
+
+    total_pedidos = pedidos_all.count()
+    total_pagos = pedidos_all.filter(status='Pago Totalmente').count()
+    total_pago_primeira = pedidos_all.filter(status='Pago 1° Parcela').count()
+
+    arrecadado = (total_pago_primeira * 28) + (total_pagos * 56)  
+    
+    pedidos = pedidos_all
 
     form_filtro = FiltroProdutosForm(request.GET or None)
     if form_filtro.is_valid():
         status = form_filtro.cleaned_data.get('status')
         if status:
             pedidos = pedidos.filter(status=status)
-
+    
     # Se é um POST, estamos atualizando 1 pedido só
     if request.method == 'POST':
         pedido_id = request.POST.get('pedido_id')
@@ -344,6 +361,10 @@ def gerenciar_pedidos(request):
     return render(request, 'gerenciar_pedidos.html', {
         'pedidos_com_forms': pedidos_paginados,
         'form_filtro': form_filtro,
+	'total_pedidos': total_pedidos,
+        'total_pagos': total_pagos,
+        'total_pago_primeira': total_pago_primeira,
+	'arrecadado': arrecadado,
     })
 
 def exportar_pedidos_excel(request):

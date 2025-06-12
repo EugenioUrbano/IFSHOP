@@ -30,6 +30,7 @@ urlpatterns = [
     path('carrinho/', views.carrinho, name='carrinho'),
     path('comprovantes/<int:pedido_id>/', views.comprovantes, name='comprovantes'),
     path('edit_pedido/<int:pedido_id>/',views.edit_pedido, name='edit_pedido'),
+    path('excluir_pedido/<int:pedido_id>/', views.excluir_pedido, name='excluir_pedido'),
     path("verificar-pedidos/", verificar_pedidos, name="verificar_pedidos"),
     path("marcar-pedidos-vistos/", marcar_pedidos_vistos, name="marcar_pedidos_vistos"),
     path('camiseta/<int:camiseta_id>/', views.camiseta, name='camiseta'),

@@ -87,7 +87,7 @@ class Camiseta(models.Model):
     turnos = models.CharField(max_length=50)
     cores = models.TextField( null=True, help_text="Digite as cores separadas por vírgula. Ex: azul, vermelho, verde")
     cursos = models.CharField(max_length=50)
-    imagem = models.ImageField(blank=False)
+    imagem = models.ImageField(blank=True, null=True)
     pix_qr_code_parcela = models.ImageField(upload_to='qrcode_parcela_camisetas/', null=False, default="")
     pix_qr_code_total = models.ImageField(upload_to='qrcode_total_camisetas/', null=False, default="")
     pix_chave_parcela = models.TextField(max_length=300, null=False, default="")
@@ -164,9 +164,9 @@ class Pedido(models.Model):
     status = models.CharField(max_length=100, default="Pendente")
     revisado = models.BooleanField(default=True)
     visto = models.BooleanField(default=False)
-    comprovante_total = models.ImageField(upload_to='qrcode_total_camisetas/', null=False, default="")
-    comprovante_parcela1 = models.ImageField(upload_to='qrcode_total_camisetas/', null=False, default="")
-    comprovante_parcela2 = models.ImageField(upload_to='qrcode_total_camisetas/', null=False, default="")
+    comprovante_total = models.ImageField(upload_to='qrcode_total_camisetas/', null=True, blank=True, default="")
+    comprovante_parcela1 = models.ImageField(upload_to='qrcode_total_camisetas/', null=True, blank=True, default="")
+    comprovante_parcela2 = models.ImageField(upload_to='qrcode_total_camisetas/', null=True, blank=True, default="")
 
     cliente = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE, related_name="pedidos")
 

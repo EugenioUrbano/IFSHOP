@@ -17,26 +17,6 @@
         {% for pedido in pedidos_feitos %}
           <div class="col-md-12 col-sm-12 col-lg-6">
             <!-- Modals -->
-            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h1>Tem certeza que deseja cancelar este pedido?</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">Se você excluir este pedido tera que refazê-lo.</div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
-                    <form method="post" class="">
-                      {% csrf_token %}
-                      <input type="hidden" name="pedido_id" value="{{ pedido.pedido.id }}" />
-                      <button type="submit" name="deletar" class="btn btn-danger">Sim</button>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             <div class="modal fade" id="exampleModal_fisico" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                   <div class="modal-content">
@@ -82,11 +62,9 @@
                       <h3><strong>{{ pedido.pedido.camiseta.titulo }}</strong></h3>
                       <p class="small">Data limite para pagamentos total ou primeira parcela: {{ pedido.pedido.camiseta.data_pag1 }}</p>
                       {% if pedido.pedido.camiseta.data_pag2 %}
-                        {% if pedido.pedido.camiseta.forma_pag == "Parcelado 2x Pix" or pedido.pedido.camiseta.forma_pag == "Parcelado 2x Fisico" or pedido.pedido.camiseta.forma_pag == "Negociar Pagamento"%}
-                        <p class="small">Data limite para pagamentos segunda parcela: {{ pedido.pedido.camiseta.data_pag2 }}</p>
-                        {% endif %}
+                        <p class="small">Data limite para pagamentos da segunda parcela: {{ pedido.pedido.camiseta.data_pag2 }}</p>
                       {% else %}
-                      <p class="small">Data limite para pagamentos segunda parcela: à definir </p>
+                      <p class="small">Data limite para pagamentos da segunda parcela: à definir </p>
                       {% endif%}
 		      Status: {{ pedido.pedido.status }}<br />
                     </div>
@@ -121,7 +99,7 @@
                             {% else %}
                               <button class="btn btn-warning text-white shadow-lg rounded-pill"><a href="{% url 'edit_pedido' pedido.pedido.id %}" class="nav-link">Editar</a></button>
                             {% endif %}
-			    <button type="button" class="btn btn-warning text-white shadow-lg rounded-pill" data-bs-toggle="modal" data-bs-target="#exampleModal">Cancelar</button>
+			    <button type="button" class="btn btn-warning text-white shadow-lg rounded-pill"><a href="{% url 'excluir_pedido' pedido.pedido.id %}" class="nav-link">Cancelar</a></button>
                         </div>
                       </div>
                     </div>
