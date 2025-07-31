@@ -17,7 +17,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-qbv1*5j=rxzji_@%1ma_3d9&$fz$o315!xwv0g#x*9dob&nmgj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 
 ALLOWED_HOSTS = ['ifshopweb.northeurope.cloudapp.azure.com', '52.158.32.93', '127.0.0.1', 'localhost']
@@ -112,16 +112,16 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',  
-        'NAME': config('NAME_BD'),              
-        'USER': config('USER_BD'),                 
-        'PASSWORD': config('PASSWORD_BD'),               
-        'HOST': 'localhost',                   
-        'PORT': '3306',    
-    }
-}
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.mysql',  
+#        'NAME': config('NAME_BD'),              
+#        'USER': config('USER_BD'),                 
+#        'PASSWORD': config('PASSWORD_BD'),               
+#        'HOST': 'localhost',                   
+#        'PORT': '3306',    
+#    }
+#}
 
 DATABASES = {
     'default': {
@@ -164,13 +164,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = '/var/www/html/IFSHOP-PROJETO_FINAL/media/'
 
 STATIC_URL = '/static/'
-STATIC_ROOT = '/var/www/html/IFSHOP-PROJETO_FINAL/static/'
 
+STATICFILES_DIRS = [BASE_DIR / "ifshop/static"]
 
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
