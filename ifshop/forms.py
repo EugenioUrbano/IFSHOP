@@ -1,15 +1,17 @@
 from django import forms
 from django.forms import modelformset_factory
-from .models import Camiseta, Pedido, UsuarioCustomizado, ImagemCamiseta, EstiloTamanho
+from .models import Camiseta, Pedido, UsuarioCustomizado, ImagemCamiseta, EstiloTamanho, Curso
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 
 ######################## login e cadastro de usuario  #############################       
         
 class CadastroUsuarioForm(UserCreationForm):
-    curso = forms.ChoiceField(
-        choices=Camiseta.CURSOS_OPCOES,
-        widget=forms.Select(attrs={'class': 'form-select rounded-3 '}))
+    curso = forms.ModelChoiceField(
+        queryset=Curso.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-select rounded-3'}),
+        empty_label="Selecione um curso"
+    )
     
     nome = forms.CharField(
         max_length=100,
@@ -54,15 +56,10 @@ class FiltroProdutoForm(forms.Form):
         required=False,
         widget=forms.Select(attrs={'class': 'form-select form-select-sm d-inline p-2'})
     )
-    cursos = forms.ChoiceField(
-        choices=[
-            ('', 'Todos os Cursos'),  
-            ('infoweb', 'InfoWeb'),
-            ('edific', 'Edific'),
-            ('mamb', 'Mamb'),
-            ('outro', 'Outro'),
-        ],
+    cursos = forms.ModelChoiceField(
+        queryset=Curso.objects.all(),
         required=False,
+        empty_label="Todos os Cursos",
         widget=forms.Select(attrs={'class': 'form-select form-select-sm d-inline p-2'})
     )
 
@@ -125,9 +122,12 @@ class CamisetaForm(forms.ModelForm):
         label= 'Formas de Pagamento Disponivel' ,
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'd-inline-block form-check-input '}), required=True)
     
-    cursos = forms.ChoiceField(
-        choices=Camiseta.CURSOS_OPCOES,
-        widget=forms.Select(attrs={'class': 'form-select rounded-3',}), required=True)
+    cursos = forms.ModelMultipleChoiceField(
+        queryset=Curso.objects.all(),
+        widget=forms.SelectMultiple(attrs={'class': 'form-select rounded-3'}),
+        required=True,
+        label="Cursos que podem comprar essa camiseta"
+    )
     
     turnos = forms.ChoiceField(
         choices=Camiseta.TURNOS_OPCOES,

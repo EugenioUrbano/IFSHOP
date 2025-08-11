@@ -5,17 +5,16 @@ from django.conf import settings
 from django.db import models
 import os
 
+class Curso(models.Model):
+    nome = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.nome
 
 class UsuarioCustomizado(AbstractUser):
-    CURSOS_OPCOES = [
-        ('infoweb', 'InfoWeb'),
-        ('edific', 'Edific'),
-        ('mamb', 'Mamb'),
-        ('outro', 'Outro'),
-    ]
     email = models.EmailField(max_length=100, blank=False, null=True, unique=True)
     telefone = models.CharField(max_length=15, blank=False, null=True)
-    curso = models.CharField(max_length=50, blank=False, null=True)
+    curso = models.ForeignKey(Curso, on_delete=models.SET_NULL, null=True, blank=True)
     vendedor = models.BooleanField(default=False)
     nome = models.CharField(max_length=150)
     
@@ -55,15 +54,7 @@ class Camiseta(models.Model):
         ('Babylook', 'BabyLook'),
         ('Normal', 'Normal'),
         ('Infantil', 'Infantil')
-    ]
-
-    CURSOS_OPCOES = [
-        ('infoweb', 'InfoWeb'),
-        ('edific', 'Edific'),
-        ('mamb', 'Mamb'),
-        ('outro', 'Outro'),
-    ]
-    
+    ]    
     TURNOS_OPCOES = [
         ('Matutino', 'Matutino'),
         ('Vespertino', 'Vespertino'),
@@ -86,7 +77,7 @@ class Camiseta(models.Model):
     data_pag2 = models.DateField(null=True, blank=True,help_text="Não precisa colocar")
     turnos = models.CharField(max_length=50)
     cores = models.TextField( null=True, help_text="Digite as cores separadas por vírgula. Ex: azul, vermelho, verde")
-    cursos = models.CharField(max_length=50)
+    cursos = models.ManyToManyField('Curso')
     imagem = models.ImageField(blank=True, null=True)
     pix_qr_code_parcela = models.ImageField(upload_to='qrcode_parcela_camisetas/', null=False, default="")
     pix_qr_code_total = models.ImageField(upload_to='qrcode_total_camisetas/', null=False, default="")

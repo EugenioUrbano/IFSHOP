@@ -27,8 +27,8 @@ def index(request):
         if turnos:  
             camisetas = camisetas.filter(turnos=turnos)
 
-        if cursos:  
-            camisetas = camisetas.filter(cursos=cursos)
+        if cursos:
+            camisetas = camisetas.filter(cursos__id=cursos.id)
             
     camisetas_com_imagens = []
     data_hoje = now().date()
