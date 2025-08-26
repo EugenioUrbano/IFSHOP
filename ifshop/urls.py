@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
-from .views import cadastro_usuario, logout_usuario, verificar_pedidos, marcar_pedidos_vistos
+from .views import cadastro_usuario, logout_usuario, verificar_pedidos, marcar_pedidos_vistos, gerenciar_vendedores
 
 urlpatterns = [
     path("", views.index, name="index"),
@@ -34,6 +34,7 @@ urlpatterns = [
     path("verificar-pedidos/", verificar_pedidos, name="verificar_pedidos"),
     path("marcar-pedidos-vistos/", marcar_pedidos_vistos, name="marcar_pedidos_vistos"),
     path('camiseta/<int:camiseta_id>/', views.camiseta, name='camiseta'),
+    path('gerenciar_vendedores/', views.gerenciar_vendedores, name='gerenciar_vendedores'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

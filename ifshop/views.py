@@ -13,6 +13,9 @@ from django.db import transaction
 from django.utils import timezone
 import openpyxl
 import json, os
+from django.contrib.auth.models import User, Group
+from .models import UsuarioCustomizado
+
 
 
 def index(request):
@@ -478,3 +481,36 @@ def edit_produto(request, camiseta_id):
         formset = ImagemCamisetaFormSet(queryset=camiseta.imagens.all())
 
     return render(request, 'edit_produto.html', {'form': form, 'formset': formset})
+
+
+# ---- admin-----#
+
+
+def is_admin(user):
+    return user.is_authenticated and user.is_staff
+
+@login_required
+@user_passes_test(is_admin)
+def gerenciar_vendedores(request):
+    # Buscar todos os usuários do seu modelo personalizado
+    usuarios = UsuarioCustomizado.objects.all().order_by('nome')
+    
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        acao = request.POST.get('acao')
+        
+        if user_id and acao:
+            usuario = get_object_or_404(UsuarioCustomizado, id=user_id)
+            
+            if acao == 'tornar_vendedor':
+                usuario.vendedor = True
+                usuario.save()
+            elif acao == 'remover_vendedor':
+                usuario.vendedor = False
+                usuario.save()
+                
+        return redirect('gerenciar_vendedores')
+    
+    return render(request, 'gerenciar_vendedores.html', {
+        'usuarios': usuarios
+    })

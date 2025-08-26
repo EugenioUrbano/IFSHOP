@@ -3,8 +3,8 @@ import os
 from pathlib import Path
 from django.contrib.messages import constants as messages
 
-EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='teste@example.com')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default= '1234')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
