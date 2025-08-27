@@ -216,7 +216,7 @@ def camiseta(request, camiseta_id):
 
 @login_required
 @user_passes_test(vendedor)
-def adicionar_pro(request):
+def adicionar_camiseta(request):
     camisetas = Camiseta.objects.all()
     
     camisetas_com_imagens = []
@@ -284,7 +284,7 @@ def adicionar_pro(request):
 
 @login_required
 @user_passes_test(vendedor)
-def gerenciar_pro(request):
+def gerenciar_camiseta(request):
     camisetas = Camiseta.objects.filter(vendedor=request.user) 
 
     camisetas_com_imagens = [
@@ -304,7 +304,7 @@ def gerenciar_pro(request):
     
 @login_required
 @user_passes_test(vendedor)
-def excluir_produto(request, camiseta_id):
+def excluir_camiseta(request, camiseta_id):
     camiseta = get_object_or_404(Camiseta, id=camiseta_id, vendedor=request.user)
 
     if request.method == "POST" and 'deletar' in request.POST:
@@ -444,7 +444,7 @@ def edit_pedido(request, pedido_id):
 
 @login_required
 @user_passes_test(vendedor) 
-def edit_produto(request, camiseta_id):
+def edit_camiseta(request, camiseta_id):
     camiseta = get_object_or_404(Camiseta, id=camiseta_id)
 
     if request.method == 'POST':
