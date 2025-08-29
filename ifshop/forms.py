@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import modelformset_factory
-from .models import Camiseta, Pedido, UsuarioCustomizado, ImagemCamiseta, EstiloTamanho, Curso
+from .models import Camiseta, ProdutoBase, ProdutoDiverso, PedidoBase, PedidoCamiseta, UsuarioCustomizado, ImagemProdutoBase, EstiloTamanho, Curso
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 
@@ -63,7 +63,7 @@ class FiltroProdutoForm(forms.Form):
         widget=forms.Select(attrs={'class': 'form-select form-select-sm d-inline p-2'})
     )
 
-class FiltroProdutosForm(forms.Form):
+class FiltroPedidosForm(forms.Form):
     status = forms.ChoiceField(
         choices=[
             ('', 'Todos os Pedidos'),  
@@ -78,21 +78,7 @@ class FiltroProdutosForm(forms.Form):
     
 ### Filtro ###
 
-class CamisetaForm(forms.ModelForm):
-    tamanhos = forms.MultipleChoiceField(
-        choices=Camiseta.TAMANHOS_OPCOES,
-        label='Tamanhos',
-        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
-        required=False
-    )
-
-    estilos = forms.MultipleChoiceField(
-        choices=Camiseta.ESTILOS_OPCOES,
-        label='Estilos',
-        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
-        required=True
-    )
-    
+class ProdutoBaseForm(forms.ModelForm):
     data_limite_pedidos = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control rounded-3 ',}), required=True)
     
@@ -118,19 +104,19 @@ class CamisetaForm(forms.ModelForm):
         widget=forms.NumberInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: 00,00'}), required=False)
     
     forma_pag_op = forms.MultipleChoiceField(
-        choices=Camiseta.FORMA_PAG_OPCOES,
+        choices=ProdutoBase.FORMA_PAG_OPCOES,
         label= 'Formas de Pagamento Disponivel' ,
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'd-inline-block form-check-input '}), required=True)
     
-    cursos = forms.ModelMultipleChoiceField(
+    curso = forms.ModelMultipleChoiceField(
         queryset=Curso.objects.all(),
         widget=forms.SelectMultiple(attrs={'class': 'form-select rounded-3'}),
         required=True,
-        label="Cursos que podem comprar essa camiseta"
+        label="Curso deste produto"
     )
     
     turnos = forms.ChoiceField(
-        choices=Camiseta.TURNOS_OPCOES,
+        choices=ProdutoBase.TURNOS_OPCOES,
         widget=forms.Select(attrs={'class': 'form-select rounded-3',}), required=True)
     
     pix_qr_code_total = forms.ImageField(
@@ -151,13 +137,43 @@ class CamisetaForm(forms.ModelForm):
     )
     
     class Meta:
-        model = Camiseta
-        fields = ['titulo', 'preco', 'preco_parcela', 'forma_pag_op', 'cores', 'data_limite_pedidos', 'cursos', 
-                  'turnos', 'tamanhos', 'estilos', "pix_qr_code_parcela", "pix_qr_code_total", "pix_chave_parcela", "pix_chave_total",
+        model = ProdutoBase
+        fields = ['titulo', 'preco', 'preco_parcela', 'forma_pag_op', 'opcoes', 'data_limite_pedidos', 'curso', 
+                  'turnos', "pix_qr_code_parcela", "pix_qr_code_total", "pix_chave_parcela", "pix_chave_total",
                   "data_pag1", "data_pag2"]
         widgets = {
-            'cores': forms.TextInput(attrs={'placeholder': 'Ex: azul, vermelho, verde'})
+            'opcoes': forms.TextInput(attrs={'placeholder': 'Ex: azul, vermelho, verde'})
         }
+        
+ImagemProdutoBAseFormSet = modelformset_factory(
+    ImagemProdutoBase ,
+    fields=('imagem', 'principal'),
+    extra=4,  # Permite adicionar até 5 imagens por vez
+    can_delete=True,
+    widgets={
+        'imagem': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        'principal': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+    }
+)
+
+class CamisetaForm(forms.ModelForm):
+    tamanhos = forms.MultipleChoiceField(
+        choices=Camiseta.TAMANHOS_OPCOES,
+        label='Tamanhos',
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
+        required=False
+    )
+    estilos = forms.MultipleChoiceField(
+        choices=Camiseta.ESTILOS_OPCOES,
+        label='Estilos',
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
+        required=True
+    )
+    
+    class Meta:
+        model = Camiseta
+        fields = ['tamanhos', 'estilos']
+        
        
     def clean(self):
         cleaned_data = super().clean()
@@ -192,21 +208,10 @@ class CamisetaForm(forms.ModelForm):
                     )
         return camiseta
 
-    
-ImagemCamisetaFormSet = modelformset_factory(
-    ImagemCamiseta ,
-    fields=('imagem', 'principal'),
-    extra=4,  # Permite adicionar até 5 imagens por vez
-    can_delete=True,
-    widgets={
-        'imagem': forms.ClearableFileInput(attrs={'class': 'form-control'}),
-        'principal': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-    }
-)
 ####################################################################################################      
 
-class PedidoForm(forms.ModelForm):
-    cor_escolhida = forms.ChoiceField(label="Escolha a cor", choices=[], required=True)
+class PedidoBaseForm(forms.ModelForm):
+    opcao_escolhida = forms.ChoiceField(label="Escolha uma opção", choices=[], required=True)
     
     comprovante_total = forms.ImageField(
         label= "Anexe o Comprovante",
@@ -223,6 +228,31 @@ class PedidoForm(forms.ModelForm):
         widget=forms.FileInput(attrs={'class': 'form-control'}), required= False
     )
     
+    forma_pag = forms.ChoiceField(
+        label="Forma de Pagamento",
+        widget=forms.Select(attrs={'class': 'card-text mb-auto form-select',}))
+
+    class Meta:
+        model = PedidoBase
+        fields = ['opcao_escolhida', "forma_pag", "comprovante_total", "comprovante_parcela1", "comprovante_parcela2"]
+        
+    def __init__(self, *args, **kwargs):
+        produto = kwargs.pop('produto', None)
+        forma_pag_opcoes = kwargs.pop('forma_pag_opcoes', [])
+        
+        super().__init__(*args, **kwargs)
+
+        self.fields['forma_pag'].choices = [(op, op) for op in forma_pag_opcoes]
+        
+        if produto:
+            opcoes_disponiveis = produto.lista_opcoes()
+            print("Opções disponíveis:", opcoes_disponiveis)  
+            if opcoes_disponiveis:
+                self.fields['opcao_escolhida'].choices = [(opcao, opcao) for opcao in opcoes_disponiveis]
+            else:
+                self.fields['opcao_escolhida'].choices = [("", "Nenhuma opção disponível")]
+
+class PedidoCamisetaForm(forms.ModelForm):
     nome_estampa = forms.CharField(
         max_length=100,
         widget=forms.TextInput(attrs={
@@ -237,39 +267,24 @@ class PedidoForm(forms.ModelForm):
     
     estilo = forms.ChoiceField(
         widget=forms.Select(attrs={'class': 'card-text mb-auto form-select', 'id': 'id_estilo'}))
-    
-    forma_pag = forms.ChoiceField(
-        label="Forma de Pagamento",
-        widget=forms.Select(attrs={'class': 'card-text mb-auto form-select',}))
 
     class Meta:
-        model = Pedido
-        fields = ['nome_estampa', 'numero_estampa', 'tamanho', 'estilo', 'cor_escolhida', "forma_pag", "comprovante_total", "comprovante_parcela1", "comprovante_parcela2"]
+        model = PedidoBase
+        fields = ['nome_estampa', 'numero_estampa', 'tamanho', 'estilo']
         
     def __init__(self, *args, **kwargs):
-        camiseta = kwargs.pop('camiseta', None)
         tamanhos_opcoes = kwargs.pop('tamanhos_opcoes', [])
         estilos_opcoes = kwargs.pop('estilos_opcoes', [])
-        forma_pag_opcoes = kwargs.pop('forma_pag_opcoes', [])
-        
         super().__init__(*args, **kwargs)
 
         self.fields['tamanho'].choices = [(op, op) for op in tamanhos_opcoes]
         self.fields['estilo'].choices = [(op, op) for op in estilos_opcoes]
-        self.fields['forma_pag'].choices = [(op, op) for op in forma_pag_opcoes]
         
-        if camiseta:
-            cores_disponiveis = camiseta.lista_cores()
-            print("Cores disponíveis:", cores_disponiveis)  # Verifique se as cores estão sendo passadas
-            if cores_disponiveis:
-                self.fields['cor_escolhida'].choices = [(cor, cor) for cor in cores_disponiveis]
-            else:
-                self.fields['cor_escolhida'].choices = [("", "Nenhuma cor disponível")]
-        
+    
 class AlterarStatusPedidoForm(forms.ModelForm):
-    status = forms.ChoiceField(choices=Pedido.STATUS_OPCOES, widget=forms.Select(attrs={'class': 'card-text mb-auto form-select',}))
+    status = forms.ChoiceField(choices=PedidoBase.STATUS_OPCOES, widget=forms.Select(attrs={'class': 'card-text mb-auto form-select',}))
     class Meta:
-        model = Pedido
+        model = PedidoBase
         fields = ['status']  # Apenas o campo de status
 
 class AnexoComprovantesPedidoForm(forms.ModelForm):
@@ -288,5 +303,5 @@ class AnexoComprovantesPedidoForm(forms.ModelForm):
         widget=forms.FileInput(attrs={'class': 'form-control'}), required= False
     )
     class Meta:
-        model = Pedido
+        model = PedidoBase
         fields = ['comprovante_total','comprovante_parcela1','comprovante_parcela2']  # Apenas o campo de status 

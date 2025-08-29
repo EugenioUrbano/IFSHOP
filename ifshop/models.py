@@ -78,14 +78,6 @@ class ProdutoBase(models.Model):
     
     def lista_opcoes(self):
         return [opcao.strip() for opcao in self.opcoes.split(",") if opcao.strip()]
-    
-    def save(self, *args, **kwargs):
-        if self.pk: 
-            pedidos = PedidoBase.objects.filter(camiseta=self)
-            pedidos.update(revisado=False) 
-            
-        self.opcoes = ", ".join(self.lista_opcoes())
-        super().save(*args, **kwargs)
 
 class ImagemProdutoBase(models.Model):
     produto = models.ForeignKey(ProdutoBase, related_name='imagens', on_delete=models.CASCADE)
@@ -104,6 +96,14 @@ class ImagemProdutoBase(models.Model):
 
 class ProdutoDiverso(models.Model):
     produto = models.ForeignKey(ProdutoBase, on_delete=models.CASCADE, related_name='diversos')
+    
+    def save(self, *args, **kwargs):
+        if self.pk: 
+            pedidos = PedidoProduto.objects.filter(produto=self)
+            pedidos.update(revisado=False) 
+            
+        self.opcoes = ", ".join(self.produto.lista_opcoes())
+        super().save(*args, **kwargs)
     
     def __str__(self):
         return self.produto.titulo
@@ -130,6 +130,13 @@ class Camiseta(models.Model):
     estilos = models.CharField(max_length=50, default="" )
     tamanhos = JSONField(default=dict)
     
+    def save(self, *args, **kwargs):
+        if self.pk: 
+            pedidos = PedidoCamiseta.objects.filter(camiseta=self)
+            pedidos.update(revisado=False) 
+            
+        self.opcoes = ", ".join(self.produto.lista_opcoes())
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.produto.titulo
@@ -180,7 +187,7 @@ class PedidoBase(models.Model):
     
     
 class PedidoCamiseta(models.Model):
-    pedido = models.ForeignKey(PedidoBase, on_delete=models.CASCADE)
+    pedido = models.ForeignKey(PedidoBase, on_delete=models.CASCADE, related_name="camisetas")
     camiseta = models.ForeignKey(Camiseta, on_delete=models.CASCADE)
     
     nome_estampa = models.CharField(max_length=50)
@@ -192,11 +199,5 @@ class PedidoCamiseta(models.Model):
     def __str__(self):
         return f"Pedido de camiseta para {self.camiseta.produto.titulo} - {self.nome_estampa} ({self.numero_estampa})"
 
-class PedidoProduto(models.Model):
-    pedido = models.ForeignKey(PedidoBase, on_delete=models.CASCADE)
-    produto = models.ForeignKey(ProdutoDiverso, on_delete=models.CASCADE)
-    
-    def __str__(self):
-        return f"Pedido do produto para {self.produto.produto.titulo} - {self.pedido.opcao_escolhida}"
 
 ####################################################################################################

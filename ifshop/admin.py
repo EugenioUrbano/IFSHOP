@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import Camiseta, Pedido, UsuarioCustomizado, Curso
+from .models import ProdutoBase, ProdutoDiverso, Camiseta, PedidoBase, PedidoCamiseta, UsuarioCustomizado, Curso
 
 class CustomUserAdmin(UserAdmin):
     model = UsuarioCustomizado
@@ -10,8 +10,9 @@ class CustomUserAdmin(UserAdmin):
     )
     list_display = UserAdmin.list_display + ('vendedor',)
 
+admin.site.register(ProdutoBase, ProdutoDiverso)
 admin.site.register(Camiseta)
-admin.site.register(Pedido)
+admin.site.register(PedidoBase, PedidoCamiseta)
 admin.site.register(UsuarioCustomizado, CustomUserAdmin)
 
 @admin.register(Curso)
