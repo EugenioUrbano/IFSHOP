@@ -14,30 +14,30 @@
 {% if user.vendedor %}
 <div class="row justify-content-end">
   <div style=" color: #012145; padding: 10px;" class="d-flex flex-wrap col-4 align-items-center justify-content-center ">
-    <h3 class="texto_perfil">Suas Camisetas</h3>
+    <h3 class="texto_perfil">Seus Produtos</h3>
   </div>
   <div class="text-end col-4">
-    <button type="button" class="btn botoes shadow-lg rounded-pill px-3 "><a href="{% url 'gerenciar_pro' %}" class="nav-link">Gerencie suas Camisetas</a></button>
+    <button type="button" class="btn botoes shadow-lg rounded-pill px-3 "><a href="{% url 'gerenciar_produtos' %}" class="nav-link">Gerencie seus Produtos</a></button>
   </div>
 </div>
 
   </div>
-  {% if camisetas_com_imagens %}
+  {% if produtos_com_imagens %}
   <div style="padding-left: 50px;" class="album py-5 ">
       <div class="container">
         <div class="row row-cols-1 ">
-          {% for item in camisetas_com_imagens|slice:":4" %}
+          {% for item in produtos_com_imagens|slice:":4" %}
           <div class="col-3 ">
             <div id="card_perfil" class="card">
               {% if item.imagem_principal %}
-                  <img id="fotos_perfil" src="{{ item.imagem_principal.imagem.url }}" alt="Imagem de {{ item.camiseta.nome }}" >
+                  <img id="fotos_perfil" src="{{ item.imagem_principal.imagem.url }}" >
               {% else %}
-                <img id="fotos_pro" src="{% static 'img/não_tem_imagem.svg' %}"  alt="Imagem de {{ item.camiseta.nome }}" class="img-fluid">
+                <img id="fotos_pro" src="{% static 'img/não_tem_imagem.svg' %}" class="img-fluid">
               {% endif %}
               <div class="card-body">
-                <h4>{{ item.camiseta.titulo }}</h4>
+                <h4>{{ item.produto.titulo }}</h4>
                 <div class="d-flex justify-content-between align-items-center">
-                  <p class="text-body-secondary">R$ {{ item.camiseta.preco }}</p>
+                  <p class="text-body-secondary">R$ {{ item.produto.preco }}</p>
                 </div>
               </div>
             </div>
@@ -54,6 +54,15 @@
       <h3>Pedidos das suas Camisetas</h3>
     </div>
     <div class="text-end col-4">
+        <div class="dropdown">
+            <button class="btn botoes shadow-lg rounded-pill px-3 " type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Gerenciar Pedidos
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item nav-link" href="{% url 'pedidos_produtos'%}">De Produtos Diversificados</a></li>
+                <li><a class="dropdown-item nav-link" href="{% url 'pedidos_camisetas' %}">De Camisetas</a></li>
+            </ul>
+        </div>
         <button type="button" class="btn botoes shadow-lg rounded-pill px-3 "><a href="{% url 'gerenciar_pedidos' %}" class="nav-link">Gerencie seus Pedidos</a></button>
         <a href="{% url 'exportar_pedidos' %}" class="btn botoes shadow-lg rounded-pill px-3 ">
           Exportar pedidos em Excel
@@ -62,50 +71,6 @@
     </div>
     <div class="text-center" id="notificacao-pedidos" style="display: none; color: red;">Novo pedido!</div>
   </div>
-  
-    
-  {% if pedidos_recebidos %}
-    <div class="table-responsive ">
-      <table class="table table-striped table-hover table-bordered align-middle text-center">
-        <thead class="">
-           <tr>
-              <th>ID do Pedido</th>
-              <th>Cliente</th>
-              <th>Numero Cliente</th>
-              <th>Título do Produto</th>
-              <th>Data</th>
-              <th>Opção de Cor</th>
-              <th>Nome na Estampa</th>
-              <th>Número na Estampa</th>
-              <th>Tamanho</th>
-              <th>Estilo</th>
-              <th>Forma de Pagamento</th>
-              <th>Status</th>
-           </tr>
-        </thead>
-       <tbody class="table-group-divider">
-        {%  for pedido in pedidos_recebidos|slice:":3" %}
-        <tr>
-            <td>{{ pedido.id }}</td>
-            <td>{{ pedido.cliente }}</td>
-            <td>{{ pedido.cliente.telefone }}</td>
-            <td>{{ pedido.camiseta.titulo }}</td>
-            <td>{{ pedido.data_pedido }}</td>
-            <td>{{ pedido.cor_escolhida }}</td>
-            <td>{{ pedido.nome_estampa }}</td>
-            <td>{{ pedido.numero_estampa }}</td>
-            <td>{{ pedido.tamanho }}</td>
-            <td>{{ pedido.estilo }}</td>
-            <td>{{ pedido.forma_pag }}</td>
-            <td>{{ pedido.status }}</td>
-        </tr>
-        {% endfor %}
-       </tbody>
-     </table>
-   </div>
-  {% else %}
-    <p class="container text-center">Nenhum pedido encontrado para suas camisetas.</p>
-  {% endif %}
 {% else %}
   <div style="color: #012145; padding: 15px;" class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
     <h3>Seus Pedidos</h3>
@@ -121,14 +86,14 @@
           <div class="col-3 ">
             <div class="card" style="width: 18rem;">
               {% if pedido.imagem_principal %}
-                <img src="{{ pedido.imagem_principal.imagem.url }}" alt="Imagem de {{ pedido.pedido.camiseta.titulo }}" class="thumbnail" style="width: 200px; height: 200px;">
+                <img src="{{ pedido.imagem_principal.imagem.url }}" class="thumbnail" style="width: 200px; height: 200px;">
               {% else %}
                 <p>Sem imagem disponível</p>
               {% endif %}
               <div class="card-body">
-                <h3>{{ pedido.pedido.camiseta.titulo }}</h3>
+                <h3>{{ pedido.pedido.produto.titulo }}</h3>
                 <div class="d-flex justify-content-between align-items-center">
-                  <p class="text-body-secondary">R$ {{ pedido.pedido.camiseta.preco }}</p>
+                  <p class="text-body-secondary">R$ {{ pedido.pedido.produto.preco }}</p>
                 </div>
               </div>
             </div>

@@ -53,32 +53,40 @@
 
 {% block content %}
 
-{% if camisetas_com_imagens %}
+{% if produtos_com_imagens %}
 <div class="album py-5">
     <div class="container">
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-            {% for item in camisetas_com_imagens %}
+            {% for item in produtos_com_imagens %}
                 <div class="col">
                     <div class="card shadow-sm">
                         {% if item.imagem_principal %}
-                            <img id="fotos_pro" src="{{ item.imagem_principal.imagem.url }}" alt="Imagem de {{ item.camiseta.nome }}" class="img-fluid">
+                            <img id="fotos_pro" src="{{ item.imagem_principal.imagem.url }}"  class="img-fluid">
                         {% else %}
-                            <img id="fotos_pro" src="{% static 'img/não_tem_imagem.svg' %}"  alt="Imagem de {{ item.camiseta.nome }}" class="img-fluid">
+                            <img id="fotos_pro" src="{% static 'img/não_tem_imagem.svg' %}"  class="img-fluid">
                         {% endif %}
                         <div class="card-body">
-                            <h3>{{ item.camiseta.titulo }}</h3>
-                            <h6 class="text-body-secondary">Data para fazer o pedido até {{ item.camiseta.data_limite_pedidos }}</h6>
+                            <h3>{{ item.produto.titulo }}</h3>
+                            {% if item.produto.data_limite_pedidos %}
+                                <h6 class="text-body-secondary">Data para fazer o pedido até {{ item.produto.data_limite_pedidos }}</h6>
+                            {% endif %}
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="btn-group">
                                     {% if item.disponivel %}
-                                        <a href="{% url 'camiseta' item.camiseta.id %}">
-                                            <button type="button" class="btn botoes shadow-lg rounded px-3">Fazer Pedido</button> 
-                                        </a>
+                                        {% if item.produto.camisetas.exists %}
+                                            <a href="{% url 'camiseta' item.produto.camisetas.first.id %}">
+                                                <button type="button" class="btn botoes shadow-lg rounded px-3">Fazer Pedido</button>
+                                            </a>
+                                        {% else %}
+                                            <a href="{% url 'produto' item.produto.id %}">
+                                                <button type="button" class="btn botoes shadow-lg rounded px-3">Fazer Pedido</button>
+                                            </a>
+                                        {% endif %}
                                     {% else %}
                                         <button type="button" class="btn btn-secondary" disabled>Indisponível</button>
                                     {% endif %}
                                 </div>
-                                <p class="text-body-secondary">R$ {{ item.camiseta.preco }}</p>
+                                <p class="text-body-secondary">R$ {{ item.produto.preco }}</p>
                             </div>
                         </div>
                     </div>
@@ -88,24 +96,23 @@
     </div>
 </div>
 {% else %}
-    <h3 class= "semcamisacadast">Nenhuma camisa cadastrada.</h3>
+    <h3 class= "semcamisacadast">Nenhum produto cadastrado.</h3>
 {% endif %}
+
 <div class="pagination justify-content-center align-items-center">
     <span class="step-links">
-        {% if camisetas_com_imagens.has_previous %}
+        {% if produtos_com_imagens.has_previous %}
             <button type="button" class="btn botoes_paginacao"><a href="?pagina=1" class="nav-link">&laquo; Início</a></button>
-            <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ camisetas_com_imagens.previous_page_number }} " class="nav-link">Anterior</a></button>
-            
+            <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ produtos_com_imagens.previous_page_number }} " class="nav-link">Anterior</a></button>
         {% endif %}
 
         <span class="current">
-            Página {{ camisetas_com_imagens.number }} de {{ camisetas_com_imagens.paginator.num_pages }}
+            Página {{ produtos_com_imagens.number }} de {{ produtos_com_imagens.paginator.num_pages }}
         </span>
         
-
-        {% if camisetas_com_imagens.has_next %}
-            <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ camisetas_com_imagens.next_page_number }}" class="nav-link">Próxima</a></button>
-            <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ camisetas_com_imagens.paginator.num_pages }}" class="nav-link">Última &raquo;</a></button>
+        {% if produtos_com_imagens.has_next %}
+            <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ produtos_com_imagens.next_page_number }}" class="nav-link">Próxima</a></button>
+            <button type="button" class="btn botoes_paginacao"><a href="?pagina={{ produtos_com_imagens.paginator.num_pages }}" class="nav-link">Última &raquo;</a></button>
         {% endif %}
     </span>
 </div>

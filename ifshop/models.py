@@ -19,13 +19,12 @@ class UsuarioCustomizado(AbstractUser):
     nome = models.CharField(max_length=150)
     
     def save(self, *args, **kwargs):
-        if not self.username:  # Apenas gera username se estiver vazio
-            primeiro_nome = self.nome.split()[0]  # Captura o primeiro nome
+        if not self.username: 
+            primeiro_nome = self.nome.split()[0]  
             contador = 1
             username_base = primeiro_nome.lower()
             username_gerado = username_base
 
-            # Garante que o username seja único
             while UsuarioCustomizado.objects.filter(username=username_gerado).exists():
                 contador += 1
                 username_gerado = f"{username_base}_{contador}"
@@ -63,6 +62,8 @@ class ProdutoBase(models.Model):
     data_pag1 = models.DateField(help_text="Total ou primeira parcela")
     data_pag2 = models.DateField(null=True, blank=True,help_text="Não precisa colocar")
     
+    turma = models.CharField(max_length=50)
+    
     turnos = models.CharField(max_length=50)
     cursos = models.ManyToManyField('Curso')
     
@@ -78,6 +79,17 @@ class ProdutoBase(models.Model):
     
     def lista_opcoes(self):
         return [opcao.strip() for opcao in self.opcoes.split(",") if opcao.strip()]
+    
+    def save(self, *args, **kwargs):
+        if self.pk: 
+            pedidos = PedidoBase.objects.filter(produto=self)
+            pedidos.update(revisado=False) 
+            
+        self.opcoes = ", ".join(self.lista_opcoes())
+        super().save(*args, **kwargs)
+        
+    def __str__(self):
+        return self.titulo
 
 class ImagemProdutoBase(models.Model):
     produto = models.ForeignKey(ProdutoBase, related_name='imagens', on_delete=models.CASCADE)
@@ -94,19 +106,6 @@ class ImagemProdutoBase(models.Model):
             ImagemProdutoBase.objects.filter(produto=self.produto, principal=True).update(principal=False)
         super().save(*args, **kwargs)
 
-class ProdutoDiverso(models.Model):
-    produto = models.ForeignKey(ProdutoBase, on_delete=models.CASCADE, related_name='diversos')
-    
-    def save(self, *args, **kwargs):
-        if self.pk: 
-            pedidos = PedidoProduto.objects.filter(produto=self)
-            pedidos.update(revisado=False) 
-            
-        self.opcoes = ", ".join(self.produto.lista_opcoes())
-        super().save(*args, **kwargs)
-    
-    def __str__(self):
-        return self.produto.titulo
 
 class Camiseta(models.Model):
     TAMANHOS_OPCOES = [
@@ -125,7 +124,7 @@ class Camiseta(models.Model):
         ('Infantil', 'Infantil')
     ]    
 
-    produto = models.ForeignKey(ProdutoBase, on_delete=models.CASCADE, related_name='camisetas')
+    produto = models.ForeignKey(ProdutoBase, on_delete=models.CASCADE, related_name='camisetas', null=True, blank=True)
 
     estilos = models.CharField(max_length=50, default="" )
     tamanhos = JSONField(default=dict)

@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import modelformset_factory
-from .models import Camiseta, ProdutoBase, ProdutoDiverso, PedidoBase, PedidoCamiseta, UsuarioCustomizado, ImagemProdutoBase, EstiloTamanho, Curso
+from .models import Camiseta, ProdutoBase, PedidoBase, PedidoCamiseta, UsuarioCustomizado, ImagemProdutoBase, EstiloTamanho, Curso
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 
@@ -114,6 +114,9 @@ class ProdutoBaseForm(forms.ModelForm):
         required=True,
         label="Curso deste produto"
     )
+    turma = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: InfoWeb4M'}), required=True)
     
     turnos = forms.ChoiceField(
         choices=ProdutoBase.TURNOS_OPCOES,
@@ -140,12 +143,12 @@ class ProdutoBaseForm(forms.ModelForm):
         model = ProdutoBase
         fields = ['titulo', 'preco', 'preco_parcela', 'forma_pag_op', 'opcoes', 'data_limite_pedidos', 'curso', 
                   'turnos', "pix_qr_code_parcela", "pix_qr_code_total", "pix_chave_parcela", "pix_chave_total",
-                  "data_pag1", "data_pag2"]
+                  "turma", "data_pag1", "data_pag2"]
         widgets = {
             'opcoes': forms.TextInput(attrs={'placeholder': 'Ex: azul, vermelho, verde'})
         }
         
-ImagemProdutoBAseFormSet = modelformset_factory(
+ImagemProdutoBaseFormSet = modelformset_factory(
     ImagemProdutoBase ,
     fields=('imagem', 'principal'),
     extra=4,  # Permite adicionar até 5 imagens por vez
@@ -269,7 +272,7 @@ class PedidoCamisetaForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'card-text mb-auto form-select', 'id': 'id_estilo'}))
 
     class Meta:
-        model = PedidoBase
+        model = PedidoCamiseta
         fields = ['nome_estampa', 'numero_estampa', 'tamanho', 'estilo']
         
     def __init__(self, *args, **kwargs):

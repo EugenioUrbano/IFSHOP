@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load crispy_forms_filters %}
+
+{% block title %}Gerencie Produtos{% endblock %}
+{% block filtro%} {% endblock %}
+
+{% block content %}
+<div style=" color: black; padding: 10px;" class=" justify-content-center ">
+    <div class=" row justify-content-end d-flex flex-wrap align-items-center">
+        <h1 class="col-4">Gerencie seus Produtos</h1>
+    <div class="text-end col-4" style="position: relative; padding-left: 5px;">
+        <div class="dropdown">
+            <button class="btn botoes shadow-lg rounded-pill px-3 " type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Adicionar Produto
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item nav-link" href="{% url 'criar_produto'%}">Produto Diversificado</a></li>
+                <li><a class="dropdown-item nav-link" href="{% url 'criar_camiseta' %}">Camiseta</a></li>
+            </ul>
+        </div>
+    </div>
+    </div>
+</div>
+
+<ul style="list-style: none; padding: 0;" class="container body-content">
+    {% if itens %}
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+            {% for item in itens %}
+                <div class="col">
+                    <div class="card shadow-sm h-100">
+                        {% if item.imagem_principal %}
+                            <img src="{{ item.imagem_principal.imagem.url }}" class="card-img-top" alt="Imagem de {{ item.tipo }}">
+                        {% else %}
+                            <img src="{% static 'img/não_tem_imagem.svg' %}" class="card-img-top" alt="Sem imagem">
+                        {% endif %}
+
+                        <div class="card-body d-flex flex-column">
+                            {% if item.tipo == "produto" %}
+                                <h5 class="card-title">{{ item.produto.titulo }}</h5>
+                                <p class="card-text">
+                                    <strong>Preço:</strong> R$ {{ item.produto.preco }} <br>
+                                    <strong>Descrição:</strong> {{ item.produto.descricao|truncatewords:15 }}
+                                </p>
+                                <div class="mt-auto d-flex justify-content-between">
+                                    <a href="{% url 'editar_produto' item.produto.id %}" class="btn btn-warning btn-sm rounded-pill shadow">Editar</a>
+                                    <a href="{% url 'excluir_produto' item.produto.id %}" class="btn btn-danger btn-sm rounded-pill shadow">Excluir</a>
+                                </div>
+
+                            {% elif item.tipo == "camiseta" %}
+                                <h5 class="card-title">{{ item.camiseta.produto.titulo }} (Camiseta)</h5>
+                                <p class="card-text">
+                                    <strong>Estilos:</strong> {{ item.camiseta.estilos }} <br>
+                                    <strong>Tamanhos:</strong> {{ item.camiseta.tamanhos }} <br>
+                                    <strong>Preço:</strong> R$ {{ item.camiseta.produto.preco }}
+                                </p>
+                                <div class="mt-auto d-flex justify-content-between">
+                                    <a href="{% url 'edit_camiseta' item.camiseta.id %}" class="btn btn-warning btn-sm rounded-pill shadow">Editar</a>
+                                    <a href="{% url 'excluir_produto' item.produto.id %}" class="btn btn-danger btn-sm rounded-pill shadow">Excluir</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="d-flex justify-content-center mt-4">
+            <nav>
+                <ul class="pagination">
+                    {% if itens.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?pagina={{ itens.previous_page_number }}">Anterior</a></li>
+                    {% endif %}
+
+                    <li class="page-item active"><span class="page-link">{{ itens.number }}</span></li>
+
+                    {% if itens.has_next %}
+                        <li class="page-item"><a class="page-link" href="?pagina={{ itens.next_page_number }}">Próxima</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+
+    {% else %}
+        <h3 class="text-center">Nenhum produto cadastrado.</h3>
+    {% endif %}
+
+{% endblock %}

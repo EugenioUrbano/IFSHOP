@@ -6,9 +6,7 @@
 {% block title %}
   Carrinho
 {% endblock %}
-{% block filtro %}
-
-{% endblock %}
+{% block filtro %}{% endblock %}
 
 {% block content %}
   {% if user.is_authenticated %}
@@ -16,90 +14,113 @@
       <div class="container mx-auto row m-0">
         {% for pedido in pedidos_feitos %}
           <div class="col-md-12 col-sm-12 col-lg-6">
-            <!-- Modals -->
-            <div class="modal fade" id="exampleModal_fisico" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h4>Você escolheu pagar fisicamente. Nos procure na sala A107.</h4>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-center">
-                      <p>Alunos responsáveis: Gabriely Souza, Wescley Plinio, Helloar ou Eugênio Urbano</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
 
-              <div class="modal fade" id="exampleModal_cartao" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h4>Você escolheu pagar com cartão. Nos procure na sala A107.</h4>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-center">
-                      <p>Alunos responsáveis: Gabriely Souza, Wescley Plinio, Helloar ou Eugênio Urbano</p>
-                      <p class="bs-danger">Preço sujeito a taxa, confirme com quem estiver lhe atendendo.</p>
-                    </div>
+            <!-- Modal para pagamento físico -->
+            <div class="modal fade" id="exampleModal_fisico" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h4>
+                      Você escolheu pagar fisicamente. Procure por 
+                      {{ pedido.pedido.produto.vendedor.username }}.
+                    </h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                 </div>
               </div>
-            <!-- Resto da Pagina -->
+            </div>
+
+            <!-- Pedido -->
             <ul style="list-style: none; padding: 0;" class="container body-content">
               <li style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; display: flex; align-items: center; justify-content: space-between;">
                 <div class="row">
+                  
+                  <!-- Imagem -->
                   <div class="col-md-3 col-sm-12 col-lg-6 d-flex">
                     {% if pedido.imagem_principal %}
-                      <img src="{{ pedido.imagem_principal.imagem.url }}" alt="Imagem de {{ pedido.pedido.camiseta.titulo }}" class="thumbnail img-fluid mx-auto w-100" />
+                      <img src="{{ pedido.imagem_principal.imagem.url }}" alt="Imagem de {{ pedido.pedido.produto.titulo }}" class="thumbnail img-fluid mx-auto w-100" />
                     {% else %}
-                      <img src="{% static 'img/não_tem_imagem.svg' %}" alt="Imagem de {{ item.camiseta.nome }}" class="thumbnail img-fluid me-auto w-100" />
+                      <img src="{% static 'img/não_tem_imagem.svg' %}" alt="Sem imagem" class="thumbnail img-fluid me-auto w-100" />
                     {% endif %}
                   </div>
 
+                  <!-- Informações -->
                   <div class="col-md-9 col-sm-12 col-lg-6 themed-grid-col">
                     <div class="pb-3">
-                      <h3><strong>{{ pedido.pedido.camiseta.titulo }}</strong></h3>
-                      <p class="small">Data limite para pagamentos total ou primeira parcela: {{ pedido.pedido.camiseta.data_pag1 }}</p>
-                      {% if pedido.pedido.camiseta.data_pag2 %}
-                        <p class="small">Data limite para pagamentos da segunda parcela: {{ pedido.pedido.camiseta.data_pag2 }}</p>
+                      <h3><strong>{{ pedido.pedido.produto.titulo }}</strong></h3>
+                      <p class="small">Data limite p/ pagamento total ou 1ª parcela: {{ pedido.pedido.produto.data_pag1 }}</p>
+                      {% if pedido.pedido.produto.data_pag2 %}
+                        <p class="small">Data limite p/ 2ª parcela: {{ pedido.pedido.produto.data_pag2 }}</p>
                       {% else %}
-                      <p class="small">Data limite para pagamentos da segunda parcela: à definir </p>
-                      {% endif%}
-		      Status: {{ pedido.pedido.status }}<br />
+                        <p class="small">Data limite p/ 2ª parcela: à definir</p>
+                      {% endif %}
+                      <p>Status: {{ pedido.pedido.status }}</p>
                     </div>
+
                     <div class="row">
-                      <div class="col-sm-12 col-md-6">
-                        Nome: {{ pedido.pedido.nome_estampa }}<br />
-                        Número: {{ pedido.pedido.numero_estampa }}<br />
-                        Tamanho: {{ pedido.pedido.tamanho }}<br />
-                      </div>
-                      <div class="col-sm-12 col-md-6">
-                        Estilo: {{ pedido.pedido.estilo }}<br />
-                        Preço: R$ {{ pedido.pedido.camiseta.preco }}<br />
-                        Cor: {{ pedido.pedido.cor_escolhida }}<br />
-			
-                      </div>
+                      <!-- Se for pedido de camiseta -->
+                      {% if pedido.pedido.camisetas.exists %}
+                        {% for camiseta_pedido in pedido.pedido.camisetas.all %}
+                          <div class="col-sm-12 col-md-6">
+                            Nome: {{ camiseta_pedido.nome_estampa }}<br />
+                            Número: {{ camiseta_pedido.numero_estampa }}<br />
+                            Tamanho: {{ camiseta_pedido.tamanho }}<br />
+                          </div>
+                          <div class="col-sm-12 col-md-6">
+                            Estilo: {{ camiseta_pedido.estilo }}<br />
+                            Preço: R$ {{ pedido.pedido.produto.preco }}<br />
+                            Opção: {{ pedido.pedido.opcao_escolhida }}<br />
+                          </div>
+                        {% endfor %}
+                      {% else %}
+                        <!-- Produto genérico -->
+                        <div class="col-sm-12 col-md-6">
+                          Preço: R$ {{ pedido.pedido.produto.preco }}<br />
+                          Opção: {{ pedido.pedido.opcao_escolhida }}<br />
+                        </div>
+                      {% endif %}
+
+                      <!-- Botões -->
                       <div class="col-sm-12 col-md-6">
                         <div class="d-flex justify-content-around mt-2">
 
-                            {% if pedido.pedido.forma_pag == "Pix" or pedido.pedido.forma_pag == "Parcelado 2x Pix" %}
-                            <button class="btn botoes rounded-pill shadow-lg"><a href="{% url 'comprovantes' pedido.pedido.id %}" class="nav-link">Pagar</a></button>
-                            {% elif pedido.pedido.forma_pag == "Negociar Pagamento" %}
+                          {% if pedido.pedido.forma_pag == "Pix" or pedido.pedido.forma_pag == "Parcelado 2x Pix" %}
                             <button class="btn botoes rounded-pill shadow-lg">
-                                <a href="https://wa.me/55{{pedido.pedido.camiseta.vendedor.telefone}}?text=Olá!%20Gostaria%20de%20Negociar%20o%20pagamento%20da%20camiseta,%20ID%20de%20Pedido:%20{{pedido.pedido.id}}." class="nav-link"><i class="fab fa-whatsapp"></i>Negociar Pagamento</a>
+                              <a href="{% url 'comprovantes' pedido.pedido.id %}" class="nav-link">Pagar</a>
                             </button>
-                            {% elif pedido.pedido.forma_pag == "Cartão Debito/Credito"%}
-                            <button class="btn botoes rounded-pill shadow-lg" data-bs-toggle="modal" data-bs-target="#exampleModal_cartao">Veja como pagar</button>
+                          {% elif pedido.pedido.forma_pag == "Negociar Pagamento" %}
+                            <button class="btn botoes rounded-pill shadow-lg">
+                              <a href="https://wa.me/55{{pedido.pedido.produto.vendedor.telefone}}?text=Olá!%20Gostaria%20de%20negociar%20o%20pagamento%20do%20produto%20{{pedido.pedido.produto.titulo}},%20Pedido%20ID:%20{{pedido.pedido.id}}" 
+                                class="nav-link">
+                                <i class="fab fa-whatsapp"></i> Negociar Pagamento
+                              </a>
+                            </button>
+                          {% else %}
+                            <button class="btn botoes rounded-pill shadow-lg" data-bs-toggle="modal" data-bs-target="#exampleModal_fisico">
+                              Veja como pagar
+                            </button>
+                          {% endif %}
+
+                          {% if pedido.pedido.produto.data_limite_pedidos <= hoje %}
+                            <button class="btn nav-link" disabled>Editar (Indisponível)</button>
+                          {% else %}
+                            {% if pedido.pedido.camisetas.exists %}
+                              <!-- Se for camiseta -->
+                              <button class="btn btn-warning text-white shadow-lg rounded-pill">
+                                <a href="{% url 'edit_pedido_camiseta' pedido.pedido.id %}" class="nav-link">Editar</a>
+                              </button>
                             {% else %}
-                            <button class="btn botoes rounded-pill shadow-lg" data-bs-toggle="modal" data-bs-target="#exampleModal_fisico">Veja como pagar</button>
+                              <!-- Se for produto genérico -->
+                              <button class="btn btn-warning text-white shadow-lg rounded-pill">
+                                <a href="{% url 'edit_pedido_produto' pedido.pedido.id %}" class="nav-link">Editar</a>
+                              </button>
                             {% endif %}
-                            {% if pedido.pedido.camiseta.data_limite_pedidos <= hoje %}
-                              <button class="btn nav-link" disabled>Editar (Indisponível)</button>
-                            {% else %}
-                              <button class="btn btn-warning text-white shadow-lg rounded-pill"><a href="{% url 'edit_pedido' pedido.pedido.id %}" class="nav-link">Editar</a></button>
-                            {% endif %}
-			    <button type="button" class="btn btn-warning text-white shadow-lg rounded-pill"><a href="{% url 'excluir_pedido' pedido.pedido.id %}" class="nav-link">Cancelar</a></button>
+                          {% endif %}
+
+                          <button type="button" class="btn btn-warning text-white shadow-lg rounded-pill">
+                            <a href="{% url 'excluir_pedido' pedido.pedido.id %}" class="nav-link">Cancelar</a>
+                          </button>
+
                         </div>
                       </div>
                     </div>
@@ -114,6 +135,6 @@
       <h3>Nenhum pedido feito.</h3>
     {% endif %}
   {% else %}
-    <p>Nenhum pedido feito.</p>
+    <p>Você precisa estar logado para ver seus pedidos.</p>
   {% endif %}
 {% endblock %}
