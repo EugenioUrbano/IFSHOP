@@ -64,39 +64,43 @@
               </div>
               <div class="offcanvas-body">
                 <ul style="list-style: none; padding: 0;" class="container body-content">
-                  {% if user.is_authenticated %}
-                    {% if pedidos_feitos %}
-                      {% for pedido in pedidos_feitos|slice:":3" %}
-                      <li style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; display: flex; align-items: center; justify-content: space-between;">
-                          <div style="display: flex; align-items: center; gap: 20px;">
-                            {% if pedido.imagem_principal %}
-                              <img src="{{ pedido.imagem_principal.imagem.url }}" alt="Imagem de {{ pedido.pedido.produto.titulo }}" width="100">
-                            {% else %}
-                            <img id="foto_carrinho2" src="{% static 'img/não_tem_imagem.svg' %}" class="img-fluid">
-                            {% endif %}
-                              <div class="col-md-8 themed-grid-col">
-                                  <div class="pb-3">
-                                      <h3><strong>{{ pedido.pedido.produto.titulo }}</strong></h3>
-                                  </div>
-                                  <div class="row">
-                                    <div class="">
-                                      Opção: {{ pedido.pedido.opcao_escolhida }}<br>
-                                      Preço: R$ {{ pedido.pedido.produto.preco }}<br>
-                                      Status: {{ pedido.pedido.status }}<br>
-                                  </div>
-                              </div>
-                          </div>
-                      </li>
-                      {% endfor %}
+                    {% if user.is_authenticated %}
+                        {% if pedidos_feitos %}
+                            {% for pedido_dict in pedidos_feitos|slice:":3" %}
+                                {% with pedido=pedido_dict.pedido %}
+                                <li style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; display: flex; align-items: center; justify-content: space-between;">
+                                    <div style="display: flex; align-items: center; gap: 20px;">
+                                        {% if pedido_dict.imagem_principal %}
+                                            <img src="{{ pedido_dict.imagem_principal.imagem.url }}" alt="Imagem de {{ pedido.produto.titulo }}" width="100">
+                                        {% else %}
+                                            <img id="foto_carrinho2" src="{% static 'img/não_tem_imagem.svg' %}" class="img-fluid">
+                                        {% endif %}
+                                        <div class="col-md-8 themed-grid-col">
+                                            <div class="pb-3">
+                                                <h3><strong>{{ pedido.produto.titulo }}</strong></h3>
+                                            </div>
+                                            <div class="row">
+                                                <div>
+                                                    Opção: {{ pedido.opcao_escolhida }}<br>
+                                                    Preço: R$ {{ pedido.produto.preco }}<br>
+                                                    Status: {{ pedido.status }}<br>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                {% endwith %}
+                            {% endfor %}
+                        {% else %}
+                            <p>Nenhum pedido feito.</p>
+                        {% endif %}
                     {% else %}
-                      <p>Nenhum pedido feito.</p>
+                        <p>Nenhum pedido feito.</p>
                     {% endif %}
-                  {% else %}
-                    <p>Nenhum pedido feito.</p>
-                  {% endif %}
-                  <button type="button" class="btn botoes shadow-lg rounded-pill px-3 "><a href="{% url 'carrinho' %}" class="nav-link">Ver Mais</a></button>
+                    <button type="button" class="btn botoes shadow-lg rounded-pill px-3 ">
+                        <a href="{% url 'carrinho' %}" class="nav-link">Ver Mais</a>
+                    </button>
                 </ul>
-              </div>
             </div>
             {% endblock %}
           </div>

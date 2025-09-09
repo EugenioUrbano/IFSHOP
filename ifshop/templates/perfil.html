@@ -1,126 +1,120 @@
-{% extends "base.html"%}
+{% extends "base.html" %}
 
 {% load static %}
 {% load crispy_forms_filters %}
 
-{% block title%}Perfil{% endblock %}
-{% block filtro%} {% endblock %}
+{% block title %}Perfil{% endblock %}
+{% block filtro %}{% endblock %}
 
 {% block content %}
-<div style="background-color: #ffffff; color: black; padding: 0px;" class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
-  <h1 style=" color: #012145; padding: 15px;">Bem-vindo(a), {{ request.user.username }}</h1>
-  
-</div>
-{% if user.vendedor %}
-<div class="row justify-content-end">
-  <div style=" color: #012145; padding: 10px;" class="d-flex flex-wrap col-4 align-items-center justify-content-center ">
-    <h3 class="texto_perfil">Seus Produtos</h3>
-  </div>
-  <div class="text-end col-4">
-    <button type="button" class="btn botoes shadow-lg rounded-pill px-3 "><a href="{% url 'gerenciar_produtos' %}" class="nav-link">Gerencie seus Produtos</a></button>
-  </div>
+<div class="container py-3">
+    <h1 class="text-primary text-center mb-4">Bem-vindo(a), {{ request.user.username }}</h1>
+
+    {% if user.vendedor %}
+    <!-- Se usuário é vendedor -->
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-6">
+            <h3>Seus Produtos</h3>
+        </div>
+        <div class="col-md-6 text-end">
+            <a href="{% url 'gerenciar_produtos' %}" class="btn botoes shadow-lg rounded-pill px-3">Gerencie seus Produtos</a>
+        </div>
+    </div>
+
+    {% if produtos_com_imagens %}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3 mb-5">
+        {% for item in produtos_com_imagens|slice:":4" %}
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                {% if item.imagem_principal %}
+                    <img src="{{ item.imagem_principal.imagem.url }}" class="card-img-top" alt="{{ item.titulo }}">
+                {% else %}
+                    <img src="{% static 'img/não_tem_imagem.svg' %}" class="card-img-top" alt="Sem imagem">
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ item.titulo }}</h5>
+                    <p class="text-body-secondary mt-auto">R$ {{ item.preco }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <p class="text-center">Nenhum produto cadastrado.</p>
+    {% endif %}
+
+    <!-- Seção Pedidos das camisetas -->
+    <div class="row mb-3 align-items-center">
+        <div class="col-md-6">
+            <h3>Pedidos das suas Camisetas</h3>
+        </div>
+        <div class="col-md-6 text-end">
+            <div class="dropdown d-inline me-2">
+                <button class="btn botoes shadow-lg rounded-pill px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Gerenciar Pedidos
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'pedidos_produtos' %}">De Produtos Diversificados</a></li>
+                    <li><a class="dropdown-item" href="{% url 'pedidos_camisetas' %}">De Camisetas</a></li>
+                </ul>
+            </div>
+            <a href="{% url 'exportar_pedidos_camisetas_excel' %}" class="btn botoes shadow-lg rounded-pill px-3">
+                Exportar pedidos em Excel
+            </a>
+        </div>
+    </div>
+    <div class="text-center mb-3" id="notificacao-pedidos" style="display:none; color:red;">Novo pedido!</div>
+
+    {% else %}
+    <!-- Se usuário não é vendedor -->
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-6">
+            <h3>Seus Pedidos</h3>
+        </div>
+        <div class="col-md-6 text-end">
+            <a href="{% url 'carrinho' %}" class="btn botoes shadow-lg rounded-pill px-3">Ver Mais Detalhes</a>
+        </div>
+    </div>
+
+    {% if pedidos_feitos %}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3 mb-5">
+        {% for pedido in pedidos_feitos|slice:":4" %}
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                {% if pedido.imagem %}
+                    <img src="{{ pedido.imagem.imagem.url }}" class="card-img-top" alt="{{ pedido.titulo }}">
+                {% else %}
+                    <div class="text-center py-5">Sem imagem disponível</div>
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ pedido.titulo }}</h5>
+                    <p class="text-body-secondary mt-auto">R$ {{ pedido.preco }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <p class="text-center">Nenhum pedido feito.</p>
+    {% endif %}
+    {% endif %}
 </div>
 
-  </div>
-  {% if produtos_com_imagens %}
-  <div style="padding-left: 50px;" class="album py-5 ">
-      <div class="container">
-        <div class="row row-cols-1 ">
-          {% for item in produtos_com_imagens|slice:":4" %}
-          <div class="col-3 ">
-            <div id="card_perfil" class="card">
-              {% if item.imagem_principal %}
-                  <img id="fotos_perfil" src="{{ item.imagem_principal.imagem.url }}" >
-              {% else %}
-                <img id="fotos_pro" src="{% static 'img/não_tem_imagem.svg' %}" class="img-fluid">
-              {% endif %}
-              <div class="card-body">
-                <h4>{{ item.produto.titulo }}</h4>
-                <div class="d-flex justify-content-between align-items-center">
-                  <p class="text-body-secondary">R$ {{ item.produto.preco }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-    </div>
-  {% else %}
-      <p class="container text-center">Nenhuma camisa cadastrada.</p>
-  {% endif %}
-  <div class="row justify-content-end">
-    <div style=" color: #012145; padding: 15px; padding-bottom: 10px;" class="col-4 d-flex flex-wrap align-items-center justify-content-center ">
-      <h3>Pedidos das suas Camisetas</h3>
-    </div>
-    <div class="text-end col-4">
-        <div class="dropdown">
-            <button class="btn botoes shadow-lg rounded-pill px-3 " type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Gerenciar Pedidos
-            </button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item nav-link" href="{% url 'pedidos_produtos'%}">De Produtos Diversificados</a></li>
-                <li><a class="dropdown-item nav-link" href="{% url 'pedidos_camisetas' %}">De Camisetas</a></li>
-            </ul>
-        </div>
-        <button type="button" class="btn botoes shadow-lg rounded-pill px-3 "><a href="{% url 'gerenciar_pedidos' %}" class="nav-link">Gerencie seus Pedidos</a></button>
-        <a href="{% url 'exportar_pedidos' %}" class="btn botoes shadow-lg rounded-pill px-3 ">
-          Exportar pedidos em Excel
-        </a>
-    
-    </div>
-    <div class="text-center" id="notificacao-pedidos" style="display: none; color: red;">Novo pedido!</div>
-  </div>
-{% else %}
-  <div style="color: #012145; padding: 15px;" class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
-    <h3>Seus Pedidos</h3>
-    <div class="text-end">
-        <button type="button" class="btn botoes shadow-lg rounded-pill px-3 "><a href="{% url 'carrinho' %}" class="nav-link">Ver Mais Detalhes</a></button>
-    </div>
-  </div>
-  {% if pedidos_feitos %}
-  <div style="padding-left: 50px;" class="album py-5 ">
-      <div class="container">
-        <div class="row row-cols-1 ">
-          {% for pedido in pedidos_feitos|slice:":4" %}
-          <div class="col-3 ">
-            <div class="card" style="width: 18rem;">
-              {% if pedido.imagem_principal %}
-                <img src="{{ pedido.imagem_principal.imagem.url }}" class="thumbnail" style="width: 200px; height: 200px;">
-              {% else %}
-                <p>Sem imagem disponível</p>
-              {% endif %}
-              <div class="card-body">
-                <h3>{{ pedido.pedido.produto.titulo }}</h3>
-                <div class="d-flex justify-content-between align-items-center">
-                  <p class="text-body-secondary">R$ {{ pedido.pedido.produto.preco }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-    </div>
-  {% else %}
-      <p>Nenhum pedido feito, clique no logo do site..</p>
-  {% endif %}
-{% endif %}
 <script>
-  function verificarPedidos() {
-      fetch("/verificar-pedidos/")
-          .then(response => response.json())
-          .then(data => {
-              let notificacao = document.getElementById("notificacao-pedidos");
-              if (data.pedidos_novos > 0) {
-                  notificacao.style.display = "block";
-                  notificacao.innerText = `Você tem ${data.pedidos_novos} novos pedidos!`;
-              } else {
-                  notificacao.style.display = "none";
-              }
-          });
-  }
-  
-  setInterval(verificarPedidos, 5000);  // Verifica a cada 5 segundos
-  </script>
+function verificarPedidos() {
+    fetch("/verificar-pedidos/")
+        .then(response => response.json())
+        .then(data => {
+            const notificacao = document.getElementById("notificacao-pedidos");
+            if (data.pedidos_novos > 0) {
+                notificacao.style.display = "block";
+                notificacao.innerText = `Você tem ${data.pedidos_novos} novos pedidos!`;
+            } else {
+                notificacao.style.display = "none";
+            }
+        });
+}
+setInterval(verificarPedidos, 5000);
+</script>
 {% endblock %}
+

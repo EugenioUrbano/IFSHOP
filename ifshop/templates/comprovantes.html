@@ -6,9 +6,8 @@
 {% block title %}
   Realizar pagamento
 {% endblock %}
-{% block filtro %}
 
-{% endblock %}
+{% block filtro %}{% endblock %}
 
 {% block content %}
 {% if messages %}
@@ -20,35 +19,41 @@
     {% endfor %}
   </div>
 {% endif %}
-{% if pedido.camiseta.pix_chave_total or pedido.camiseta.pix_qr_code_total %}
-  <div class="modal fade" id="exampleModal_pix" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4>Qr Code e Chave Pix Para Pagamento</h4>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body text-center">
-          {% if pedido.camiseta.pix_qr_code_total %}
-          <img src="{{ pedido.camiseta.pix_qr_code_total.url }}" class="thumbnail" style="width: 200px; height: 200px;" />
-          {% else %}
+
+{% comment %}
+  Define 'item' como o objeto correto: primeira camiseta se houver, senão o produto genérico
+{% endcomment %}
+{% if pedido.camisetas.exists %}
+  {% with item=pedido.camisetas.first %}
+{% else %}
+  {% with item=pedido.produto %}
+{% endif %}
+
+{# Modal Pix Total #}
+{% if item.pix_chave_total or item.pix_qr_code_total %}
+<div class="modal fade" id="exampleModal_pix" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4>Qr Code e Chave Pix Para Pagamento</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        {% if item.pix_qr_code_total %}
+          <img src="{{ item.pix_qr_code_total.url }}" class="thumbnail" style="width: 200px; height: 200px;" />
+        {% else %}
           <p>Não tem Qr Code</p>
-          {% endif %}
-	  <li>
-	      <hr class="dropdown-divider" />
-          </li>
-          {% if pedido.camiseta.pix_chave_total %}
-          <p>
-   	     <span id="texto1">{{ pedido.camiseta.pix_chave_total }}</span>
-	  </p>
-          {% else %}
+        {% endif %}
+        <hr class="dropdown-divider" />
+        {% if item.pix_chave_total %}
+          <p><span id="texto1">{{ item.pix_chave_total }}</span></p>
+        {% else %}
           <p>Não tem Chave Pix</p>
-          {% endif %}
-          </p>
-        </div>
+        {% endif %}
       </div>
     </div>
   </div>
+</div>
 {% else %}
 <div class="modal fade" id="exampleModal_pix" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -61,95 +66,99 @@
   </div>
 </div>
 {% endif %}
-{% if pedido.camiseta.pix_chave_parcela or pedido.camiseta.pix_qr_code_parcela %}
-  <div class="modal fade" id="exampleModal_pix2x" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4>Qr Code e Chave Pix Para Pagamento</h4>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body text-center">
-          {% if pedido.camiseta.pix_qr_code_parcela %}
-          <img src="{{ pedido.camiseta.pix_qr_code_parcela.url }}" class="thumbnail" style="width: 200px; height: 200px;" />
-          {% else %}
+
+{# Modal Pix Parcelado 2x #}
+{% if item.pix_chave_parcela or item.pix_qr_code_parcela %}
+<div class="modal fade" id="exampleModal_pix2x" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4>Qr Code e Chave Pix Para Pagamento</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        {% if item.pix_qr_code_parcela %}
+          <img src="{{ item.pix_qr_code_parcela.url }}" class="thumbnail" style="width: 200px; height: 200px;" />
+        {% else %}
           <p>Não tem Qr Code</p>
-          {% endif %}
-	  <li>
-              <hr class="dropdown-divider" />
-          </li>
-          {% if pedido.camiseta.pix_chave_parcela %}
-          <p>
-  	     <span id="texto2">{{ pedido.camiseta.pix_chave_parcela }}</span>
-	  </p>
-          {% else %}
+        {% endif %}
+        <hr class="dropdown-divider" />
+        {% if item.pix_chave_parcela %}
+          <p><span id="texto2">{{ item.pix_chave_parcela }}</span></p>
+        {% else %}
           <p>Não tem Chave Pix</p>
-          {% endif %}
-        </div>
+        {% endif %}
       </div>
     </div>
   </div>
-  {% else %}
-  <div class="modal fade" id="exampleModal_pix2x" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
+</div>
+{% else %}
+<div class="modal fade" id="exampleModal_pix2x" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4>Não tem Qr Code e nem Chave Pix</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="p-5">
+  <div class="modal modal-sheet position-static d-block p-4 py-md-5" tabindex="-1" role="dialog" id="modalSignin">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content rounded-4 shadow login-cadastro">
         <div class="modal-header">
-          <h4>Não tem Qr Code e nem Chave Pix</h4>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h1>Realizar Pagamento</h1>
         </div>
-      </div>
-    </div>
-  </div>
-  {% endif %}
-  <div class="p-5">
-    <div class="modal modal-sheet position-static d-block p-4 py-md-5" tabindex="-1" role="dialog" id="modalSignin">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content rounded-4 shadow login-cadastro">
-          <div class="modal-header">
-            <h1>Realizar Pagamento</h1>
-          </div>
-          {% if pedido.forma_pag == "Pix" %}
+
+        {% if pedido.forma_pag == "Pix" %}
           <a type="button" class="mx-auto mt-3 btn botoes shadow-lg" data-bs-toggle="modal" data-bs-target="#exampleModal_pix">Ver chave</a>
-          {% elif pedido.forma_pag == "Parcelado 2x Pix" %}
+        {% elif pedido.forma_pag == "Parcelado 2x Pix" %}
           <a type="button" class="mx-auto mt-3 btn botoes shadow-lg" data-bs-toggle="modal" data-bs-target="#exampleModal_pix2x">Ver chave</a>
-          {% endif %}
-          <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="modal-body">
-              {% if pedido.forma_pag == 'Pix' %}
-                {% if hoje < pedido.camiseta.data_pag1 %}
-                    {{ form.comprovante_total|as_crispy_field }}
-                {% else %}
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="modal-body">
+            {% if pedido.forma_pag == 'Pix' %}
+              {% if hoje < item.data_pag1 %}
+                {{ form.comprovante_total|as_crispy_field }}
+              {% else %}
                 <h4>Você não pode mais anexar o comprovante da primeira parcela</h4>
                 <h5>Negocie com:</h5>
-                <p>Alunos responsáveis: Gabriely Souza, Wescley Plinio, Helloar ou Eugênio Urbano</p>
-                {% endif %}
-
-              {% elif pedido.forma_pag == 'Parcelado 2x Pix' %}
-                {% if hoje <= pedido.camiseta.data_pag1 %}
-                  {{ form.comprovante_parcela1|as_crispy_field }}
-                {% else %}
+                <p>Aluno(a) responsável: {{ item.vendedor.username }}</p>
+              {% endif %}
+            {% elif pedido.forma_pag == 'Parcelado 2x Pix' %}
+              {% if hoje <= item.data_pag1 %}
+                {{ form.comprovante_parcela1|as_crispy_field }}
+              {% else %}
                 <h4>Você ainda não pode ou não pode mais anexar primeira parcela.</h4>
                 <h5>Negocie com:</h5>
-                <p>Alunos responsáveis: Gabriely Souza, Wescley Plinio, Helloar ou Eugênio Urbano</p>
-                {% endif %}
-                {% if hoje <= pedido.camiseta.data_pag2 %}
-                  {{ form.comprovante_parcela2|as_crispy_field }}
-                {% else %}
+                <p>Aluno(a) responsável: {{ item.vendedor.username }}</p>
+              {% endif %}
+
+              {% if hoje <= item.data_pag2 %}
+                {{ form.comprovante_parcela2|as_crispy_field }}
+              {% else %}
                 <h3>Você ainda não pode anexar um comprovante (ou não pode mais)</h3>
                 <h4>Negocie com:</h4>
-                <p>Alunos responsáveis: Gabriely Souza, Wescley Plinio, Helloar ou Eugênio Urbano</p>
-                {% endif %}
+                <p>Aluno(a) responsável: {{ item.vendedor.username }}</p>
               {% endif %}
-	      <div class="col-md-6">
-	         <a href="{% url 'carrinho' %}" class="btn btn-secondary ">Voltar</a>
-                 <button class="btn botoes shadow-lg rounded px-3  " type="submit">Salvar</button>
-	      </div>
+            {% endif %}
+
+            <div class="col-md-6">
+              <a href="{% url 'carrinho' %}" class="btn btn-secondary">Voltar</a>
+              <button class="btn botoes shadow-lg rounded px-3" type="submit">Salvar</button>
             </div>
-            <div class="modal-footer"></div>
-          </form>
-        </div>
+          </div>
+          <div class="modal-footer"></div>
+        </form>
       </div>
     </div>
   </div>
+</div>
+
+{% endwith %}
 {% endblock %}

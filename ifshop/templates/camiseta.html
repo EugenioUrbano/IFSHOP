@@ -55,22 +55,22 @@
                 <form method="post" class="row g-3">
                     {% csrf_token %}
                     <div class=" col-md-6">
-                        {{ form.nome_estampa|as_crispy_field }}
+                        {{ form_camiseta.nome_estampa|as_crispy_field }}
                     </div>
                     <div class=" col-md-6">
-                        {{ form.numero_estampa|as_crispy_field }}
+                        {{ form_camiseta.numero_estampa|as_crispy_field }}
                     </div>
                     <div class=" col-md-6">
-                        {{ form.estilo|as_crispy_field }}
+                        {{ form_camiseta.estilo|as_crispy_field }}
                     </div>
                     <div class=" col-md-6">
-                        {{ form.tamanho|as_crispy_field }}
+                        {{ form_camiseta.tamanho|as_crispy_field }}
                     </div>
                     <div class="col-md-6">
-                        {{ form.cor_escolhida|as_crispy_field }}
+                        {{ form_base.opcao_escolhida|as_crispy_field }}
                     </div>
                     <div class="col-md-6">
-                        {{ form.forma_pag|as_crispy_field }}
+                        {{ form_base.forma_pag|as_crispy_field }}
                     </div>
 		    {% if user.is_authenticated %}
 		    {% else %}

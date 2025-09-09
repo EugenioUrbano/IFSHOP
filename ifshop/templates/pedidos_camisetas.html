@@ -3,68 +3,48 @@
 {% load static %}
 {% load crispy_forms_filters %}
 
-{% block title %}Gerencie Produtos{% endblock %}
-{% block filtro%} {% endblock %}
+{% block title %}Gerencie Pedidos{% endblock %}
+{% block filtro %}{% endblock %}
 
 {% block content %}
 {% if messages %}
   <div class="container mt-3">
     {% for message in messages %}
-      <div 
-        class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% else %}alert-info{% endif %} alert-dismissible fade show" 
-        role="alert"
-      >
+      <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
         {{ message }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
       </div>
     {% endfor %}
   </div>
 {% endif %}
-<div style=" color: black; padding: 10px;" class="d-flex flex-wrap align-items-center justify-content-center ">
-    <h1 class="container text-center">Gerencie Pedidos das suas Camisetas</h1>
+
+<div class="container text-center my-4">
+    <h1>Gerencie Pedidos das suas Camisetas</h1>
 </div>
+
 <div class="row justify-content-center mb-4">
-    <div class="col-md-3">
+    {% for card in [
+        {'title':'Total de Pedidos','value':total_pedidos},
+        {'title':'Total Pago Totalmente','value':total_pagos},
+        {'title':'Total Pago 1° Parcela','value':total_pago_primeira},
+        {'title':'Total Arrecadado','value':arrecadado}
+    ] %}
+    <div class="col-md-3 mb-3">
         <div class="card shadow-sm">
             <div class="card-body text-center">
-                <h5 class="card-title">Total de Pedidos</h5>
-                <p class="card-text fs-4">{{ total_pedidos }}</p>
+                <h5 class="card-title">{{ card.title }}</h5>
+                <p class="card-text fs-4">{{ card.value }}</p>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card shadow-sm">
-            <div class="card-body text-center">
-                <h5 class="card-title">Total Pago Totalmente</h5>
-                <p class="card-text fs-4">{{ total_pagos }}</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card shadow-sm">
-            <div class="card-body text-center">
-                <h5 class="card-title">Total Pago 1° Parcela</h5>
-                <p class="card-text fs-4">{{ total_pago_primeira }}</p>
-            </div>
-        </div>
-    </div>
+    {% endfor %}
 </div>
-<div class="row justify-content-center mb-4">
-    <div class="col-md-3">
-        <div class="card shadow-sm">
-            <div class="card-body text-center">
-                <h5 class="card-title">Total Arrecadado</h5>
-                <p class="card-text fs-4">{{ arrecadado }}</p>
-            </div>
-        </div>
-    </div>
-</div>
+
 <section class="b-example-divider filtros-fundo espaco-filtro">
     <form method="get">
-        <div id="filter_bar " class="row justify-content-center align-items-center">
+        <div class="row justify-content-center align-items-center">
             <div class="col-md-4">
-                <div class="container filtros-fundo justify-content-between"></div>
-                {{ form_filtro.status }}
+                {{ form_filtro.status|as_crispy_field }}
             </div>
             <div class="col-md-2">
                 <button type="submit" class="btn botoes shadow-lg rounded-pill px-3">Filtrar</button>
@@ -72,30 +52,30 @@
         </div>
     </form>
 </section>
+
 {% if pedidos_com_forms %}
-<div class="table-responsive ">
+<div class="table-responsive">
     <table class="table table-striped table-hover table-bordered align-middle text-center">
-      <thead class="">
-        <tr>
-            <th>ID do Pedido</th>
-            <th>Cliente</th>
-            <th>Numero Cliente</th>
-            <th>Título do Produto</th>
-            <th>Data</th>
-            <th>Opção de Cor</th>
-            <th>Nome na Estampa</th>
-            <th>Número na Estampa</th>
-            <th>Tamanho</th>
-            <th>Estilo</th>
-            <th>Forma de Pagamento</th>
-            <th>Comprovante</th>
-            <th>Status</th>
-        </tr>
-      </thead>
-      <tbody class="table-group-divider">
-        {% for item in pedidos_com_forms %}
-	<form method="POST">
-	    {% csrf_token %}
+        <thead>
+            <tr>
+                <th>ID do Pedido</th>
+                <th>Cliente</th>
+                <th>Telefone</th>
+                <th>Título do Produto</th>
+                <th>Data</th>
+                <th>Cor</th>
+                <th>Nome Estampa</th>
+                <th>Número Estampa</th>
+                <th>Tamanho</th>
+                <th>Estilo</th>
+                <th>Forma de Pagamento</th>
+                <th>Comprovante</th>
+                <th>Status</th>
+                <th>Salvar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in pedidos_com_forms %}
             <tr>
                 <td>{{ item.pedido.id }}</td>
                 <td>{{ item.pedido.cliente }}</td>
@@ -108,100 +88,93 @@
                 <td>{{ item.pedido.tamanho }}</td>
                 <td>{{ item.pedido.estilo }}</td>
                 <td>{{ item.pedido.forma_pag }}</td>
-                {% if item.pedido.forma_pag == "Pix" %}
-                    {% if item.pedido.comprovante_total %}
-                    <td><a href="{{ item.pedido.comprovante_total.url }}" target="_blank">Ver Comprovante</a></td>
-                    {% else %}
-                    <td>Nenhum Comprovante Cadastrado</td>
-                    {% endif %}
-                {% elif item.pedido.forma_pag == "Parcelado 2x Pix" %}
-                    {% if item.pedido.comprovante_parcela1 or item.pedido.comprovante_parcela2 %}
-                    <td>
-                        {% if item.pedido.comprovante_parcela1 %}<a href="{{ item.pedido.comprovante_parcela1.url }}" target="_blank">Primeira Parcela</a>
-                        {% else %}<p>Sem 1° Comprovante</p>{% endif %}<li><hr class="dropdown-divider"></li>
-                        {% if item.pedido.comprovante_parcela2 %}<a href="{{ item.pedido.comprovante_parcela2.url }}" target="_blank">Segunda Parcela</a>
-                        {% else %}<p>Sem 2° Comprovante</p>{% endif %}
-                    </td>
-                    {% else %}
-                    <td>Nenhum Comprovante Cadastrado</td>
-                    {% endif %}
-                {% else %}
-                <td>Outra Forma de Pagamento</td>
-                {% endif %}
-                <td>{{ item.form.status }}</td>
                 <td>
-                    <input type="hidden" name="pedido_id" value="{{ item.pedido.id }}">
-                    <button type="submit" class="btn botoes shadow-lg rounded-pill px-2 py-1">Salvar</button>
+                    {% if item.pedido.forma_pag == "Pix" %}
+                        {% if item.pedido.comprovante_total %}
+                            <a href="{{ item.pedido.comprovante_total.url }}" target="_blank">Ver Comprovante</a>
+                        {% else %}
+                            Nenhum Comprovante
+                        {% endif %}
+                    {% elif item.pedido.forma_pag == "Parcelado 2x Pix" %}
+                        {% if item.pedido.comprovante_parcela1 %}
+                            <a href="{{ item.pedido.comprovante_parcela1.url }}" target="_blank">1° Parcela</a><br>
+                        {% else %}
+                            Sem 1° Comprovante<br>
+                        {% endif %}
+                        {% if item.pedido.comprovante_parcela2 %}
+                            <a href="{{ item.pedido.comprovante_parcela2.url }}" target="_blank">2° Parcela</a>
+                        {% else %}
+                            Sem 2° Comprovante
+                        {% endif %}
+                    {% else %}
+                        Não aplicável
+                    {% endif %}
                 </td>
-           </tr>
-	</form>
-        {% endfor %}
-      </tbody>
+                <td>
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ item.form.status }}
+                        <input type="hidden" name="pedido_id" value="{{ item.pedido.id }}">
+                </td>
+                <td>
+                        <button type="submit" class="btn botoes shadow-lg rounded-pill px-2 py-1">Salvar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
 </div>
-<div class="pagination justify-content-center align-items-center">
+
+<div class="pagination justify-content-center mt-4">
     {% with request.GET.urlencode as query_params %}
         {% if pedidos_com_forms.has_previous %}
-            <button type="button" class="btn botoes_paginacao">
-                <a href="?{{ query_params }}&pagina=1" class="nav-link">&laquo; Início</a>
-            </button>
-            <button type="button" class="btn botoes_paginacao">
-                <a href="?{{ query_params }}&pagina={{ pedidos_com_forms.previous_page_number }}" class="nav-link">Anterior</a>
-            </button>
+            <a href="?{{ query_params }}&pagina=1" class="btn botoes_paginacao">&laquo; Início</a>
+            <a href="?{{ query_params }}&pagina={{ pedidos_com_forms.previous_page_number }}" class="btn botoes_paginacao">Anterior</a>
         {% endif %}
-
-        <span class="current">
-            Página {{ pedidos_com_forms.number }} de {{ pedidos_com_forms.paginator.num_pages }}
-        </span>
-
+        <span class="mx-2">Página {{ pedidos_com_forms.number }} de {{ pedidos_com_forms.paginator.num_pages }}</span>
         {% if pedidos_com_forms.has_next %}
-            <button type="button" class="btn botoes_paginacao">
-                <a href="?{{ query_params }}&pagina={{ pedidos_com_forms.next_page_number }}" class="nav-link">Próxima</a>
-            </button>
-            <button type="button" class="btn botoes_paginacao">
-                <a href="?{{ query_params }}&pagina={{ pedidos_com_forms.paginator.num_pages }}" class="nav-link">Última &raquo;</a>
-            </button>
+            <a href="?{{ query_params }}&pagina={{ pedidos_com_forms.next_page_number }}" class="btn botoes_paginacao">Próxima</a>
+            <a href="?{{ query_params }}&pagina={{ pedidos_com_forms.paginator.num_pages }}" class="btn botoes_paginacao">Última &raquo;</a>
         {% endif %}
     {% endwith %}
 </div>
- 
+
 {% else %}
-    <p class="container text-center">Nenhum pedido encontrado para suas camisetas.</p>
+<p class="container text-center py-5">Nenhum pedido encontrado para suas camisetas.</p>
 {% endif %}
+
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        fetch("/marcar-pedidos-vistos/", {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": getCookie("csrftoken"),  // Obtém o CSRF Token para segurança
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({})
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === "success") {
-                console.log("Pedidos marcados como vistos.");
-            }
-        })
-        .catch(error => console.error("Erro ao marcar pedidos como vistos:", error));
-    });
-    
-    // Função para obter o CSRF Token do cookie
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            let cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                let cookie = cookies[i].trim();
-                if (cookie.startsWith(name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
+document.addEventListener("DOMContentLoaded", function () {
+    fetch("/marcar-pedidos-vistos/", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === "success") console.log("Pedidos marcados como vistos.");
+    })
+    .catch(error => console.error("Erro ao marcar pedidos:", error));
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        let cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
             }
         }
-        return cookieValue;
     }
-    </script>
-
+    return cookieValue;
+}
+</script>
 {% endblock %}
+

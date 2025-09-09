@@ -107,39 +107,41 @@ class ImagemProdutoBase(models.Model):
         super().save(*args, **kwargs)
 
 
-class Camiseta(models.Model):
+class Camiseta(ProdutoBase):
     TAMANHOS_OPCOES = [
         ('PP', 'PP'),
         ('P', 'P'),
         ('M', 'M'),
         ('G', 'G'),
         ('GG', 'GG'),
-	    ('XG', 'XG'),
-	    ('XGG', 'XGG')
+        ('XG', 'XG'),
+        ('XGG', 'XGG')
     ]
     
     ESTILOS_OPCOES = [
         ('Babylook', 'BabyLook'),
         ('Normal', 'Normal'),
         ('Infantil', 'Infantil')
-    ]    
+    ]
 
-    produto = models.ForeignKey(ProdutoBase, on_delete=models.CASCADE, related_name='camisetas', null=True, blank=True)
-
-    estilos = models.CharField(max_length=50, default="" )
+    estilos = models.CharField(max_length=50, default="")
     tamanhos = JSONField(default=dict)
-    
+
+
     def save(self, *args, **kwargs):
-        if self.pk: 
-            pedidos = PedidoCamiseta.objects.filter(camiseta=self)
-            pedidos.update(revisado=False) 
-            
-        self.opcoes = ", ".join(self.produto.lista_opcoes())
+        if self.pk:
+            pedidos = PedidoBase.objects.filter(camisetas__camiseta=self)
+            pedidos.update(revisado=False)
+
+        if self.opcoes:  # garante que não quebra
+            self.opcoes = ", ".join(self.lista_opcoes())
+
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.produto.titulo
-    
+        return f"Camiseta: {self.titulo}"
+
+
 class EstiloTamanho(models.Model):
     ESTILOS_OPCOES = Camiseta.ESTILOS_OPCOES
     TAMANHOS_OPCOES = Camiseta.TAMANHOS_OPCOES
@@ -149,7 +151,7 @@ class EstiloTamanho(models.Model):
     tamanho = models.CharField(max_length=5, choices=TAMANHOS_OPCOES)
 
     def __str__(self):
-        return f"{self.estilo} - {self.tamanho} ({self.camiseta.produto.titulo})"
+        return f"{self.estilo} - {self.tamanho} ({self.camiseta.titulo})"
         
 ####################################################################################################
 
@@ -196,7 +198,7 @@ class PedidoCamiseta(models.Model):
     estilo = models.CharField(max_length=20, default="")
     
     def __str__(self):
-        return f"Pedido de camiseta para {self.camiseta.produto.titulo} - {self.nome_estampa} ({self.numero_estampa})"
+        return f"Pedido de camiseta para {self.camiseta.titulo} - {self.nome_estampa} ({self.numero_estampa})"
 
 
 ####################################################################################################

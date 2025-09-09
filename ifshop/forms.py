@@ -110,7 +110,7 @@ class ProdutoBaseForm(forms.ModelForm):
     
     curso = forms.ModelMultipleChoiceField(
         queryset=Curso.objects.all(),
-        widget=forms.SelectMultiple(attrs={'class': 'form-select rounded-3'}),
+        widget=forms.Select(attrs={'class': 'form-select rounded-3'}),
         required=True,
         label="Curso deste produto"
     )
@@ -159,7 +159,7 @@ ImagemProdutoBaseFormSet = modelformset_factory(
     }
 )
 
-class CamisetaForm(forms.ModelForm):
+class CamisetaForm(ProdutoBaseForm):
     tamanhos = forms.MultipleChoiceField(
         choices=Camiseta.TAMANHOS_OPCOES,
         label='Tamanhos',
@@ -172,12 +172,11 @@ class CamisetaForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
         required=True
     )
-    
-    class Meta:
+
+    class Meta(ProdutoBaseForm.Meta):
         model = Camiseta
-        fields = ['tamanhos', 'estilos']
-        
-       
+        fields = ProdutoBaseForm.Meta.fields + ['tamanhos', 'estilos']
+
     def clean(self):
         cleaned_data = super().clean()
         estilos = cleaned_data.get("estilos", [])
@@ -190,11 +189,9 @@ class CamisetaForm(forms.ModelForm):
 
         cleaned_data['tamanhos'] = tamanhos_por_estilo
         return cleaned_data   
-        
+
     def save(self, commit=True):
         camiseta = super().save(commit=False)
-        
-        # `tamanhos` já deve vir como dicionário { estilo: [tamanhos] }
         camiseta.tamanhos = self.cleaned_data['tamanhos']
         camiseta.estilos = ", ".join(self.cleaned_data['estilos'])
 
@@ -217,23 +214,24 @@ class PedidoBaseForm(forms.ModelForm):
     opcao_escolhida = forms.ChoiceField(label="Escolha uma opção", choices=[], required=True)
     
     comprovante_total = forms.ImageField(
-        label= "Anexe o Comprovante",
-        widget=forms.FileInput(attrs={'class': 'form-control'}), required= False
+        label="Anexe o Comprovante",
+        widget=forms.FileInput(attrs={'class': 'form-control'}), required=False
     )
     
     comprovante_parcela1 = forms.ImageField(
-        label= "Anexe o Comprovante da Primeira Parcela",
-        widget=forms.FileInput(attrs={'class': 'form-control'}), required= False
+        label="Anexe o Comprovante da Primeira Parcela",
+        widget=forms.FileInput(attrs={'class': 'form-control'}), required=False
     )
     
     comprovante_parcela2 = forms.ImageField(
-        label= "Anexe o Comprovante da Segunda Parcela",
-        widget=forms.FileInput(attrs={'class': 'form-control'}), required= False
+        label="Anexe o Comprovante da Segunda Parcela",
+        widget=forms.FileInput(attrs={'class': 'form-control'}), required=False
     )
     
     forma_pag = forms.ChoiceField(
         label="Forma de Pagamento",
-        widget=forms.Select(attrs={'class': 'card-text mb-auto form-select',}))
+        widget=forms.Select(attrs={'class': 'card-text mb-auto form-select'})
+    )
 
     class Meta:
         model = PedidoBase
@@ -249,27 +247,30 @@ class PedidoBaseForm(forms.ModelForm):
         
         if produto:
             opcoes_disponiveis = produto.lista_opcoes()
-            print("Opções disponíveis:", opcoes_disponiveis)  
             if opcoes_disponiveis:
                 self.fields['opcao_escolhida'].choices = [(opcao, opcao) for opcao in opcoes_disponiveis]
             else:
                 self.fields['opcao_escolhida'].choices = [("", "Nenhuma opção disponível")]
 
+
 class PedidoCamisetaForm(forms.ModelForm):
     nome_estampa = forms.CharField(
         max_length=100,
-        widget=forms.TextInput(attrs={
-            'class': 'card-text mb-auto form-control',}))
+        widget=forms.TextInput(attrs={'class': 'card-text mb-auto form-control'})
+    )
     
     numero_estampa = forms.CharField(
         max_length=100,
-        widget=forms.TextInput(attrs={'class': 'card-text mb-auto form-control',}))
+        widget=forms.TextInput(attrs={'class': 'card-text mb-auto form-control'})
+    )
     
     tamanho = forms.ChoiceField(
-        widget=forms.Select(attrs={'class': 'card-text mb-auto form-select', 'id': 'id_tamanho'}))
+        widget=forms.Select(attrs={'class': 'card-text mb-auto form-select', 'id': 'id_tamanho'})
+    )
     
     estilo = forms.ChoiceField(
-        widget=forms.Select(attrs={'class': 'card-text mb-auto form-select', 'id': 'id_estilo'}))
+        widget=forms.Select(attrs={'class': 'card-text mb-auto form-select', 'id': 'id_estilo'})
+    )
 
     class Meta:
         model = PedidoCamiseta
@@ -282,29 +283,35 @@ class PedidoCamisetaForm(forms.ModelForm):
 
         self.fields['tamanho'].choices = [(op, op) for op in tamanhos_opcoes]
         self.fields['estilo'].choices = [(op, op) for op in estilos_opcoes]
-        
-    
+
+
 class AlterarStatusPedidoForm(forms.ModelForm):
-    status = forms.ChoiceField(choices=PedidoBase.STATUS_OPCOES, widget=forms.Select(attrs={'class': 'card-text mb-auto form-select',}))
+    status = forms.ChoiceField(
+        choices=PedidoBase.STATUS_OPCOES, 
+        widget=forms.Select(attrs={'class': 'card-text mb-auto form-select'})
+    )
+    
     class Meta:
         model = PedidoBase
-        fields = ['status']  # Apenas o campo de status
+        fields = ['status']
+
 
 class AnexoComprovantesPedidoForm(forms.ModelForm):
     comprovante_total = forms.ImageField(
-        label= "Anexe o Comprovante",
-        widget=forms.FileInput(attrs={'class': 'form-control'}), required= False
+        label="Anexe o Comprovante",
+        widget=forms.FileInput(attrs={'class': 'form-control'}), required=False
     )
     
     comprovante_parcela1 = forms.ImageField(
-        label= "Anexe o Comprovante da Primeira Parcela",
-        widget=forms.FileInput(attrs={'class': 'form-control'}), required= False
+        label="Anexe o Comprovante da Primeira Parcela",
+        widget=forms.FileInput(attrs={'class': 'form-control'}), required=False
     )
     
     comprovante_parcela2 = forms.ImageField(
-        label= "Anexe o Comprovante da Segunda Parcela",
-        widget=forms.FileInput(attrs={'class': 'form-control'}), required= False
+        label="Anexe o Comprovante da Segunda Parcela",
+        widget=forms.FileInput(attrs={'class': 'form-control'}), required=False
     )
+    
     class Meta:
         model = PedidoBase
-        fields = ['comprovante_total','comprovante_parcela1','comprovante_parcela2']  # Apenas o campo de status 
+        fields = ['comprovante_total', 'comprovante_parcela1', 'comprovante_parcela2']
