@@ -18,10 +18,10 @@
                 <div class="col-md-6 mb-4">
                     <a href="{% url 'gerenciar_produtos' %}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="" class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
+                            <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"></path>
                         </svg>
                     </a>
-                    <h2 class="fw-bold mb-5">Editar Camiseta</h2>
+                    <h2 class="fw-bold mb-5">Criar Camiseta</h2>
                 </div>
 
                 <!-- Formulário -->
@@ -56,36 +56,7 @@
                     <div class="col-md-6">{{ form.data_pag2|as_crispy_field }}</div>
                     <div class="col-md-6">{{ form.curso|as_crispy_field }}</div>
                     <div class="col-md-6">{{ form.turnos|as_crispy_field }}</div>
-                    <div class="col-md-6">{{ form.turma|as_crispy_field }}</div>
-
-                    <!-- Estilos e tamanhos -->
-                    <div class="col-md-6">
-                        <label class="form-label">Estilos disponíveis:</label>
-                        <div class="row" id="estilos-com-tamanhos">
-                            {% for estilo in form.estilos.field.choices %}
-                                <div class="col-12 mb-4 border rounded-3 p-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input estilo-checkbox" type="checkbox" name="estilos" value="{{ estilo.0 }}" id="id_estilo_{{ estilo.0 }}"
-                                        {% if estilo.0 in form.initial.estilos %}checked{% endif %}>
-                                        <label class="form-check-label fw-bold" for="id_estilo_{{ estilo.0 }}">{{ estilo.1 }}</label>
-                                    </div>
-                                    <div class="tamanhos-estilo mt-3" data-estilo="{{ estilo.0 }}" style="display: none;">
-                                        <label class="form-label">Tamanhos para {{ estilo.1 }}:</label>
-                                        <div class="row">
-                                            {% for tamanho in form.tamanhos.field.choices %}
-                                                <div class="form-check col-md-4">
-                                                    <input class="form-check-input" type="checkbox" name="tamanhos_{{ estilo.0 }}" value="{{ tamanho.0 }}"
-                                                    id="id_{{ estilo.0 }}_{{ tamanho.0 }}"
-                                                    {% if tamanho.0 in form.initial.tamanhos|get_item:estilo.0 %}checked{% endif %}
-                                                    <label class="form-check-label" for="id_{{ estilo.0 }}_{{ tamanho.0 }}">{{ tamanho.1 }}</label>
-                                                </div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
+                    
 
                     <!-- Opções de pagamento -->
                     <div class="col-md-6">
@@ -98,6 +69,35 @@
                         {% endfor %}
                     </div>
 
+                    <div class="col-md-6">{{ form.turma|as_crispy_field }}</div>
+                    
+                    <!-- Estilos e tamanhos -->
+                    <div class="col-12">
+                        <label class="form-label">Estilos disponíveis:</label>
+                        <div class="row" id="estilos-com-tamanhos">
+                            {% for estilo in form.estilos.field.choices %}
+                                <div class="col-12 mb-4 border rounded-3 p-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input estilo-checkbox" type="checkbox" name="estilos" value="{{ estilo.0 }}" id="id_estilo_{{ estilo.0 }}">
+                                        <label class="form-check-label fw-bold" for="id_estilo_{{ estilo.0 }}">{{ estilo.1 }}</label>
+                                    </div>
+                                    <div class="tamanhos-estilo mt-3" data-estilo="{{ estilo.0 }}" style="display: none;">
+                                        <label class="form-label">Tamanhos para {{ estilo.1 }}:</label>
+                                        <div class="row">
+                                            {% for tamanho in form.tamanhos.field.choices %}
+                                                <div class="form-check col-md-4">
+                                                    <input class="form-check-input" type="checkbox" name="tamanhos_{{ estilo.0 }}" value="{{ tamanho.0 }}" id="id_{{ estilo.0 }}_{{ tamanho.0 }}">
+                                                    <label class="form-check-label" for="id_{{ estilo.0 }}_{{ tamanho.0 }}">{{ tamanho.1 }}</label>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    
                     <!-- Modal de imagens -->
                     <div class="col-md-6">
                         <button type="button" class="btn botoes shadow-lg rounded d-block" data-bs-toggle="modal" data-bs-target="#modalImagens">Adicionar imagens</button>
@@ -151,7 +151,7 @@
 
                     <!-- Botão de submit -->
                     <div class="col-md-6 mt-3">
-                        <button type="submit" class="btn botoes shadow-lg rounded px-3 d-block">Salvar alterações</button>
+                        <button type="submit" class="btn botoes shadow-lg rounded px-3 d-block">Cadastrar Camiseta</button>
                     </div>
 
                 </form>
@@ -177,4 +177,5 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+
 {% endblock %}
