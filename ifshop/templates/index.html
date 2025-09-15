@@ -34,13 +34,13 @@
 <section class="b-example-divider filtros-fundo container my-5">
     <form method="get" class="d-flex">
         <div id="filter_bar" class="row g-1 mx-auto p-0">
-            <div class="col-md-5">
+            <div class="col-md-6">
                 {{ form.turnos|as_crispy_field }}
             </div>
-            <div class="col-md-5">
+            <div class="col-md-6">
                 {{ form.cursos|as_crispy_field }}
             </div>
-            <div class="col-md-2">
+            <div class="col-md-12">
                 <button type="submit" class="btn w-100 botoes shadow-lg rounded-pill px-3">Filtrar</button>
             </div>
         </div>
