@@ -1,6 +1,6 @@
-# IFSHOP-PROJETO_FINAL
+# IFSHOP
 
-Site para ajudar na venda, compra e divulgação de camisas dos 4° anos
+Site para ajudar na venda, compra e divulgação de camisas e produtos dos 4° anos.
 
 PARTICIPANTES:
 
