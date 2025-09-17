@@ -1,6 +1,6 @@
-# IFSHOP
-
-Site para ajudar na venda, compra e divulgação de camisas e produtos dos 4° anos.
+# IFShop
+Sistema de vendas de camisetas e produtos para alunos do IFRN e pessoas de fora.  
+Feito em **Django + Bootstrap** com suporte a vendedores e pedidos dinâmicos.
 
 PARTICIPANTES:
 
