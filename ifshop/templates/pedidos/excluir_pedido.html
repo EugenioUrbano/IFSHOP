@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Excluir Pedido{% endblock %}
+{% block filtro %}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center py-5">
+    <div class="modal modal-sheet position-static d-block p-4 py-md-5" tabindex="-1" role="dialog" id="modalExcluirPedido">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content rounded-4 shadow login-cadastro">
+                
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Tem certeza que deseja excluir seu pedido?</h1>
+                </div>
+                
+                <div class="modal-body">
+                    <p>Será necessário refazê-lo caso confirme a exclusão.</p>
+                </div>
+                
+                <div class="modal-footer">
+                    <a href="{% url 'carrinho' %}" class="btn btn-secondary">Não</a>
+                    
+                    <form method="post" class="d-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="pedido_id" value="{{ pedido.id }}">
+                        <button type="submit" name="deletar" class="btn btn-danger">Sim</button>
+                    </form>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
