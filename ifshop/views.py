@@ -55,7 +55,7 @@ def index(request):
     page_number = request.GET.get('pagina')
     produtos_paginados = paginator.get_page(page_number)
 
-    return render(request, 'index.html', {'form': form, 'produtos_com_imagens': produtos_paginados})
+    return render(request, 'core/index.html', {'form': form, 'produtos_com_imagens': produtos_paginados})
 
 # ---- usuario ----- #
 
@@ -71,7 +71,7 @@ def login_view(request):
             return redirect('index')  
     else:
         form = LoginUsuarioForm()
-    return render(request, 'login.html', {'form': form})
+    return render(request, 'registration/login.html', {'form': form})
 
 def logout_usuario(request):
     logout(request) 
@@ -97,7 +97,7 @@ def perfil(request):
         } for c in camisetas
     ]
 
-    return render(request, 'perfil.html', {
+    return render(request, 'usuarios/perfil.html', {
         'produtos_com_imagens': produtos_com_imagens,
         'camisetas_com_imagens': camisetas_com_imagens,
         'pedidos_recebidos': pedidos_recebidos
@@ -112,7 +112,7 @@ def cadastro_usuario(request):
             return redirect('index') 
     else:
         form = CadastroUsuarioForm()
-    return render(request, 'cadastro.html', {'form': form})
+    return render(request, 'registration/cadastro.html', {'form': form})
 
 
 # ---- utilidades do site ----- #
@@ -206,7 +206,7 @@ def carrinho(request):
             'camisetas': camisetas_rel,
         })
 
-    return render(request, "carrinho.html", {
+    return render(request, "usuarios/carrinho.html", {
         'pedidos_feitos': pedidos_feitos,
         'hoje': hoje,
     })
@@ -218,7 +218,7 @@ def excluir_pedido(request, pedido_id):
         pedido.delete()
         return redirect('carrinho')
 
-    return render(request, "excluir_pedido.html", {'pedido': pedido})
+    return render(request, "pedidos/excluir_pedido.html", {'pedido': pedido})
     
 def comprovantes(request, pedido_id):
     pedido = get_object_or_404(PedidoBase, id=pedido_id, cliente=request.user)
@@ -234,7 +234,7 @@ def comprovantes(request, pedido_id):
         return redirect('comprovantes', pedido_id=pedido.id)
     else:
         form = AnexoComprovantesPedidoForm(instance=pedido)
-    return render(request, 'comprovantes.html', {'form': form,'pedido': pedido,'hoje': hoje})
+    return render(request, 'pedidos/comprovantes.html', {'form': form,'pedido': pedido,'hoje': hoje})
     
 @login_required
 @user_passes_test(vendedor)
@@ -253,7 +253,7 @@ def pedidos_camisetas(request):
     page = request.GET.get("pagina")
     pedidos_paginados = paginator.get_page(page)
 
-    return render(request, 'gerenciar_pedidos.html', {
+    return render(request, 'pedidos/pedidos_camisetas.html', {
         'pedidos_com_forms': pedidos_paginados,
         'form_filtro': form_filtro,
         'total_pedidos': pedidos_all.count(),
@@ -289,7 +289,7 @@ def edit_pedido_camiseta(request, pedido_id):
         form_base = PedidoBaseForm(instance=pedido_base, produto=produto, forma_pag_opcoes=forma_pag_opcoes)
         form_camiseta = PedidoCamisetaForm(instance=pedido_camiseta, tamanhos_opcoes=tamanhos_opcoes, estilos_opcoes=estilos_opcoes)
 
-    return render(request, 'edit_pedido_camiseta.html', {
+    return render(request, 'pedidos/edit_pedido_camiseta.html', {
         'form_base': form_base,
         'form_camiseta': form_camiseta,
         'pedido_camiseta': pedido_camiseta,
@@ -347,7 +347,7 @@ def camiseta(request, camiseta_id):
             estilos_opcoes=estilos_opcoes
         )
 
-    return render(request, 'camiseta.html', {
+    return render(request, 'camisetas/camiseta.html', {
         'form_base': form_base,
         'form_camiseta': form_camiseta,
         'camiseta': camiseta,
@@ -411,7 +411,7 @@ def criar_camiseta(request):
         form = CamisetaForm()
         formset = ImagemProdutoBaseFormSet(queryset=ImagemProdutoBase.objects.none())
 
-    return render(request, 'criar_camiseta.html', {
+    return render(request, 'camisetas/criar_camiseta.html', {
         'form': form,
         'formset': formset,
         'camisetas_com_imagens': camisetas_com_imagens
@@ -456,7 +456,7 @@ def edit_camiseta(request, camiseta_id):
         form = CamisetaForm(instance=camiseta)
         formset = ImagemProdutoBaseFormSet(queryset=camiseta.imagens.all())
 
-    return render(request, 'edit_camiseta.html', {'form': form, 'formset': formset})
+    return render(request, 'camisetas/edit_camiseta.html', {'form': form, 'formset': formset})
 
 # ---- admin-----#
 
@@ -484,7 +484,7 @@ def gerenciar_vendedores(request):
                 
         return redirect('gerenciar_vendedores')
     
-    return render(request, 'gerenciar_vendedores.html', {
+    return render(request, 'gestao/gerenciar_vendedores.html', {
         'usuarios': usuarios
     })
 
@@ -508,7 +508,7 @@ def gerenciar_produtos(request):
     page_number = request.GET.get('pagina')
     itens_paginados = paginator.get_page(page_number)
 
-    return render(request, 'gerenciar_produtos.html', {'itens': itens_paginados})
+    return render(request, 'produtos/gerenciar_produtos.html', {'itens': itens_paginados})
 
     
 @login_required
@@ -520,19 +520,19 @@ def excluir_produto(request, produto_id):
         produto.delete()
         return redirect('gerenciar_produtos')
 
-    return render(request, "excluir_produto.html", {'produto': produto})
+    return render(request, "produtos/excluir_produto.html", {'produto': produto})
 
 def edit_produto(request):
-    return render(request, 'edit_produto.html')
+    return render(request, 'produtos/edit_produto.html')
 
 def edit_pedido_produto(request):
-    return render(request, 'edit_pedido_produto.html')
+    return render(request, 'pedidos/edit_pedido_produto.html')
 
 def criar_produto(request):
-    return render(request, 'criar_produto.html')
+    return render(request, 'produtos/criar_produto.html')
 
 def pedidos_produtos(request):
-    return render(request, 'pedidos_produtos.html')
+    return render(request, 'pedidos/pedidos_produtos.html')
 
 def produto(request):
-    return render(request, 'produto.html')
+    return render(request, 'produtos/produto.html')
