@@ -13,21 +13,21 @@
             
             <!-- Informações da camiseta -->
             <strong class="d-inline-block mb-2 text-primary-emphasis">
-                Data para pedidos até {{ pedido.camiseta.data_limite_pedidos }}
+                Data para edição dos pedidos até {{ pedido_base.produto.data_limite_pedidos }}
             </strong>
-            <h3 class="mb-0">{{ pedido.camiseta.titulo }}</h3>
-            <div class="mb-3 text-body-secondary">Preço: R$ {{ pedido.camiseta.preco }}</div>
+            <h3 class="mb-0">{{ pedido_base.produto.titulo }}</h3>
+            <div class="mb-3 text-body-secondary">Preço: R$ {{ pedido_base.produto.preco }}</div>
             
             <!-- Formulário de edição do pedido -->
             <form method="post" class="row g-3">
                 {% csrf_token %}
 
-                <div class="col-md-6">{{ form.nome_estampa|as_crispy_field }}</div>
-                <div class="col-md-6">{{ form.numero_estampa|as_crispy_field }}</div>
-                <div class="col-md-6">{{ form.estilo|as_crispy_field }}</div>
-                <div class="col-md-6">{{ form.tamanho|as_crispy_field }}</div>
-                <div class="col-md-6">{{ form.cor_escolhida|as_crispy_field }}</div>
-                <div class="col-md-6">{{ form.forma_pag|as_crispy_field }}</div>
+                <div class="col-md-6">{{ form_camiseta.nome_estampa|as_crispy_field }}</div>
+                <div class="col-md-6">{{ form_camiseta.numero_estampa|as_crispy_field }}</div>
+                <div class="col-md-6">{{ form_camiseta.estilo|as_crispy_field }}</div>
+                <div class="col-md-6">{{ form_camiseta.tamanho|as_crispy_field }}</div>
+                <div class="col-md-6">{{ form_base.opcao_escolhida|as_crispy_field }}</div>
+                <div class="col-md-6">{{ form_base.forma_pag|as_crispy_field }}</div>
 
                 <div class="col-12 mt-3">
                     <button type="submit" class="btn botoes shadow-lg rounded px-3 d-flex justify-content-center">

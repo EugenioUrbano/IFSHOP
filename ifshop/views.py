@@ -136,7 +136,7 @@ def marcar_pedidos_vistos(request):
         return JsonResponse({"status": "success"})
     return JsonResponse({"error": "Método inválido"}, status=400)
 
-def exportar_pedidos_excel(request):
+def exportar_pedidos_camisetas(request):
     camisetas_vendedor = Camiseta.objects.filter(vendedor=request.user)
 
     pedidos = PedidoCamiseta.objects.filter(
@@ -270,7 +270,7 @@ def pedidos_camisetas(request):
 def edit_pedido_camiseta(request, pedido_id):
     pedido_camiseta = get_object_or_404(PedidoCamiseta, id=pedido_id, pedido__cliente=request.user)
     pedido_base = pedido_camiseta.pedido
-    produto = pedido_camiseta.camiseta.produto
+    produto = pedido_camiseta.camiseta
 
     tamanhos_opcoes = list({t for lista in pedido_camiseta.camiseta.tamanhos.values() for t in lista})
     estilos_opcoes = [e.strip() for e in pedido_camiseta.camiseta.estilos.split(',')]
@@ -429,23 +429,22 @@ def edit_camiseta(request, camiseta_id):
 
         if form.is_valid() and formset.is_valid():
             with transaction.atomic():
-                # remover imagens antigas
-                for imagem in camiseta.imagens.all():
-                    if imagem.imagem and os.path.isfile(imagem.imagem.path):
-                        os.remove(imagem.imagem.path)
-                camiseta.imagens.all().delete()
+                # Salvar o form primeiro (isso lida com campos ManyToMany corretamente)
+                camiseta = form.save()
 
-                # atualizar campos extras
-                camiseta.tamanhos = form.cleaned_data['tamanhos']
-                camiseta.estilos = ", ".join(form.cleaned_data['estilos'])
-                camiseta.forma_pag_op = ", ".join(form.cleaned_data.get('forma_pag_op', []))
+                # Remover imagens antigas apenas se novas forem enviadas
+                for imagem_form in formset:
+                    if imagem_form.cleaned_data.get('DELETE'):
+                        imagem_instance = imagem_form.instance
+                        if imagem_instance.imagem and os.path.isfile(imagem_instance.imagem.path):
+                            os.remove(imagem_instance.imagem.path)
+                        imagem_instance.delete()
 
-                form.save()
-
-                # salvar novas imagens
-                for imagem in formset.save(commit=False):
-                    imagem.produto = camiseta  # ✅ corrigido
-                    imagem.save()
+                # Salvar o formset
+                instances = formset.save(commit=False)
+                for instance in instances:
+                    instance.produto = camiseta
+                    instance.save()
                 formset.save_m2m()
 
             messages.success(request, 'Camiseta atualizada com sucesso!')

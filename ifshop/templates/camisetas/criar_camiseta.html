@@ -49,24 +49,16 @@
                     <div class="col-md-6">{{ form.preco|as_crispy_field }}</div>
                     <div class="col-md-6">{{ form.preco_parcela|as_crispy_field }}</div>
                     <div class="col-md-6">{{ form.opcoes|as_crispy_field }}</div>
+
+                    <!-- Datas -->
                     <div class="col-md-6">{{ form.data_limite_pedidos|as_crispy_field }}</div>
                     <div class="col-md-6">{{ form.data_pag1|as_crispy_field }}</div>
                     <div class="col-md-6">{{ form.data_pag2|as_crispy_field }}</div>
+
+                    <!-- Indentificação e Forma de pagamento -->
                     <div class="col-md-6">{{ form.curso|as_crispy_field }}</div>
                     <div class="col-md-6">{{ form.turnos|as_crispy_field }}</div>
-                    
-
-                    <!-- Opções de pagamento -->
-                    <div class="col-md-6">
-                        <label class="form-label">Opções de Pagamento Disponíveis:</label>
-                        {% for checkbox in form.forma_pag_op %}
-                            <div class="form-check">
-                                {{ checkbox.tag }}
-                                <label class="form-check-label" for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
-                            </div>
-                        {% endfor %}
-                    </div>
-
+                    <div class="col-md-6">{{ form.forma_pag_op|as_crispy_field }}</div>
                     <div class="col-md-6">{{ form.turma|as_crispy_field }}</div>
                     
                     <!-- Estilos e tamanhos -->
