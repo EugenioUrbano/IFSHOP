@@ -32,8 +32,8 @@
                     <img src="{% static 'img/não_tem_imagem.svg' %}" class="card-img-top" alt="Sem imagem">
                 {% endif %}
                 <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">{{ item.titulo }}</h5>
-                    <p class="text-body-secondary mt-auto">R$ {{ item.preco }}</p>
+                    <h5 class="card-title">{{ item.produto.titulo }}</h5>
+                    <p class="text-body-secondary mt-auto">R$ {{ item.produto.preco }}</p>
                 </div>
             </div>
         </div>
@@ -58,8 +58,8 @@
                     <li><a class="dropdown-item" href="{% url 'pedidos_camisetas' %}">De Camisetas</a></li>
                 </ul>
             </div>
-            <a href="{% url 'exportar_pedidos_camisetas_excel' %}" class="btn botoes shadow-lg rounded-pill px-3">
-                Exportar pedidos em Excel
+            <a href="{% url 'exportar_pedidos_excel' %}" class="btn botoes shadow-lg rounded-pill px-3">
+                Exportar pedidos de camisetas em Excel
             </a>
         </div>
     </div>

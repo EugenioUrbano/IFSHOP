@@ -63,12 +63,17 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6">
-                            Tamanhos: {{ item.camiseta.tamanhos }}<br>
-                            Estilos: {{ item.camiseta.estilos }}<br>
-                            Preço: R${{ item.camiseta.preco }}<br>
+                            <p><strong>Tamanhos:</strong></p>
+                            <ul>
+                                {% for estilo, tamanhos in item.camiseta.tamanhos.items %}
+                                    <li><strong>{{ estilo }}:</strong> {{ tamanhos|join:", " }}</li>
+                                {% endfor %}
+                            </ul>
+                            <p><strong>Preço:</strong> R$ {{ item.camiseta.preco }}</p>
                         </div>
                     </div>
                 </div>
+
             </div>
             <div style="text-align: right;">
                 <div class="dropstart ">

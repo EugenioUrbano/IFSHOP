@@ -34,9 +34,8 @@
             <ul class="dropdown-menu">
               {% if user.is_staff %}
               <li><a href="{% url 'gerenciar_vendedores' %}" class="nav-link">Gerenciar usuarios</a></li>
-              {% else %}
+              {% endif %}  
               <li><a href="{% url 'perfil' %}" class="nav-link">Perfil</a></li>
-              {% endif %}
               <li><hr class="dropdown-divider"></li>
               <li><a href="{% url 'logout' %}" class="nav-link">Deslogar</a></li>
               <li><hr class="dropdown-divider"></li>

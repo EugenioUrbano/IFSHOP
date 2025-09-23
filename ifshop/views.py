@@ -136,8 +136,9 @@ def marcar_pedidos_vistos(request):
         return JsonResponse({"status": "success"})
     return JsonResponse({"error": "Método inválido"}, status=400)
 
-def exportar_pedidos_camisetas_excel(request):
-    camisetas_vendedor = Camiseta.objects.filter(produto__vendedor=request.user)
+def exportar_pedidos_excel(request):
+    camisetas_vendedor = Camiseta.objects.filter(vendedor=request.user)
+
     pedidos = PedidoCamiseta.objects.filter(
         camiseta__in=camisetas_vendedor,
         pedido__status__in=["Pago Totalmente", "Pago 1° Parcela"]
@@ -146,7 +147,7 @@ def exportar_pedidos_camisetas_excel(request):
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Pedidos Pagos"
-    ws.append(['Nome na Estampa', 'Número na Estampa', 'Estilo', 'Tamanho', 'Opção de Cor'])
+    ws.append(['Nome na Estampa', 'Número na Estampa', 'Estilo', 'Tamanho', 'Opção escolhida', "Status"])
 
     for pedido in pedidos:
         ws.append([
@@ -154,7 +155,8 @@ def exportar_pedidos_camisetas_excel(request):
             pedido.numero_estampa,
             pedido.estilo,
             pedido.tamanho,
-            pedido.pedido.opcao_escolhida
+            pedido.pedido.opcao_escolhida,
+            pedido.pedido.status
         ])
 
     response = HttpResponse(
@@ -163,6 +165,7 @@ def exportar_pedidos_camisetas_excel(request):
     response['Content-Disposition'] = 'attachment; filename=pedidos_pagos.xlsx'
     wb.save(response)
     return response
+
 
 # ---- pedidos ----- #
 
