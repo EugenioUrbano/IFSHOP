@@ -108,7 +108,7 @@ class ProdutoBaseForm(forms.ModelForm):
         label= 'Formas de Pagamento Disponivel' ,
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'd-inline-block form-check-input '}), required=True)
     
-    curso = forms.ModelMultipleChoiceField(
+    curso = forms.ModelChoiceField(
         queryset=Curso.objects.all(),
         widget=forms.Select(attrs={'class': 'form-select rounded-3'}),
         required=True,

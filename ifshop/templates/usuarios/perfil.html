@@ -22,6 +22,7 @@
     </div>
 
     {% if produtos_com_imagens %}
+<<<<<<< HEAD:ifshop/templates/perfil.html
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3 mb-5">
         {% for item in produtos_com_imagens|slice:":4" %}
         <div class="col">
@@ -34,11 +35,25 @@
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">{{ item.produto.titulo }}</h5>
                     <p class="text-body-secondary mt-auto">R$ {{ item.produto.preco }}</p>
+=======
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3 mb-5">
+            {% for item in produtos_com_imagens|slice:":4" %}
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    {% if item.imagem_principal %}
+                        <img src="{{ item.imagem_principal.imagem.url }}" class="card-img-top" alt="{{ item.produto.titulo }}">
+                    {% else %}
+                        <img src="{% static 'img/não_tem_imagem.svg' %}" class="card-img-top" alt="Sem imagem">
+                    {% endif %}
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ item.produto.titulo }}</h5>
+                        <p class="text-body-secondary mt-auto">R$ {{ item.produto.preco }}</p>
+                    </div>
+>>>>>>> 8b06a518006c3f36b671532231db8c76d37a97bf:ifshop/templates/usuarios/perfil.html
                 </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
     {% else %}
         <p class="text-center">Nenhum produto cadastrado.</p>
     {% endif %}

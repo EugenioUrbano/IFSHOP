@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load crispy_forms_filters %}
+
+{% block title %}Carrinho{% endblock %}
+{% block filtro %}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  {% if user.is_authenticated %}
+    {% if pedidos_feitos %}
+      <h1 class="mb-4">Meus Pedidos</h1>
+      <div class="row">
+        {% for item in pedidos_feitos %}
+          {% with pedido=item.pedido imagens=item.imagem_principal camisetas=item.camisetas %}
+            <div class="col-12 mb-4">
+              <div class="card shadow-sm">
+                <div class="row g-0">
+
+                  <div class="col-md-3 d-flex align-items-center justify-content-center p-3">
+                    {% if imagens %}
+                      <img src="{{ imagens.imagem.url }}" alt="Imagem de {{ pedido.produto.titulo }}" class="img-fluid rounded" style="max-height: 250px; object-fit: cover;"/>
+                    {% else %}
+                      <img src="{% static 'img/não_tem_imagem.svg' %}" alt="Sem imagem" class="img-fluid rounded" style="max-height: 250px; object-fit: cover;"/>
+                    {% endif %}
+                  </div>
+
+                  <div class="col-md-9">
+                    <div class="card-body d-flex flex-column h-100">
+                      
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h4 class="card-title fw-bold">{{ pedido.produto.titulo }}</h4>
+                        <span class="badge 
+                          {% if pedido.status == 'Pendente' %} bg-warning text-dark
+                          {% elif pedido.status == 'Pago' or pedido.status == 'Aprovado' %} bg-success
+                          {% elif pedido.status == 'Cancelado' %} bg-danger
+                          {% else %} bg-secondary
+                          {% endif %}
+                          fs-6">{{ pedido.status }}</span>
+                      </div>
+
+                      <div class="text-muted small mb-3">
+                        <p class="mb-1">
+                          <strong>Data limite (1ª parcela):</strong> {{ pedido.produto.data_pag1|date:"d/m/Y" }}
+                        </p>
+                        <p class="mb-0">
+                          <strong>Data limite (2ª parcela):</strong> 
+                          {% if pedido.produto.data_pag2 %}
+                            {{ pedido.produto.data_pag2|date:"d/m/Y" }}
+                          {% else %}
+                            A definir
+                          {% endif %}
+                        </p>
+                      </div>
+                      
+                      <hr>
+
+                      <div class="row mb-3">
+                        {% if camisetas %}
+                          <div class="col-12">
+                            <h6 class="fw-bold">Detalhes da Camiseta:</h6>
+                            <div class="bg-light p-3 rounded">
+                              {% for pc in camisetas %}
+                                <div class="row">
+                                  <div class="col-sm-6">
+                                    <p class="mb-1"><strong>Nome:</strong> {{ pc.nome_estampa }}</p>
+                                    <p class="mb-1"><strong>Número:</strong> {{ pc.numero_estampa }}</p>
+                                    <p class="mb-0"><strong>Tamanho:</strong> {{ pc.tamanho }}</p>
+                                  </div>
+                                  <div class="col-sm-6">
+                                    <p class="mb-1"><strong>Estilo:</strong> {{ pc.estilo }}</p>
+                                  </div>
+                                </div>
+                                {% if not forloop.last %}<hr class="my-2">{% endif %}
+                              {% endfor %}
+                            </div>
+                          </div>
+                        {% endif %}
+                        
+                        <div class="col-12 mt-3">
+                          <div class="d-flex justify-content-between align-items-center">
+                              <div>
+                                  <h5 class="fw-bold mb-0">Preço: R$ {{ pedido.produto.preco }}</h5>
+                                  <span class="text-muted">Opção: {{ pedido.opcao_escolhida }}</span>
+                              </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="mt-auto d-flex flex-wrap gap-2 align-items-center">
+                        {# Botão de Pagamento Principal #}
+                        {% if pedido.forma_pag == "Pix" or pedido.forma_pag == "Parcelado 2x Pix" %}
+                          <a href="{% url 'comprovantes' pedido.id %}" class="btn btn-primary shadow-sm">
+                            <i class="bi bi-qr-code-scan"></i> Pagar com Pix
+                          </a>
+                        {% elif pedido.forma_pag == "Negociar Pagamento" %}
+                          <a href="https://wa.me/55{{ pedido.produto.vendedor.telefone }}?text=Olá!%20Gostaria%20de%20negociar%20o%20pagamento%20do%20produto%20{{ pedido.produto.titulo }},%20Pedido%20ID:%20{{ pedido.id }}" class="btn btn-success shadow-sm" target="_blank">
+                            <i class="bi bi-whatsapp"></i> Negociar Pagamento
+                          </a>
+                        {% else %}
+                          <button class="btn btn-info shadow-sm" data-bs-toggle="modal" data-bs-target="#exampleModal_fisico_{{ pedido.id }}">
+                            <i class="bi bi-info-circle"></i> Veja como pagar
+                          </button>
+                        {% endif %}
+
+                        {# Botão de Edição #}
+                        {% if pedido.produto.data_limite_pedidos and pedido.produto.data_limite_pedidos <= hoje %}
+                          <button class="btn btn-secondary" disabled>Editar (Prazo Esgotado)</button>
+                        {% else %}
+                          {% if camisetas %}
+                            {% for pc in camisetas %}
+                              <a href="{% url 'edit_pedido_camiseta' pc.id %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-pencil"></i> Editar Pedido
+                              </a>
+                            {% endfor %}
+                          {% else %}
+                            <a href="{% url 'edit_pedido_produto' pedido.id %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-pencil"></i> Editar Pedido
+                            </a>
+                          {% endif %}
+                        {% endif %}
+
+                        {# Botão de Cancelamento #}
+                        <a href="{% url 'excluir_pedido' pedido.id %}" class="btn btn-outline-danger ms-md-auto">
+                           <i class="bi bi-trash"></i> Cancelar
+                        </a>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal fade" id="exampleModal_fisico_{{ pedido.id }}" tabindex="-1" aria-labelledby="exampleModalLabel{{ pedido.id }}" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel{{ pedido.id }}">Pagamento Físico</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>Você escolheu pagar fisicamente. Procure por <strong>{{ pedido.produto.vendedor.nome }} na sala de {{ pedido.produto.turma }}</strong> para efetuar o pagamento.</p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Entendi</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          {% endwith %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-center py-5">
+        <div class="alert alert-info" role="alert">
+          <h4 class="alert-heading">Seu carrinho está vazio!</h4>
+          <p>Você ainda não fez nenhum pedido. Explore nossos produtos e adicione itens ao seu carrinho.</p>
+          <hr>
+          <a href="{% url 'pagina_de_produtos' %}" class="btn btn-primary">Ver Produtos</a> {# <-- Mude 'pagina_de_produtos' para o nome da sua URL de produtos #}
+        </div>
+      </div>
+    {% endif %}
+  {% else %}
+    <div class="alert alert-warning" role="alert">
+      Você precisa estar logado para ver seus pedidos. <a href="{% url 'login' %}" class="alert-link">Clique aqui para fazer login</a>.
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
