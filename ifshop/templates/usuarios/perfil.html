@@ -22,20 +22,6 @@
     </div>
 
     {% if produtos_com_imagens %}
-<<<<<<< HEAD:ifshop/templates/perfil.html
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3 mb-5">
-        {% for item in produtos_com_imagens|slice:":4" %}
-        <div class="col">
-            <div class="card h-100 shadow-sm">
-                {% if item.imagem_principal %}
-                    <img src="{{ item.imagem_principal.imagem.url }}" class="card-img-top" alt="{{ item.titulo }}">
-                {% else %}
-                    <img src="{% static 'img/não_tem_imagem.svg' %}" class="card-img-top" alt="Sem imagem">
-                {% endif %}
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">{{ item.produto.titulo }}</h5>
-                    <p class="text-body-secondary mt-auto">R$ {{ item.produto.preco }}</p>
-=======
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3 mb-5">
             {% for item in produtos_com_imagens|slice:":4" %}
             <div class="col">
@@ -49,7 +35,6 @@
                         <h5 class="card-title">{{ item.produto.titulo }}</h5>
                         <p class="text-body-secondary mt-auto">R$ {{ item.produto.preco }}</p>
                     </div>
->>>>>>> 8b06a518006c3f36b671532231db8c76d37a97bf:ifshop/templates/usuarios/perfil.html
                 </div>
             </div>
             {% endfor %}
@@ -61,7 +46,7 @@
     <!-- Seção Pedidos das camisetas -->
     <div class="row mb-3 align-items-center">
         <div class="col-md-6">
-            <h3>Pedidos das suas Camisetas</h3>
+            <h3>Pedidos dos seus produtos</h3>
         </div>
         <div class="col-md-6 text-end">
             <div class="dropdown d-inline me-2">
@@ -73,9 +58,14 @@
                     <li><a class="dropdown-item" href="{% url 'pedidos_camisetas' %}">De Camisetas</a></li>
                 </ul>
             </div>
-            <a href="{% url 'exportar_pedidos_excel' %}" class="btn botoes shadow-lg rounded-pill px-3">
-                Exportar pedidos de camisetas em Excel
-            </a>
+            <div class="dropdown d-inline me-2">
+                <button class="btn botoes shadow-lg rounded-pill px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Exportar Pedidos
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'exportar_pedidos_camisetas' %}">De Camisetas</a></li>
+                </ul>
+            </div>
         </div>
     </div>
     <div class="text-center mb-3" id="notificacao-pedidos" style="display:none; color:red;">Novo pedido!</div>

@@ -62,14 +62,14 @@
                         <h3><strong>{{ item.camiseta.titulo }}</strong></h3>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
-                            <p><strong>Tamanhos:</strong></p>
+                        <div class="col-md-12">
                             <ul>
                                 {% for estilo, tamanhos in item.camiseta.tamanhos.items %}
                                     <li><strong>{{ estilo }}:</strong> {{ tamanhos|join:", " }}</li>
                                 {% endfor %}
+                                <li><strong>Preço:</strong> R$ {{ item.camiseta.preco }}</li>
                             </ul>
-                            <p><strong>Preço:</strong> R$ {{ item.camiseta.preco }}</p>
+                            
                         </div>
                     </div>
                 </div>

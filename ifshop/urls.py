@@ -25,15 +25,11 @@ urlpatterns = [
     path('gerenciar_produtos/', views.gerenciar_produtos, name='gerenciar_produtos'),
     path('excluir_produto/<int:produto_id>/', views.excluir_produto, name='excluir_produto'),
     
-<<<<<<< HEAD
     ##########################################################################
     
     path('edit_camiseta/<int:camiseta_id>/', views.edit_camiseta, name='edit_camiseta'),
     path('pedidos_camisetas/', views.pedidos_camisetas, name="pedidos_camisetas"),
-    path('exportar_pedidos_excel/', views.exportar_pedidos_excel, name='exportar_pedidos_excel'),
-=======
-    # Camisetas
->>>>>>> 8b06a518006c3f36b671532231db8c76d37a97bf
+    path('exportar_pedidos_camisetas/', views.exportar_pedidos_camisetas, name='exportar_pedidos_camisetas'),
     path('criar_camiseta/', views.criar_camiseta, name='criar_camiseta'),
     path('camiseta/<int:camiseta_id>/', views.camiseta, name='camiseta'),
     path('edit_camiseta/<int:camiseta_id>/', views.edit_camiseta, name='edit_camiseta'),
@@ -48,7 +44,6 @@ urlpatterns = [
     path('pedidos_produtos/', views.pedidos_produtos, name="pedidos_produtos"),
     path('edit_pedido_camiseta/<int:pedido_id>/', views.edit_pedido_camiseta, name='edit_pedido_camiseta'),
     path('edit_pedido_produto/<int:pedido_id>/', views.edit_pedido_produto, name='edit_pedido_produto'),
-    path('exportar_pedidos_camisetas_excel/', views.exportar_pedidos_camisetas_excel, name='exportar_pedidos_camisetas_excel'),
     
     # Carrinho e Comprovantes
     path('carrinho/', views.carrinho, name='carrinho'),

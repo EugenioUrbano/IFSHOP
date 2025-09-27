@@ -21,7 +21,7 @@
                             <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"></path>
                         </svg>
                     </a>
-                    <h2 class="fw-bold mb-5">Criar Camiseta</h2>
+                    <h2 class="fw-bold mb-5">Editar Camiseta</h2>
                 </div>
 
                 <!-- Formulário -->
@@ -51,24 +51,16 @@
                     <div class="col-md-6">{{ form.preco|as_crispy_field }}</div>
                     <div class="col-md-6">{{ form.preco_parcela|as_crispy_field }}</div>
                     <div class="col-md-6">{{ form.opcoes|as_crispy_field }}</div>
+                    
+                    <!-- Datas -->
                     <div class="col-md-6">{{ form.data_limite_pedidos|as_crispy_field }}</div>
                     <div class="col-md-6">{{ form.data_pag1|as_crispy_field }}</div>
                     <div class="col-md-6">{{ form.data_pag2|as_crispy_field }}</div>
+
+                    <!-- Indentificação e Forma de pagamento -->
                     <div class="col-md-6">{{ form.curso|as_crispy_field }}</div>
                     <div class="col-md-6">{{ form.turnos|as_crispy_field }}</div>
-                    
-
-                    <!-- Opções de pagamento -->
-                    <div class="col-md-6">
-                        <label class="form-label">Opções de Pagamento Disponíveis:</label>
-                        {% for checkbox in form.forma_pag_op %}
-                            <div class="form-check">
-                                {{ checkbox.tag }}
-                                <label class="form-check-label" for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
-                            </div>
-                        {% endfor %}
-                    </div>
-
+                    <div class="col-md-6">{{ form.forma_pag_op|as_crispy_field }}</div>
                     <div class="col-md-6">{{ form.turma|as_crispy_field }}</div>
                     
                     <!-- Estilos e tamanhos -->
@@ -151,7 +143,7 @@
 
                     <!-- Botão de submit -->
                     <div class="col-md-6 mt-3">
-                        <button type="submit" class="btn botoes shadow-lg rounded px-3 d-block">Cadastrar Camiseta</button>
+                        <button type="submit" class="btn botoes shadow-lg rounded px-3 d-block">Atualizar Camiseta</button>
                     </div>
 
                 </form>
