@@ -147,7 +147,7 @@ def exportar_pedidos_excel(request):
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Pedidos Pagos"
-    ws.append(['Nome na Estampa', 'Número na Estampa', 'Estilo', 'Tamanho', 'Opção escolhida', "Status"])
+    ws.append(['Nome na Estampa', 'cm do penis', 'Penis', 'Tamanho', 'Opção escolhida', "Status"])
 
     for pedido in pedidos:
         ws.append([
