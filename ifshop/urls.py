@@ -25,7 +25,7 @@ urlpatterns = [
     path('gerenciar_produtos/', views.gerenciar_produtos, name='gerenciar_produtos'),
     path('excluir_produto/<int:produto_id>/', views.excluir_produto, name='excluir_produto'),
     
-    ##########################################################################
+   # Camisetas
     
     path('edit_camiseta/<int:camiseta_id>/', views.edit_camiseta, name='edit_camiseta'),
     path('pedidos_camisetas/', views.pedidos_camisetas, name="pedidos_camisetas"),

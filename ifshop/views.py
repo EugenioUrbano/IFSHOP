@@ -322,6 +322,26 @@ def edit_pedido_camiseta(request, pedido_id):
         'tamanhos_por_estilo_json': json.dumps(pedido_camiseta.camiseta.tamanhos)
     })
 
+def edit_pedido_produto(request, pedido_id):
+    pedido = get_object_or_404(PedidoBase, id=pedido_id, pedido__cliente=request.user)
+    
+    forma_pag_opcoes = [f.strip() for f in produto.forma_pag_op.split(',')]
+
+    if request.method == 'POST':
+        form_base = PedidoBaseForm(request.POST, request.FILES, instance=pedido, produto=produto, forma_pag_opcoes=forma_pag_opcoes)
+        
+
+        if form_base.is_valid():
+            form_base.save()
+            messages.success(request, "Pedido do seu produto atualizado com sucesso!")
+            return redirect('carrinho')
+    else:
+        form_base = PedidoBaseForm(instance=pedido, produto=produto, forma_pag_opcoes=forma_pag_opcoes)
+
+    return render(request, 'pedidos/edit_pedido_produto.html', {
+        'form_base': form_base,
+        'pedido': pedido,
+    })
 
 # ---- camiseta ----- #
 
@@ -590,14 +610,41 @@ def excluir_produto(request, produto_id):
 def edit_produto(request):
     return render(request, 'produtos/edit_produto.html')
 
-def edit_pedido_produto(request):
-    return render(request, 'pedidos/edit_pedido_produto.html')
-
 def criar_produto(request):
     return render(request, 'produtos/criar_produto.html')
 
 def pedidos_produtos(request):
     return render(request, 'pedidos/pedidos_produtos.html')
 
-def produto(request):
-    return render(request, 'produtos/produto.html')
+def produto(request, produto_id):
+    produto = get_object_or_404(ProdutoBase.objects.prefetch_related('imagens'), id=produto_id)
+    forma_pag_opcoes = [f.strip() for f in produto.forma_pag_op.split(',')]
+
+    if request.method == 'POST':
+        if not request.user.is_authenticated:
+            messages.warning(request, "Você precisa estar logado para fazer um pedido.")
+            return redirect('login')
+
+        form_base = PedidoBaseForm(
+            request.POST,
+            request.FILES,
+            forma_pag_opcoes=forma_pag_opcoes
+        )
+
+        if form_base.is_valid():
+            pedido_base = form_base.save(commit=False)
+            pedido_base.cliente = request.user
+            pedido_base.save()
+
+            messages.success(request, "Pedido de camiseta realizado com sucesso!")
+            return redirect('carrinho')
+
+    else:
+        form_base = PedidoBaseForm(
+            forma_pag_opcoes=forma_pag_opcoes
+        )
+
+    return render(request, 'produtos/produto.html', {
+        'produto': produto,
+        'form_base': form_base,
+    })

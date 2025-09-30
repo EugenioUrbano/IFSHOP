@@ -48,17 +48,17 @@
             </div>
         </div>
         <div class="col p-4 d-flex flex-column position-static">
-            <strong class="d-inline-block mb-2 text-primary-emphasis">Data para Pedidos até {{ data_limite_pedidos }}</strong>
-                <h3 class="mb-0">{{ titulo }}</h3>
-                <div class="mb-1 text-body-secondary">Preço: R$ {{ preco }}</div>
-                <div class="mb-1 text-body-secondary">Preço das parcelas: R$ {{ preco_parcela }}</div>
+            <strong class="d-inline-block mb-2 text-primary-emphasis">Data para Pedidos até {{ produto.data_limite_pedidos }}</strong>
+                <h3 class="mb-0">{{ produto.titulo }}</h3>
+                <div class="mb-1 text-body-secondary">Preço: R$ {{ produto.preco }}</div>
+                <div class="mb-1 text-body-secondary">Preço das parcelas: R$ {{ produto.preco_parcela }}</div>
                 <form method="post" class="row g-3">
                     {% csrf_token %}
                     <div class=" col-md-6">
-                        {{ opcoes|as_crispy_field }}
+                        {{ form_base.opcao_escolhida|as_crispy_field }}
                     </div>
                      <div class=" col-md-6">
-                        {{ turma|as_crispy_field }}
+                        {{ form_base.forma_pag|as_crispy_field }}
                     </div>
 		    {% if user.is_authenticated %}
 		    {% else %}
@@ -75,36 +75,4 @@
         
     </div>
   </div>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const tamanhosPorEstilo = {{ tamanhos_por_estilo_json|safe }};
-        const estiloSelect = document.getElementById('id_estilo');
-        const tamanhoSelect = document.getElementById('id_tamanho');
-
-        function atualizarTamanhos(estiloSelecionado) {
-            const tamanhos = tamanhosPorEstilo[estiloSelecionado] || [];
-
-            // Limpar os tamanhos antigos
-            tamanhoSelect.innerHTML = '';
-
-            // Adicionar os novos tamanhos
-            tamanhos.forEach(function (tamanho) {
-                const option = document.createElement('option');
-                option.value = tamanho;
-                option.textContent = tamanho;
-                tamanhoSelect.appendChild(option);
-            });
-        }
-
-        // Quando o estilo for alterado
-        estiloSelect.addEventListener('change', function () {
-            atualizarTamanhos(this.value);
-        });
-
-        // Atualizar tamanhos se já houver um estilo pré-selecionado
-        if (estiloSelect.value) {
-            atualizarTamanhos(estiloSelect.value);
-        }
-    });
-</script>
 {% endblock %}
