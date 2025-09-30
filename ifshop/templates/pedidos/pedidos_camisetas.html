@@ -49,16 +49,16 @@
             {% for item in pedidos_com_forms %}
             <tr>
                 <td>{{ item.pedido.id }}</td>
-                <td>{{ item.pedido.cliente }}</td>
-                <td>{{ item.pedido.cliente.telefone }}</td>
+                <td>{{ item.pedido.pedido.cliente }}</td>
+                <td>{{ item.pedido.pedido.cliente.telefone }}</td>
                 <td>{{ item.pedido.camiseta.titulo }}</td>
-                <td>{{ item.pedido.data_pedido }}</td>
-                <td>{{ item.pedido.cor_escolhida }}</td>
+                <td>{{ item.pedido.pedido.data_pedido }}</td>
+                <td>{{ item.pedido.pedido.opcao_escolhida }}</td>
                 <td>{{ item.pedido.nome_estampa }}</td>
                 <td>{{ item.pedido.numero_estampa }}</td>
                 <td>{{ item.pedido.tamanho }}</td>
                 <td>{{ item.pedido.estilo }}</td>
-                <td>{{ item.pedido.forma_pag }}</td>
+                <td>{{ item.pedido.pedido.forma_pag }}</td>
                 <td>
                     {% if item.pedido.forma_pag == "Pix" %}
                         {% if item.pedido.comprovante_total %}

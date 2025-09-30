@@ -147,11 +147,29 @@ class ProdutoBaseForm(forms.ModelForm):
         widgets = {
             'opcoes': forms.TextInput(attrs={'placeholder': 'Ex: azul, vermelho, verde'})
         }
+    
+    def save(self, commit=True):
+        produto = super().save(commit=False)
+        if 'forma_pag_op' in self.cleaned_data:
+            formas_pagamento = self.cleaned_data['forma_pag_op']
+            produto.forma_pag_op = ", ".join(formas_pagamento)
+        
+        if 'opcoes' in self.cleaned_data and self.cleaned_data['opcoes']:
+            opcoes_texto = self.cleaned_data['opcoes']
+            if isinstance(opcoes_texto, str):
+                opcoes_lista = [opcao.strip() for opcao in opcoes_texto.split(",") if opcao.strip()]
+                produto.opcoes = ", ".join(opcoes_lista)
+        
+        if commit:
+            produto.save()
+            self.save_m2m() 
+        
+        return produto
         
 ImagemProdutoBaseFormSet = modelformset_factory(
     ImagemProdutoBase ,
     fields=('imagem', 'principal'),
-    extra=4,  # Permite adicionar até 5 imagens por vez
+    extra=4,  
     can_delete=True,
     widgets={
         'imagem': forms.ClearableFileInput(attrs={'class': 'form-control'}),
@@ -197,7 +215,6 @@ class CamisetaForm(ProdutoBaseForm):
 
         if commit:
             camiseta.save()
-            # Limpar estilos anteriores e recriar
             EstiloTamanho.objects.filter(camiseta=camiseta).delete()
             for estilo, tamanhos in self.cleaned_data['tamanhos'].items():
                 for tamanho in tamanhos:
