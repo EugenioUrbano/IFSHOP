@@ -22,36 +22,7 @@
     <h1>Gerencie Pedidos das suas Camisetas</h1>
 </div>
 
-<div class="row justify-content-center mb-4">
-    {% for card in [
-        {'title':'Total de Pedidos','value':total_pedidos},
-        {'title':'Total Pago Totalmente','value':total_pagos},
-        {'title':'Total Pago 1° Parcela','value':total_pago_primeira},
-        {'title':'Total Arrecadado','value':arrecadado}
-    ] %}
-    <div class="col-md-3 mb-3">
-        <div class="card shadow-sm">
-            <div class="card-body text-center">
-                <h5 class="card-title">{{ card.title }}</h5>
-                <p class="card-text fs-4">{{ card.value }}</p>
-            </div>
-        </div>
-    </div>
-    {% endfor %}
-</div>
 
-<section class="b-example-divider filtros-fundo espaco-filtro">
-    <form method="get">
-        <div class="row justify-content-center align-items-center">
-            <div class="col-md-4">
-                {{ form_filtro.status|as_crispy_field }}
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn botoes shadow-lg rounded-pill px-3">Filtrar</button>
-            </div>
-        </div>
-    </form>
-</section>
 
 {% if pedidos_com_forms %}
 <div class="table-responsive">

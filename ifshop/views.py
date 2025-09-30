@@ -264,6 +264,24 @@ def comprovantes(request, pedido_id):
 @login_required
 @user_passes_test(vendedor)
 def pedidos_camisetas(request):
+    if request.method == 'POST':
+        pedido_id = request.POST.get('pedido_id')
+        novo_status = request.POST.get('status')
+        
+        if pedido_id and novo_status:
+            try:
+                pedido = PedidoBase.objects.get(
+                    id=pedido_id, 
+                    produto__vendedor=request.user 
+                )
+                pedido.status = novo_status
+                pedido.save()
+                messages.success(request, f'Status do pedido #{pedido_id} atualizado para {novo_status}!')
+            except PedidoBase.DoesNotExist:
+                messages.error(request, 'Pedido não encontrado ou você não tem permissão para editá-lo.')
+        
+        return redirect('pedidos_camisetas')  
+    
     pedidos_all = PedidoCamiseta.objects.filter(camiseta__vendedor=request.user).select_related('pedido', 'camiseta').order_by('-pedido__data_pedido')
 
     form_filtro = FiltroPedidosForm(request.GET or None)
@@ -285,8 +303,8 @@ def pedidos_camisetas(request):
         'total_pagos': pedidos_all.filter(pedido__status='Pago Totalmente').count(),
         'total_pago_primeira': pedidos_all.filter(pedido__status='Pago 1° Parcela').count(),
         'arrecadado': sum(
-            p.camiseta.produto.preco if p.pedido.status == "Pago Totalmente" else
-            p.camiseta.produto.preco_parcela if p.pedido.status == "Pago 1° Parcela" else 0
+            p.camiseta.preco if p.pedido.status == "Pago Totalmente" else
+            p.camiseta.preco_parcela if p.pedido.status == "Pago 1° Parcela" else 0
             for p in pedidos_all
         )
     })
