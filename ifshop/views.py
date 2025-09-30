@@ -19,43 +19,68 @@ import openpyxl, json, os
 def index(request):
     form = FiltroProdutoForm(request.GET or None)
     
-    camisetas = Camiseta.objects.all()
-    produtos_base = ProdutoBase.objects.filter(camiseta__isnull=True)
+    # Buscar todos os produtos base
+    produtos_base = ProdutoBase.objects.all().prefetch_related('imagens', 'cursos')
+    camisetas_ids = Camiseta.objects.values_list('produtobase_ptr_id', flat=True)
+    
+    # Debug
+    print("=== DEBUG FILTRO ===")
+    print("GET parameters:", request.GET)
+    print("Turnos value:", request.GET.get('turnos'))
+    print("Cursos value:", request.GET.get('cursos'))
 
     if form.is_valid():
         turnos = form.cleaned_data.get('turnos')
         cursos = form.cleaned_data.get('cursos')
+        
+        print("Turnos cleaned:", turnos)
+        print("Cursos cleaned:", cursos)
+        print("Form valid")
 
-        if turnos:
-            camisetas = camisetas.filter(produto__turnos=turnos)
+        # Filtro de turnos - considerar que '' significa "todos os turnos"
+        if turnos:  # Se um turno específico foi selecionado (não vazio)
             produtos_base = produtos_base.filter(turnos=turnos)
+            print(f"Filtro turnos aplicado: {turnos}")
+        # Se turnos for vazio (todos os turnos), não aplicar filtro
+        
+        # Filtro de cursos
+        if cursos:  # Se um curso específico foi selecionado
+            produtos_base = produtos_base.filter(cursos=cursos)
+            print(f"Filtro cursos aplicado: {cursos}")
+        # Se cursos for None (todos os cursos), não aplicar filtro
+        
+        print(f"Produtos após filtro: {produtos_base.count()}")
+    else:
+        print("Form inválido")
+        print("Errors:", form.errors)
 
-        if cursos:
-            camisetas = camisetas.filter(produto__cursos__id=cursos.id)
-            produtos_base = produtos_base.filter(cursos__id=cursos.id)
-
-    produtos = list(camisetas) + list(produtos_base)
-    
+    # Processar produtos para exibição
     produtos_com_imagens = []
     data_hoje = now().date()
     
-    for produto in produtos:
-        base = produto.produto if hasattr(produto, 'produto') else produto
-        imagem_principal = base.imagens.filter(principal=True).first() or base.imagens.first()
-        disponivel = data_hoje <= base.data_limite_pedidos if base.data_limite_pedidos else True
+    for produto in produtos_base:
+        tipo = 'camiseta' if produto.id in camisetas_ids else 'produto'
+        imagem_principal = produto.imagens.filter(principal=True).first() or produto.imagens.first()
+        disponivel = data_hoje <= produto.data_limite_pedidos if produto.data_limite_pedidos else True
 
         produtos_com_imagens.append({
             'produto': produto,
             'imagem_principal': imagem_principal,
             'disponivel': disponivel,
-            'tipo': 'camiseta' if isinstance(produto, Camiseta) else 'produto'
+            'tipo': tipo
         })
 
+    print(f"Total produtos para exibir: {len(produtos_com_imagens)}")
+
+    # Paginação
     paginator = Paginator(produtos_com_imagens, 9)
     page_number = request.GET.get('pagina')
     produtos_paginados = paginator.get_page(page_number)
 
-    return render(request, 'core/index.html', {'form': form, 'produtos_com_imagens': produtos_paginados})
+    return render(request, 'core/index.html', {
+        'form': form, 
+        'produtos_com_imagens': produtos_paginados
+    })
 
 # ---- usuario ----- #
 
@@ -422,40 +447,81 @@ def criar_camiseta(request):
 @user_passes_test(vendedor)
 def edit_camiseta(request, camiseta_id):
     camiseta = get_object_or_404(Camiseta, id=camiseta_id)
+    
+    # Debug inicial
+    print("=== EDIT CAMISETA ===")
+    print("Método:", request.method)
+    if request.method == 'POST':
+        print("POST data:", dict(request.POST))
+        print("FILES:", dict(request.FILES))
 
     if request.method == 'POST':
         form = CamisetaForm(request.POST, request.FILES, instance=camiseta)
-        formset = ImagemProdutoBaseFormSet(request.POST, request.FILES, queryset=camiseta.imagens.all())
+        formset = ImagemProdutoBaseFormSet(request.POST, request.FILES, queryset=camiseta.imagens.all(), prefix='imagens')
+
+        print("Form is_valid:", form.is_valid())
+        print("Formset is_valid:", formset.is_valid())
+        
+        if form.is_valid():
+            print("Form válido - Campos cleaned_data:")
+            for field, value in form.cleaned_data.items():
+                print(f"  {field}: {value}")
+        else:
+            print("Form errors:", form.errors)
+            
+        if not formset.is_valid():
+            print("Formset errors:", formset.errors)
 
         if form.is_valid() and formset.is_valid():
-            with transaction.atomic():
-                # Salvar o form primeiro (isso lida com campos ManyToMany corretamente)
-                camiseta = form.save()
+            try:
+                with transaction.atomic():
+                    # Salvar a camiseta
+                    camiseta = form.save()
+                    print("Camiseta salva com sucesso")
 
-                # Remover imagens antigas apenas se novas forem enviadas
-                for imagem_form in formset:
-                    if imagem_form.cleaned_data.get('DELETE'):
-                        imagem_instance = imagem_form.instance
-                        if imagem_instance.imagem and os.path.isfile(imagem_instance.imagem.path):
-                            os.remove(imagem_instance.imagem.path)
-                        imagem_instance.delete()
+                    # Salvar o formset de imagens
+                    instances = formset.save(commit=False)
+                    for instance in instances:
+                        instance.produto = camiseta
+                        instance.save()
+                        print(f"Imagem {instance.id} salva")
 
-                # Salvar o formset
-                instances = formset.save(commit=False)
-                for instance in instances:
-                    instance.produto = camiseta
-                    instance.save()
-                formset.save_m2m()
+                    # Deletar imagens marcadas para exclusão
+                    for imagem_form in formset.deleted_forms:
+                        if imagem_form.instance.pk:
+                            imagem_instance = imagem_form.instance
+                            if imagem_instance.imagem and os.path.isfile(imagem_instance.imagem.path):
+                                os.remove(imagem_instance.imagem.path)
+                            imagem_instance.delete()
+                            print(f"Imagem {imagem_instance.id} deletada")
 
-            messages.success(request, 'Camiseta atualizada com sucesso!')
-            return redirect('gerenciar_produtos')
+                messages.success(request, 'Camiseta atualizada com sucesso!')
+                print("Redirecionando para gerenciar_produtos")
+                return redirect('gerenciar_produtos')
+                
+            except Exception as e:
+                messages.error(request, f'Erro ao salvar: {str(e)}')
+                print(f"Erro: {e}")
         else:
-            messages.error(request, 'Erro ao atualizar a camiseta. Verifique os campos.')
+            messages.error(request, 'Erro no formulário. Verifique os campos.')
+            print("Formulário inválido")
     else:
+        # GET request - inicializar forms com dados atuais
         form = CamisetaForm(instance=camiseta)
-        formset = ImagemProdutoBaseFormSet(queryset=camiseta.imagens.all())
+        formset = ImagemProdutoBaseFormSet(queryset=camiseta.imagens.all(), prefix='imagens')
+        
+        # CORREÇÃO: Remover o .all() dos campos que são strings
+        print("Valores iniciais da camiseta:")
+        print(f"Turnos: {camiseta.turnos}")
+        print(f"Estilos: {camiseta.estilos}")  # Removido .all()
+        print(f"Tamanhos: {camiseta.tamanhos}")  # Removido .all()
+        print(f"Forma pag op: {camiseta.forma_pag_op}")  # Removido .all()
 
-    return render(request, 'camisetas/edit_camiseta.html', {'form': form, 'formset': formset})
+    return render(request, 'camisetas/edit_camiseta.html', {
+        'form': form, 
+        'formset': formset,
+        'camiseta': camiseta
+    })
 
 # ---- admin-----#
 

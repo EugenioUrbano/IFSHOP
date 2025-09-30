@@ -7,23 +7,20 @@
 {% block filtro %}{% endblock %}
 
 {% block content %}
-<div style=" color: black; padding: 10px;" class=" justify-content-center ">
-    <div class=" row justify-content-end d-flex flex-wrap align-items-center">
-        <h1 class="col-4">Gerencie seus Produtos</h1>
-    <div class="text-end col-4" style="position: relative; padding-left: 5px;">
-        <div class="dropdown">
-            <button class="btn botoes shadow-lg rounded-pill px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Adicionar Produto
-            </button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{% url 'criar_produto' %}">Produto Diversificado</a></li>
-                <li><a class="dropdown-item" href="{% url 'criar_camiseta' %}">Camiseta</a></li>
-            </ul>
-        </div>
-    </div>
+<div class=" text-center">
+    <h1 class="">Gerencie seus Produtos</h1>
+</div>
+<div class="text-end " style="padding-right: 30px;">
+    <div class="dropdown">
+        <button class="btn botoes shadow-lg rounded-pill px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Adicionar Produto
+        </button>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'criar_produto' %}">Produto Diversificado</a></li>
+            <li><a class="dropdown-item" href="{% url 'criar_camiseta' %}">Camiseta</a></li>
+        </ul>
     </div>
 </div>
-
 <ul style="list-style: none; padding: 0;" class="container body-content">
     {% if itens%}
         {% for item in itens %}

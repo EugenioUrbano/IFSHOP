@@ -33,14 +33,16 @@
 {% block filtro %}
 <section class="b-example-divider filtros-fundo container my-5">
     <form method="get" class="d-flex">
-        <div id="filter_bar" class="row g-1 mx-auto p-0">
-            <div class="col-md-6">
-                {{ form.turnos|as_crispy_field }}
+        <div id="filter_bar" class="row g-1 mx-auto p-0 w-100">
+            <div class="col-md-5">
+                <label for="{{ form.turnos.id_for_label }}" class="form-label">Turno</label>
+                {{ form.turnos }}
             </div>
-            <div class="col-md-6">
-                {{ form.cursos|as_crispy_field }}
+            <div class="col-md-5">
+                <label for="{{ form.cursos.id_for_label }}" class="form-label">Curso</label>
+                {{ form.cursos }}
             </div>
-            <div class="col-md-12">
+            <div class="col-md-2 d-flex align-items-end">
                 <button type="submit" class="btn w-100 botoes shadow-lg rounded-pill px-3">Filtrar</button>
             </div>
         </div>
