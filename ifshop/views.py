@@ -17,44 +17,31 @@ import openpyxl, json, os
 # ---- index ----- #
 
 def index(request):
-    form = FiltroProdutoForm(request.GET or None)
+    form = FiltroProdutoForm(request.GET)
     
     # Buscar todos os produtos base
     produtos_base = ProdutoBase.objects.all().prefetch_related('imagens', 'cursos')
     camisetas_ids = Camiseta.objects.values_list('produtobase_ptr_id', flat=True)
     
-    # Debug
-    print("=== DEBUG FILTRO ===")
-    print("GET parameters:", request.GET)
-    print("Turnos value:", request.GET.get('turnos'))
-    print("Cursos value:", request.GET.get('cursos'))
 
     if form.is_valid():
         turnos = form.cleaned_data.get('turnos')
         cursos = form.cleaned_data.get('cursos')
         
-        print("Turnos cleaned:", turnos)
-        print("Cursos cleaned:", cursos)
-        print("Form valid")
-
-        # Filtro de turnos - considerar que '' significa "todos os turnos"
-        if turnos:  # Se um turno específico foi selecionado (não vazio)
-            produtos_base = produtos_base.filter(turnos=turnos)
+        if turnos:  
+            produtos_base = produtos_base.filter(turnos__iexact=turnos)
             print(f"Filtro turnos aplicado: {turnos}")
-        # Se turnos for vazio (todos os turnos), não aplicar filtro
         
-        # Filtro de cursos
-        if cursos:  # Se um curso específico foi selecionado
-            produtos_base = produtos_base.filter(cursos=cursos)
+        if cursos:  
+            produtos_com_curso = produtos_base.filter(cursos=cursos)
             print(f"Filtro cursos aplicado: {cursos}")
-        # Se cursos for None (todos os cursos), não aplicar filtro
+            produtos_base = produtos_com_curso
         
         print(f"Produtos após filtro: {produtos_base.count()}")
     else:
         print("Form inválido")
         print("Errors:", form.errors)
 
-    # Processar produtos para exibição
     produtos_com_imagens = []
     data_hoje = now().date()
     

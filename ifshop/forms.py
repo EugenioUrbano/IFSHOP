@@ -49,9 +49,9 @@ class FiltroProdutoForm(forms.Form):
     turnos = forms.ChoiceField(
         choices=[
             ('', 'Todos os Turnos'),  
-            ('matutino', 'Matutino'),
-            ('vespertino', 'Vespertino'),
-            ('noturno', 'Noturno')
+            ('Matutino', 'Matutino'),
+            ('Vespertino', 'Vespertino'),
+            ('Noturno', 'Noturno')
         ],
         required=False,
         widget=forms.Select(attrs={'class': 'form-select form-select-sm d-inline p-2'})
