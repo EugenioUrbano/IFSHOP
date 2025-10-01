@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Adicionar Produto - IFSHOP{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Cabeçalho -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 hre class="h3 mb-0">
+                    <i class="fas fa-plus-circle text-primary me-2"></i>
+                    Adicionar Novo Produto
+                </h1>
+                <a href="{% url 'gerenciar_produtos' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Voltar aos Produtos
+                </a>
+            </div>
+
+            <!-- Card do Formulário -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Informações do Produto
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data" id="produtoForm">
+                        {% csrf_token %}
+                        
+                        {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <strong>Erro!</strong> Por favor, corrija os erros abaixo.
+                            <ul class="mb-0 mt-2">
+                                {% for field, errors in form.errors.items %}
+                                    {% for error in errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+
+                        <div class="row">
+                            <!-- Nome do Produto -->
+                            <div class="col-md-12 mb-3">
+                                <label for="id_nome" class="form-label fw-bold">
+                                    Nome do Produto *
+                                </label>
+                                <input type="text" name="nome" class="form-control" id="id_nome" 
+                                       placeholder="Ex: Botton do Curso de Meio Ambiente" required
+                                       value="{{ form.nome.value|default:'' }}">
+                                <div class="form-text">Digite um nome claro e descritivo para o produto.</div>
+                            </div>
+
+                            <!-- Descrição -->
+                            <div class="col-md-12 mb-3">
+                                <label for="id_descricao" class="form-label fw-bold">
+                                    Descrição *
+                                </label>
+                                <textarea name="descricao" class="form-control" id="id_descricao" 
+                                          rows="4" placeholder="Descreva o produto detalhadamente..." 
+                                          required>{{ form.descricao.value|default:'' }}</textarea>
+                                <div class="form-text">Descreva detalhes importantes sobre o produto.</div>
+                            </div>
+
+                            <!-- Preço  -->
+                            <div class="col-md-6 mb-3">
+                                <label for="id_preco" class="form-label fw-bold">
+                                    Preço (R$) *
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">R$</span>
+                                    <input type="number" name="preco" class="form-control" id="id_preco" 
+                                           step="0.01" min="0.01" placeholder="0.00" required
+                                           value="{{ form.preco.value|default:'' }}">
+                                </div>
+                            </div> 
+
+                            <!-- Quantidade em Estoque -->
+                            <div class="col-md-6 mb-3">
+                                <label for="id_quantidade_estoque" class="form-label fw-bold">
+                                    Quantidade em Estoque *
+                                </label>
+                                <input type="number" name="quantidade_estoque" class="form-control" 
+                                       id="id_quantidade_estoque" min="0" placeholder="0" required
+                                       value="{{ form.quantidade_estoque.value|default:'0' }}">
+                            </div>
+
+                            <!-- Imagem do Produto -->
+                            <div class="col-md-6 mb-3">
+                                <label for="id_imagem" class="form-label fw-bold">
+                                    Imagem do Produto
+                                </label>
+                                <input type="file" name="imagem" class="form-control" id="id_imagem" 
+                                       accept="image/jpeg,image/png,image/gif">
+                                <div class="form-text">Formatos: JPG, PNG, GIF. Tamanho máximo: 5MB.</div>
+                            </div>
+
+                            <!-- Opções Adicionais -->
+                            <div class="col-12 mb-4">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h6 class="card-title">
+                                            <i class="fas fa-cog me-2"></i>Opções Adicionais
+                                        </h6>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-check form-switch">
+                                                    <input type="checkbox" name="disponivel" 
+                                                           class="form-check-input" id="id_disponivel" 
+                                                           {% if form.disponivel.value %}checked{% endif %}>
+                                                    <label class="form-check-label fw-bold" for="id_disponivel">
+                                                        Produto Disponível
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-check form-switch">
+                                                    <input type="checkbox" name="destaque" 
+                                                           class="form-check-input" id="id_destaque"
+                                                           {% if form.destaque.value %}checked{% endif %}>
+                                                    <label class="form-check-label fw-bold" for="id_destaque">
+                                                        Produto em Destaque
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-check form-switch">
+                                                    <input type="checkbox" name="promocao" 
+                                                           class="form-check-input" id="id_promocao"
+                                                           {% if form.promocao.value %}checked{% endif %}>
+                                                    <label class="form-check-label fw-bold" for="id_promocao">
+                                                        Está em Promoção?
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Preço de Promoção (condicional) -->
+                            <div class="col-md-6 mb-3" id="precoPromocaoField" style="display: none;">
+                                <label for="id_preco_promocao" class="form-label fw-bold text-danger">
+                                    Preço Promocional (R$)
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">R$</span>
+                                    <input type="number" name="preco_promocao" class="form-control" 
+                                           id="id_preco_promocao" step="0.01" min="0.01" 
+                                           placeholder="0.00" value="{{ form.preco_promocao.value|default:'' }}">
+                                </div>
+                                <div class="form-text">Preço especial durante a promoção.</div>
+                            </div>
+                        </div>
+
+                        <!-- Botões de Ação -->
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <button type="reset" class="btn btn-outline-secondary">
+                                <i class="fas fa-undo me-2"></i>Limpar
+                            </button>
+                            <div>
+                                <button type="submit" class="btn btn-success me-2">
+                                    <i class="fas fa-save me-2"></i>Salvar Produto
+                                </button>
+                                <button type="submit" name="adicionar_outro" value="true" class="btn btn-primary">
+                                    <i class="fas fa-plus me-2"></i>Salvar e Adicionar Outro
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Mostrar/ocultar campo de preço promocional
+    const promocaoCheckbox = document.getElementById('id_promocao');
+    const precoPromocaoField = document.getElementById('precoPromocaoField');
+    
+    function togglePrecoPromocao() {
+        if (promocaoCheckbox.checked) {
+            precoPromocaoField.style.display = 'block';
+            // Torna o campo obrigatório quando visível
+            document.getElementById('id_preco_promocao').required = true;
+        } else {
+            precoPromocaoField.style.display = 'none';
+            document.getElementById('id_preco_promocao').required = false;
+        }
+    }
+    
+    promocaoCheckbox.addEventListener('change', togglePrecoPromocao);
+    togglePrecoPromocao(); // Estado inicial
+    
+    // Validação do preço promocional
+    const precoPromocaoInput = document.getElementById('id_preco_promocao');
+    const precoInput = document.getElementById('id_preco');
+    
+    precoPromocaoInput.addEventListener('blur', function() {
+        if (promocaoCheckbox.checked && this.value && precoInput.value) {
+            const preco = parseFloat(precoInput.value);
+            const precoPromo = parseFloat(this.value);
+            
+            if (precoPromo >= preco) {
+                alert('O preço promocional deve ser menor que o preço normal!');
+                this.focus();
+            }
+        }
+    });
+    
+    // Preview da imagem
+    const imagemInput = document.getElementById('id_imagem');
+    imagemInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // Validação básica de tipo e tamanho
+            const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            
+            if (!validTypes.includes(file.type)) {
+                alert('Por favor, selecione uma imagem nos formatos JPG, PNG ou GIF.');
+                this.value = '';
+                return;
+            }
+            
+            if (file.size > maxSize) {
+                alert('A imagem deve ter no máximo 5MB.');
+                this.value = '';
+                return;
+            }
+            
+            // Mostrar preview da imagem (opcional)
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Você pode adicionar um preview da imagem aqui se quiser
+                console.log('Imagem carregada para preview');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // Validação do formulário antes do envio
+    document.getElementById('produtoForm').addEventListener('submit', function(e) {
+        const preco = parseFloat(precoInput.value);
+        const quantidade = parseInt(document.getElementById('id_quantidade_estoque').value);
+        
+        if (preco <= 0) {
+            alert('O preço deve ser maior que zero!');
+            e.preventDefault();
+            return;
+        }
+        
+        if (quantidade < 0) {
+            alert('A quantidade em estoque não pode ser negativa!');
+            e.preventDefault();
+            return;
+        }
+        
+        if (promocaoCheckbox.checked && precoPromocaoInput.value) {
+            const precoPromo = parseFloat(precoPromocaoInput.value);
+            if (precoPromo >= preco) {
+                alert('O preço promocional deve ser menor que o preço normal!');
+                e.preventDefault();
+                return;
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

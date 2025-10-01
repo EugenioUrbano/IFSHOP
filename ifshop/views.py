@@ -600,6 +600,41 @@ def gerenciar_produtos(request):
 
     return render(request, 'produtos/gerenciar_produtos.html', {'itens': itens_paginados})
 
+@login_required
+def criar_product(request):
+    categorias = Categoria.objects.filter(ativo=True)
+    
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                # Salvar o produto associado ao usuário logado
+                product = form.save(commit=False)
+                product.vendedor = request.user
+                product.save()
+                
+                messages.success(request, f'Produto "{product.nome}" adicionado com sucesso!')
+                
+                # Verificar qual botão foi clicado
+                if 'adicionar_outro' in request.POST:
+                    # Se clicou em "Salvar e Adicionar Outro", redireciona para a mesma página
+                    return redirect('criar_produto')
+                else:
+                    # Se clicou em "Salvar Produto", redireciona para gerenciar produtos
+                    return redirect('gerenciar_produtos')
+                    
+            except Exception as e:
+                messages.error(request, f'Erro ao salvar produto: {str(e)}')
+        else:
+            messages.error(request, 'Por favor, corrija os erros no formulário.')
+    else:
+        form = ProductForm()
+    
+    context = {
+        'form': form,
+        'categorias': categorias
+    }
+    return render(request, 'produtos/criar_produto.html', context)
     
 @login_required
 @user_passes_test(vendedor)
