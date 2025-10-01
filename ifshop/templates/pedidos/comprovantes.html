@@ -1,164 +1,209 @@
-{% extends 'base.html' %}
-
+{% extends "base.html" %}
 {% load static %}
-{% load crispy_forms_filters %}
 
-{% block title %}
-  Realizar pagamento
-{% endblock %}
-
-{% block filtro %}{% endblock %}
+{% block title %}Anexar Comprovante{% endblock %}
 
 {% block content %}
-{% if messages %}
-  <div class="container mt-3">
-    {% for message in messages %}
-      <div class="alert alert-{{ message.tags }}">
-        {{ message }}
-      </div>
-    {% endfor %}
-  </div>
-{% endif %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Anexar Comprovante</h1>
 
-{% comment %}
-  Define 'item' como o objeto correto: primeira camiseta se houver, senão o produto genérico
-{% endcomment %}
-{% if pedido.camisetas.exists %}
-  {% with item=pedido.camisetas.first %}
-{% else %}
-  {% with item=pedido.produto %}
-{% endif %}
-
-{# Modal Pix Total #}
-{% if item.pix_chave_total or item.pix_qr_code_total %}
-<div class="modal fade" id="exampleModal_pix" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4>Qr Code e Chave Pix Para Pagamento</h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body text-center">
-        {% if item.pix_qr_code_total %}
-          <img src="{{ item.pix_qr_code_total.url }}" class="thumbnail" style="width: 200px; height: 200px;" />
-        {% else %}
-          <p>Não tem Qr Code</p>
-        {% endif %}
-        <hr class="dropdown-divider" />
-        {% if item.pix_chave_total %}
-          <p><span id="texto1">{{ item.pix_chave_total }}</span></p>
-        {% else %}
-          <p>Não tem Chave Pix</p>
-        {% endif %}
-      </div>
-    </div>
-  </div>
-</div>
-{% else %}
-<div class="modal fade" id="exampleModal_pix" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4>Não tem Qr Code e nem Chave Pix</h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-    </div>
-  </div>
-</div>
-{% endif %}
-
-{# Modal Pix Parcelado 2x #}
-{% if item.pix_chave_parcela or item.pix_qr_code_parcela %}
-<div class="modal fade" id="exampleModal_pix2x" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4>Qr Code e Chave Pix Para Pagamento</h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body text-center">
-        {% if item.pix_qr_code_parcela %}
-          <img src="{{ item.pix_qr_code_parcela.url }}" class="thumbnail" style="width: 200px; height: 200px;" />
-        {% else %}
-          <p>Não tem Qr Code</p>
-        {% endif %}
-        <hr class="dropdown-divider" />
-        {% if item.pix_chave_parcela %}
-          <p><span id="texto2">{{ item.pix_chave_parcela }}</span></p>
-        {% else %}
-          <p>Não tem Chave Pix</p>
-        {% endif %}
-      </div>
-    </div>
-  </div>
-</div>
-{% else %}
-<div class="modal fade" id="exampleModal_pix2x" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4>Não tem Qr Code e nem Chave Pix</h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-    </div>
-  </div>
-</div>
-{% endif %}
-
-<div class="p-5">
-  <div class="modal modal-sheet position-static d-block p-4 py-md-5" tabindex="-1" role="dialog" id="modalSignin">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content rounded-4 shadow login-cadastro">
-        <div class="modal-header">
-          <h1>Realizar Pagamento</h1>
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
         </div>
-
-        {% if pedido.forma_pag == "Pix" %}
-          <a type="button" class="mx-auto mt-3 btn botoes shadow-lg" data-bs-toggle="modal" data-bs-target="#exampleModal_pix">Ver chave</a>
-        {% elif pedido.forma_pag == "Parcelado 2x Pix" %}
-          <a type="button" class="mx-auto mt-3 btn botoes shadow-lg" data-bs-toggle="modal" data-bs-target="#exampleModal_pix2x">Ver chave</a>
-        {% endif %}
-
-        <form method="post" enctype="multipart/form-data">
-          {% csrf_token %}
-          <div class="modal-body">
-            {% if pedido.forma_pag == 'Pix' %}
-              {% if hoje < item.data_pag1 %}
-                {{ form.comprovante_total|as_crispy_field }}
-              {% else %}
-                <h4>Você não pode mais anexar o comprovante da primeira parcela</h4>
-                <h5>Negocie com:</h5>
-                <p>Aluno(a) responsável: {{ item.vendedor.username }}</p>
-              {% endif %}
-            {% elif pedido.forma_pag == 'Parcelado 2x Pix' %}
-              {% if hoje <= item.data_pag1 %}
-                {{ form.comprovante_parcela1|as_crispy_field }}
-              {% else %}
-                <h4>Você ainda não pode ou não pode mais anexar primeira parcela.</h4>
-                <h5>Negocie com:</h5>
-                <p>Aluno(a) responsável: {{ item.vendedor.username }}</p>
-              {% endif %}
-
-              {% if hoje <= item.data_pag2 %}
-                {{ form.comprovante_parcela2|as_crispy_field }}
-              {% else %}
-                <h3>Você ainda não pode anexar um comprovante (ou não pode mais)</h3>
-                <h4>Negocie com:</h4>
-                <p>Aluno(a) responsável: {{ item.vendedor.username }}</p>
-              {% endif %}
-            {% endif %}
-
-            <div class="col-md-6">
-              <a href="{% url 'carrinho' %}" class="btn btn-secondary">Voltar</a>
-              <button class="btn botoes shadow-lg rounded px-3" type="submit">Salvar</button>
-            </div>
-          </div>
-          <div class="modal-footer"></div>
-        </form>
-      </div>
+        {% endfor %}
     </div>
-  </div>
-</div>
+    {% endif %}
 
-{% endwith %}
+    <!-- Informações do Pedido -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Informações do Pedido</h5>
+        </div>
+        <div class="card-body">
+            {% if pedido.camisetas.exists %}
+                {% with camiseta=pedido.camisetas.first %}
+                <p><strong>Produto:</strong> {{ camiseta.camiseta.titulo }}</p>
+                <p><strong>Cor:</strong> {{ pedido.opcao_escolhida }}</p>
+                <p><strong>Nome na Estampa:</strong> {{ camiseta.nome_estampa }}</p>
+                <p><strong>Número na Estampa:</strong> {{ camiseta.numero_estampa }}</p>
+                <p><strong>Tamanho:</strong> {{ camiseta.tamanho }}</p>
+                <p><strong>Estilo:</strong> {{ camiseta.estilo }}</p>
+                {% endwith %}
+            {% else %}
+                <p><strong>Produto:</strong> {{ pedido.produto.titulo }}</p>
+                <p><strong>Opção Escolhida:</strong> {{ pedido.opcao_escolhida }}</p>
+            {% endif %}
+            <p><strong>Forma de Pagamento:</strong> {{ pedido.forma_pag }}</p>
+            <p><strong>Status:</strong> {{ pedido.status }}</p>
+            <p><strong>Data do Pedido:</strong> {{ pedido.data_pedido }}</p>
+        </div>
+    </div>
+
+    <!-- Informações de Pagamento -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Informações de Pagamento</h5>
+        </div>
+        <div class="card-body">
+            {% if pedido.camisetas.exists %}
+                {% with produto=pedido.camisetas.first.camiseta %}
+                <p><strong>Preço Total:</strong> R$ {{ produto.preco }}</p>
+                <p><strong>Preço da Parcela:</strong> R$ {{ produto.preco_parcela }}</p>
+                <p><strong>Data para Pagamento Total:</strong> {{ produto.data_pag1 }}</p>
+                {% if produto.data_pag2 %}
+                <p><strong>Data para 2ª Parcela:</strong> {{ produto.data_pag2 }}</p>
+                {% endif %}
+                
+                <!-- QR Codes e Chaves PIX -->
+                {% if pedido.forma_pag == "Pix" or pedido.forma_pag == "Parcelado 2x Pix" %}
+                <div class="row mt-3">
+                    {% if produto.pix_qr_code_total %}
+                    <div class="col-md-6">
+                        <h6>QR Code para Pagamento Total</h6>
+                        <img src="{{ produto.pix_qr_code_total.url }}" alt="QR Code Total" class="img-fluid" style="max-height: 200px;">
+                        <p class="small mt-2"><strong>Chave PIX:</strong> {{ produto.pix_chave_total }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if produto.pix_qr_code_parcela and pedido.forma_pag == "Parcelado 2x Pix" %}
+                    <div class="col-md-6">
+                        <h6>QR Code para Parcela</h6>
+                        <img src="{{ produto.pix_qr_code_parcela.url }}" alt="QR Code Parcela" class="img-fluid" style="max-height: 200px;">
+                        <p class="small mt-2"><strong>Chave PIX:</strong> {{ produto.pix_chave_parcela }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+                {% endwith %}
+            {% else %}
+                <p><strong>Preço Total:</strong> R$ {{ pedido.produto.preco }}</p>
+                <p><strong>Preço da Parcela:</strong> R$ {{ pedido.produto.preco_parcela }}</p>
+                <p><strong>Data para Pagamento Total:</strong> {{ pedido.produto.data_pag1 }}</p>
+                {% if pedido.produto.data_pag2 %}
+                <p><strong>Data para 2ª Parcela:</strong> {{ pedido.produto.data_pag2 }}</p>
+                {% endif %}
+                
+                <!-- QR Codes e Chaves PIX -->
+                {% if pedido.forma_pag == "Pix" or pedido.forma_pag == "Parcelado 2x Pix" %}
+                <div class="row mt-3">
+                    {% if pedido.produto.pix_qr_code_total %}
+                    <div class="col-md-6">
+                        <h6>QR Code para Pagamento Total</h6>
+                        <img src="{{ pedido.produto.pix_qr_code_total.url }}" alt="QR Code Total" class="img-fluid" style="max-height: 200px;">
+                        <p class="small mt-2"><strong>Chave PIX:</strong> {{ pedido.produto.pix_chave_total }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if pedido.produto.pix_qr_code_parcela and pedido.forma_pag == "Parcelado 2x Pix" %}
+                    <div class="col-md-6">
+                        <h6>QR Code para Parcela</h6>
+                        <img src="{{ pedido.produto.pix_qr_code_parcela.url }}" alt="QR Code Parcela" class="img-fluid" style="max-height: 200px;">
+                        <p class="small mt-2"><strong>Chave PIX:</strong> {{ pedido.produto.pix_chave_parcela }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Formulário para Anexar Comprovantes -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Anexar Comprovantes</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    {{ form.comprovante_total.label_tag }}
+                    {{ form.comprovante_total }}
+                    {% if form.comprovante_total.help_text %}
+                    <div class="form-text">{{ form.comprovante_total.help_text }}</div>
+                    {% endif %}
+                    {% if form.comprovante_total.errors %}
+                    <div class="alert alert-danger mt-1">
+                        {{ form.comprovante_total.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.comprovante_parcela1.label_tag }}
+                    {{ form.comprovante_parcela1 }}
+                    {% if form.comprovante_parcela1.help_text %}
+                    <div class="form-text">{{ form.comprovante_parcela1.help_text }}</div>
+                    {% endif %}
+                    {% if form.comprovante_parcela1.errors %}
+                    <div class="alert alert-danger mt-1">
+                        {{ form.comprovante_parcela1.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.comprovante_parcela2.label_tag }}
+                    {{ form.comprovante_parcela2 }}
+                    {% if form.comprovante_parcela2.help_text %}
+                    <div class="form-text">{{ form.comprovante_parcela2.help_text }}</div>
+                    {% endif %}
+                    {% if form.comprovante_parcela2.errors %}
+                    <div class="alert alert-danger mt-1">
+                        {{ form.comprovante_parcela2.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="{% url 'carrinho' %}" class="btn btn-secondary me-md-2">Voltar ao Carrinho</a>
+                    <button type="submit" class="btn btn-primary">Enviar Comprovante</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Comprovantes Já Enviados -->
+    {% if pedido.comprovante_total or pedido.comprovante_parcela1 or pedido.comprovante_parcela2 %}
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Comprovantes Enviados</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% if pedido.comprovante_total %}
+                <div class="col-md-4">
+                    <h6>Comprovante Total</h6>
+                    <a href="{{ pedido.comprovante_total.url }}" target="_blank">
+                        <img src="{{ pedido.comprovante_total.url }}" alt="Comprovante Total" class="img-fluid" style="max-height: 150px;">
+                    </a>
+                </div>
+                {% endif %}
+                
+                {% if pedido.comprovante_parcela1 %}
+                <div class="col-md-4">
+                    <h6>1ª Parcela</h6>
+                    <a href="{{ pedido.comprovante_parcela1.url }}" target="_blank">
+                        <img src="{{ pedido.comprovante_parcela1.url }}" alt="Comprovante 1ª Parcela" class="img-fluid" style="max-height: 150px;">
+                    </a>
+                </div>
+                {% endif %}
+                
+                {% if pedido.comprovante_parcela2 %}
+                <div class="col-md-4">
+                    <h6>2ª Parcela</h6>
+                    <a href="{{ pedido.comprovante_parcela2.url }}" target="_blank">
+                        <img src="{{ pedido.comprovante_parcela2.url }}" alt="Comprovante 2ª Parcela" class="img-fluid" style="max-height: 150px;">
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
 {% endblock %}
