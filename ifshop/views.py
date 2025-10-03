@@ -1,4 +1,4 @@
-from .forms import CamisetaForm, PedidoBaseForm, PedidoCamisetaForm, AlterarStatusPedidoForm, FiltroProdutoForm, FiltroPedidosForm, CadastroUsuarioForm, LoginUsuarioForm, ImagemProdutoBaseFormSet, AnexoComprovantesPedidoForm
+from .forms import CamisetaForm, PedidoBaseForm, ProdutoBaseForm, PedidoCamisetaForm, AlterarStatusPedidoForm, FiltroProdutoForm, FiltroPedidosForm, CadastroUsuarioForm, LoginUsuarioForm, ImagemProdutoBaseFormSet, AnexoComprovantesPedidoForm, ProdutoForm
 from .models import Camiseta, ProdutoBase, PedidoBase, ImagemProdutoBase, EstiloTamanho, PedidoCamiseta, UsuarioCustomizado
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect, get_object_or_404
@@ -601,41 +601,30 @@ def gerenciar_produtos(request):
     return render(request, 'produtos/gerenciar_produtos.html', {'itens': itens_paginados})
 
 @login_required
-def criar_product(request):
-    categorias = Categoria.objects.filter(ativo=True)
+@user_passes_test(vendedor)
+def criar_produto(request):
+    print("=== CRIAR PRODUTO VIEW ===")
+    print("Método:", request.method)
     
     if request.method == 'POST':
-        form = ProductForm(request.POST, request.FILES)
-        if form.is_valid():
-            try:
-                # Salvar o produto associado ao usuário logado
-                product = form.save(commit=False)
-                product.vendedor = request.user
-                product.save()
-                
-                messages.success(request, f'Produto "{product.nome}" adicionado com sucesso!')
-                
-                # Verificar qual botão foi clicado
-                if 'adicionar_outro' in request.POST:
-                    # Se clicou em "Salvar e Adicionar Outro", redireciona para a mesma página
-                    return redirect('criar_produto')
-                else:
-                    # Se clicou em "Salvar Produto", redireciona para gerenciar produtos
-                    return redirect('gerenciar_produtos')
-                    
-            except Exception as e:
-                messages.error(request, f'Erro ao salvar produto: {str(e)}')
-        else:
-            messages.error(request, 'Por favor, corrija os erros no formulário.')
+        form = ProdutoBaseForm(request.POST, request.FILES)
+        formset = ImagemProdutoBaseFormSet(request.POST, request.FILES, queryset=ImagemProdutoBase.objects.none())
+        print("POST - Form válido?", form.is_valid())
+        if not form.is_valid():
+            print("Form errors:", form.errors)
     else:
-        form = ProductForm()
+        form = ProdutoBaseForm()
+        formset = ImagemProdutoBaseFormSet(queryset=ImagemProdutoBase.objects.none())
+        print("GET - Form inicializado")
+        print("Form fields:", [field.name for field in form])
     
     context = {
         'form': form,
-        'categorias': categorias
+        'formset': formset
     }
-    return render(request, 'produtos/criar_produto.html', context)
+    print("Context keys:", context.keys())
     
+    return render(request, 'produtos/criar_produto.html', context)
 @login_required
 @user_passes_test(vendedor)
 def excluir_produto(request, produto_id):
@@ -650,8 +639,6 @@ def excluir_produto(request, produto_id):
 def edit_produto(request):
     return render(request, 'produtos/edit_produto.html')
 
-def criar_produto(request):
-    return render(request, 'produtos/criar_produto.html')
 
 def pedidos_produtos(request):
     return render(request, 'pedidos/pedidos_produtos.html')

@@ -332,3 +332,10 @@ class AnexoComprovantesPedidoForm(forms.ModelForm):
     class Meta:
         model = PedidoBase
         fields = ['comprovante_total', 'comprovante_parcela1', 'comprovante_parcela2']
+
+class ProdutoForm(ProdutoBaseForm):
+    class Meta(ProdutoBaseForm.Meta):
+        model = ProdutoBase
+        fields = ['titulo', 'preco', 'preco_parcela', 'forma_pag_op', 'data_limite_pedidos', 'curso', 
+                  'turnos', "pix_qr_code_parcela", "pix_qr_code_total", "pix_chave_parcela", "pix_chave_total",
+                  "turma", "data_pag1", "data_pag2"]
