@@ -603,28 +603,43 @@ def gerenciar_produtos(request):
 @login_required
 @user_passes_test(vendedor)
 def criar_produto(request):
-    print("=== CRIAR PRODUTO VIEW ===")
-    print("Método:", request.method)
-    
     if request.method == 'POST':
         form = ProdutoBaseForm(request.POST, request.FILES)
         formset = ImagemProdutoBaseFormSet(request.POST, request.FILES, queryset=ImagemProdutoBase.objects.none())
-        print("POST - Form válido?", form.is_valid())
-        if not form.is_valid():
-            print("Form errors:", form.errors)
+        
+        if form.is_valid() and formset.is_valid():
+            try:
+                # Salvar o produto
+                produto = form.save(commit=False)
+                produto.vendedor = request.user
+                produto.save()
+                
+                # Salvar imagens
+                for form_img in formset:
+                    if form_img.cleaned_data.get('imagem'):
+                        imagem = form_img.save(commit=False)
+                        imagem.produto = produto
+                        imagem.save()
+                
+                messages.success(request, 'Produto criado com sucesso!')
+                
+                if 'adicionar_outro' in request.POST:
+                    return redirect('criar_produto')
+                else:
+                    return redirect('gerenciar_produtos')
+                    
+            except Exception as e:
+                messages.error(request, f'Erro ao salvar produto: {str(e)}')
+        else:
+            messages.error(request, 'Por favor, corrija os erros no formulário.')
     else:
         form = ProdutoBaseForm()
         formset = ImagemProdutoBaseFormSet(queryset=ImagemProdutoBase.objects.none())
-        print("GET - Form inicializado")
-        print("Form fields:", [field.name for field in form])
     
-    context = {
+    return render(request, 'produtos/criar_produto.html', {
         'form': form,
         'formset': formset
-    }
-    print("Context keys:", context.keys())
-    
-    return render(request, 'produtos/criar_produto.html', context)
+    })
 @login_required
 @user_passes_test(vendedor)
 def excluir_produto(request, produto_id):

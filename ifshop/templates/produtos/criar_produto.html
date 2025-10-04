@@ -22,6 +22,16 @@
                     <h2 class="fw-bold mb-5">Criar Produto</h2>
                 </div>
 
+                <!-- Mensagens -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
                 <!-- Formulário -->
                 {% if form and form.fields %}
                 <form method="post" enctype="multipart/form-data">
@@ -96,10 +106,14 @@
                                 {{ form.turma|as_crispy_field }}
                             </div>
                             <div class="col-md-6 mb-3">
+                                {{ form.cursos|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 mb-3">
                                 {{ form.data_limite_pedidos|as_crispy_field }}
                             </div>
                         </div>
                     </div>
+
 
                     <!-- Formset de imagens -->
                     {% if formset %}
@@ -138,12 +152,6 @@
                 {% else %}
                 <div class="alert alert-danger">
                     <strong>ERRO CRÍTICO:</strong> O formulário não foi carregado ou não tem campos.
-                    <p>Verifique:</p>
-                    <ul>
-                        <li>Se a view está passando 'form' no contexto</li>
-                        <li>Se o ProdutoBaseForm está definido corretamente</li>
-                        <li>Se há imports corretos no views.py</li>
-                    </ul>
                 </div>
                 {% endif %}
 

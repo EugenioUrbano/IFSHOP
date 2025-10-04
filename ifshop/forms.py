@@ -80,89 +80,136 @@ class FiltroPedidosForm(forms.Form):
 
 class ProdutoBaseForm(forms.ModelForm):
     data_limite_pedidos = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control rounded-3 ',}), required=True)
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control rounded-3'}), 
+        required=True
+    )
     
     data_pag1 = forms.DateField(
         label="Data para pagamento",
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control rounded-3 ',}), required=True)
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control rounded-3'}), 
+        required=True
+    )
     
     data_pag2 = forms.DateField(
         label="Data para pagamento da segunda parcela",
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control rounded-3',}), required=False, )
-    
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control rounded-3'}), 
+        required=False
+    )
     
     titulo = forms.CharField(
         max_length=100,
-        widget=forms.TextInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: Camisa De InfoWeb4M...'}), required=True)
+        widget=forms.TextInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: Camisa De InfoWeb4M...'}), 
+        required=True
+    )
     
     preco = forms.DecimalField(
         label="Preço Total",
-        widget=forms.NumberInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: 00,00'}), required=True)
+        widget=forms.NumberInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: 00,00'}), 
+        required=True
+    )
     
     preco_parcela = forms.DecimalField(
         label="Preço Parcelas",
-        widget=forms.NumberInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: 00,00'}), required=False)
+        widget=forms.NumberInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: 00,00'}), 
+        required=False
+    )
     
     forma_pag_op = forms.MultipleChoiceField(
         choices=ProdutoBase.FORMA_PAG_OPCOES,
-        label= 'Formas de Pagamento Disponivel' ,
-        widget=forms.CheckboxSelectMultiple(attrs={'class': 'd-inline-block form-check-input '}), required=True)
-    
-    curso = forms.ModelChoiceField(
-        queryset=Curso.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-select rounded-3'}),
-        required=True,
-        label="Curso deste produto"
+        label='Formas de Pagamento Disponíveis',
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'd-inline-block form-check-input'}), 
+        required=True
     )
+    
+    cursos = forms.ChoiceField(
+        choices=[
+            ('', 'Selecione um curso'),  # Opção vazia
+            ('Informática', 'Informática'),
+            ('Meio Ambiente', 'Meio Ambiente'),
+            ('Edificações', 'Edificações'),
+        ],
+        widget=forms.Select(attrs={'class': 'form-select rounded-3'}),
+        required=False,
+        label="Curso"
+    )
+    
     turma = forms.CharField(
         max_length=100,
-        widget=forms.TextInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: InfoWeb4M'}), required=True)
+        widget=forms.TextInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: InfoWeb4M'}), 
+        required=True
+    )
     
     turnos = forms.ChoiceField(
         choices=ProdutoBase.TURNOS_OPCOES,
-        widget=forms.Select(attrs={'class': 'form-select rounded-3',}), required=True)
+        widget=forms.Select(attrs={'class': 'form-select rounded-3'}), 
+        required=True
+    )
     
     pix_qr_code_total = forms.ImageField(
-        label= "Imagem Do QrCode Total",
-        widget=forms.FileInput(attrs={'class': 'form-control'}), required= False
-    )
-    pix_qr_code_parcela = forms.ImageField(
-        label= "Imagem Do QrCode Parcela",
-        widget=forms.FileInput(attrs={'class': 'form-control'}), required= False
-    )
-    pix_chave_total = forms.CharField(
-        label= "Coloque a chave pix para o pagamento",
-        widget = forms.TextInput(attrs={'class': 'form-control'}), required= False
-    )
-    pix_chave_parcela = forms.CharField(
-        label= "Coloque a chave pix para o pagamento",
-        widget = forms.TextInput(attrs={'class': 'form-control'}), required= False
+        label="Imagem Do QrCode Total",
+        widget=forms.FileInput(attrs={'class': 'form-control'}), 
+        required=False
     )
     
+    pix_qr_code_parcela = forms.ImageField(
+        label="Imagem Do QrCode Parcela",
+        widget=forms.FileInput(attrs={'class': 'form-control'}), 
+        required=False
+    )
+    
+    pix_chave_total = forms.CharField(
+        label="Coloque a chave pix para o pagamento",
+        widget=forms.TextInput(attrs={'class': 'form-control'}), 
+        required=False
+    )
+    
+    pix_chave_parcela = forms.CharField(
+        label="Coloque a chave pix para o pagamento",
+        widget=forms.TextInput(attrs={'class': 'form-control'}), 
+        required=False
+    )
+    
+    opcoes = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control rounded-3',
+            'placeholder': 'Ex: azul, vermelho, verde'
+        })
+    )
+
     class Meta:
         model = ProdutoBase
-        fields = ['titulo', 'preco', 'preco_parcela', 'forma_pag_op', 'opcoes', 'data_limite_pedidos', 'curso', 
-                  'turnos', "pix_qr_code_parcela", "pix_qr_code_total", "pix_chave_parcela", "pix_chave_total",
-                  "turma", "data_pag1", "data_pag2"]
-        widgets = {
-            'opcoes': forms.TextInput(attrs={'placeholder': 'Ex: azul, vermelho, verde'})
-        }
+        fields = [
+            'titulo', 'preco', 'preco_parcela', 'forma_pag_op', 'opcoes', 
+            'data_limite_pedidos', 'cursos', 'turnos', 'pix_qr_code_parcela', 
+            'pix_qr_code_total', 'pix_chave_parcela', 'pix_chave_total',
+            'turma', 'data_pag1', 'data_pag2'
+        ]
     
     def save(self, commit=True):
         produto = super().save(commit=False)
+        
+        
         if 'forma_pag_op' in self.cleaned_data:
             formas_pagamento = self.cleaned_data['forma_pag_op']
             produto.forma_pag_op = ", ".join(formas_pagamento)
-        
+            
         if 'opcoes' in self.cleaned_data and self.cleaned_data['opcoes']:
             opcoes_texto = self.cleaned_data['opcoes']
             if isinstance(opcoes_texto, str):
                 opcoes_lista = [opcao.strip() for opcao in opcoes_texto.split(",") if opcao.strip()]
                 produto.opcoes = ", ".join(opcoes_lista)
+                
+        if 'cursos' in self.cleaned_data and self.cleaned_data['cursos']:
+                curso_selecionado = self.cleaned_data['cursos']
+            # Adicionar o curso às opções ou criar um campo separado
+        if produto.opcoes:
+                produto.opcoes += f" | Curso: {curso_selecionado}"
+        else:
+                produto.opcoes = f"Curso: {curso_selecionado}"
         
         if commit:
             produto.save()
-            self.save_m2m() 
         
         return produto
         
@@ -336,6 +383,6 @@ class AnexoComprovantesPedidoForm(forms.ModelForm):
 class ProdutoForm(ProdutoBaseForm):
     class Meta(ProdutoBaseForm.Meta):
         model = ProdutoBase
-        fields = ['titulo', 'preco', 'preco_parcela', 'forma_pag_op', 'data_limite_pedidos', 'curso', 
+        fields = ['titulo', 'preco', 'preco_parcela', 'forma_pag_op', 'data_limite_pedidos', 'cursos', 
                   'turnos', "pix_qr_code_parcela", "pix_qr_code_total", "pix_chave_parcela", "pix_chave_total",
                   "turma", "data_pag1", "data_pag2"]
