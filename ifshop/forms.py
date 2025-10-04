@@ -1,3 +1,4 @@
+import re
 from django import forms
 from django.forms import modelformset_factory
 from .models import Camiseta, ProdutoBase, PedidoBase, PedidoCamiseta, UsuarioCustomizado, ImagemProdutoBase, EstiloTamanho, Curso
@@ -123,7 +124,7 @@ class ProdutoBaseForm(forms.ModelForm):
     
     cursos = forms.ChoiceField(
         choices=[
-            ('', 'Selecione um curso'),  # Opção vazia
+            ('', 'Selecione um curso'),
             ('Informática', 'Informática'),
             ('Meio Ambiente', 'Meio Ambiente'),
             ('Edificações', 'Edificações'),
@@ -169,44 +170,69 @@ class ProdutoBaseForm(forms.ModelForm):
         required=False
     )
     
-    opcoes = forms.CharField(
+    descricao = forms.CharField(
+        label="Descrição do Produto",
         required=False,
-        widget=forms.TextInput(attrs={
+        widget=forms.Textarea(attrs={
             'class': 'form-control rounded-3',
-            'placeholder': 'Ex: azul, vermelho, verde'
+            'placeholder': 'Descreva o produto em detalhes...',
+            'rows': 4
         })
     )
 
     class Meta:
         model = ProdutoBase
         fields = [
-            'titulo', 'preco', 'preco_parcela', 'forma_pag_op', 'opcoes', 
-            'data_limite_pedidos', 'cursos', 'turnos', 'pix_qr_code_parcela', 
+            'titulo', 'preco', 'preco_parcela', 'forma_pag_op', 'descricao', 
+            'data_limite_pedidos', 'turnos', 'pix_qr_code_parcela', 
             'pix_qr_code_total', 'pix_chave_parcela', 'pix_chave_total',
             'turma', 'data_pag1', 'data_pag2'
         ]
-    
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Pré-selecionar o curso se existir no campo opcoes
+        if self.instance and self.instance.opcoes and 'Curso:' in self.instance.opcoes:
+            curso_match = re.search(r'Curso: ([^|]+)', self.instance.opcoes)
+            if curso_match:
+                curso_valor = curso_match.group(1).strip()
+                self.fields['cursos'].initial = curso_valor
+        
+        # Preencher a descrição se existir no campo opcoes (sem o curso)
+        if self.instance and self.instance.opcoes:
+            # Remover a parte do curso para obter apenas a descrição
+            descricao_texto = re.sub(r'\s*\|\s*Curso: [^|]+', '', self.instance.opcoes).strip()
+            if descricao_texto and descricao_texto != 'Curso:':
+                self.fields['descricao'].initial = descricao_texto
+
     def save(self, commit=True):
         produto = super().save(commit=False)
         
-        
+        # Processar formas de pagamento
         if 'forma_pag_op' in self.cleaned_data:
             formas_pagamento = self.cleaned_data['forma_pag_op']
             produto.forma_pag_op = ", ".join(formas_pagamento)
-            
-        if 'opcoes' in self.cleaned_data and self.cleaned_data['opcoes']:
-            opcoes_texto = self.cleaned_data['opcoes']
-            if isinstance(opcoes_texto, str):
-                opcoes_lista = [opcao.strip() for opcao in opcoes_texto.split(",") if opcao.strip()]
-                produto.opcoes = ", ".join(opcoes_lista)
-                
+        
+        # Processar descrição e curso
+        descricao_final = ""
+        
+        # Primeiro, processar a descrição
+        if 'descricao' in self.cleaned_data and self.cleaned_data['descricao']:
+            descricao_texto = self.cleaned_data['descricao'].strip()
+            if descricao_texto:
+                descricao_final = descricao_texto
+        
+        # Depois, adicionar o curso selecionado
         if 'cursos' in self.cleaned_data and self.cleaned_data['cursos']:
-                curso_selecionado = self.cleaned_data['cursos']
-            # Adicionar o curso às opções ou criar um campo separado
-        if produto.opcoes:
-                produto.opcoes += f" | Curso: {curso_selecionado}"
-        else:
-                produto.opcoes = f"Curso: {curso_selecionado}"
+            curso_selecionado = self.cleaned_data['cursos']
+            if descricao_final:
+                descricao_final += f" | Curso: {curso_selecionado}"
+            else:
+                descricao_final = f"Curso: {curso_selecionado}"
+        
+        # Salvar no campo opcoes do modelo (mantendo compatibilidade)
+        produto.opcoes = descricao_final
         
         if commit:
             produto.save()
@@ -214,9 +240,9 @@ class ProdutoBaseForm(forms.ModelForm):
         return produto
         
 ImagemProdutoBaseFormSet = modelformset_factory(
-    ImagemProdutoBase ,
+    ImagemProdutoBase,
     fields=('imagem', 'principal'),
-    extra=4,  
+    extra=4,
     can_delete=True,
     widgets={
         'imagem': forms.ClearableFileInput(attrs={'class': 'form-control'}),

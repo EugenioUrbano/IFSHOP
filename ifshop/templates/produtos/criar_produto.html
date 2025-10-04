@@ -113,7 +113,15 @@
                             </div>
                         </div>
                     </div>
-
+                    <!-- Descrição do Produto -->
+                    <div class="border p-4 rounded-3 mb-4">
+                        <h5 class="text-primary mb-3">Descrição do Produto</h5>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                {{ form.descricao|as_crispy_field }}
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Formset de imagens -->
                     {% if formset %}

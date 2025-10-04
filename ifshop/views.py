@@ -651,9 +651,48 @@ def excluir_produto(request, produto_id):
 
     return render(request, "produtos/excluir_produto.html", {'produto': produto})
 
-def edit_produto(request):
-    return render(request, 'produtos/edit_produto.html')
-
+@login_required
+@user_passes_test(vendedor)
+def edit_produto(request, produto_id):
+    produto = get_object_or_404(ProdutoBase, id=produto_id, vendedor=request.user)
+    
+    if request.method == 'POST':
+        form = ProdutoBaseForm(request.POST, request.FILES, instance=produto)
+        formset = ImagemProdutoBaseFormSet(request.POST, request.FILES, queryset=produto.imagens.all())
+        
+        if form.is_valid() and formset.is_valid():
+            try:
+                # Salvar o produto
+                produto_editado = form.save()
+                
+                # Salvar imagens
+                instances = formset.save(commit=False)
+                for instance in instances:
+                    instance.produto = produto_editado
+                    instance.save()
+                
+                # Deletar imagens marcadas para exclusão
+                for form_img in formset.deleted_forms:
+                    if form_img.instance.pk:
+                        form_img.instance.delete()
+                
+                messages.success(request, 'Produto atualizado com sucesso!')
+                return redirect('gerenciar_produtos')
+                
+            except Exception as e:
+                messages.error(request, f'Erro ao atualizar produto: {str(e)}')
+        else:
+            messages.error(request, 'Por favor, corrija os erros no formulário.')
+    else:
+        # Inicializar o formulário com a instância do produto
+        form = ProdutoBaseForm(instance=produto)
+        formset = ImagemProdutoBaseFormSet(queryset=produto.imagens.all())
+    
+    return render(request, 'produtos/edit_produto.html', {
+        'form': form,
+        'formset': formset,
+        'produto': produto
+    })
 
 def pedidos_produtos(request):
     return render(request, 'pedidos/pedidos_produtos.html')
