@@ -36,7 +36,8 @@
               </button>
               <ul class="dropdown-menu">
                 {% if user.is_staff %}
-                <li><a href="{% url 'gerenciar_vendedores' %}" class="nav-link">Gerenciar usuarios</a></li>
+                <li><a href="{% url 'admin:index' %}" class="nav-link">Admin</a></li>
+                <!--<li><a href="{% url 'gerenciar_vendedores' %}" class="nav-link">Gerenciar usuarios</a></li>-->
                 <li><hr class="dropdown-divider"></li>
                 {% endif %}  
                 <li><a href="{% url 'perfil' %}" class="nav-link">Perfil</a></li>

@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
+from django.contrib import admin
 from . import views
 from django.contrib.auth import views as auth_views
 
@@ -55,6 +56,7 @@ urlpatterns = [
     path("marcar-pedidos-vistos/", views.marcar_pedidos_vistos, name="marcar_pedidos_vistos"),
     
     # Admin
+    path('admin/', admin.site.urls),
     path('gerenciar_vendedores/', views.gerenciar_vendedores, name='gerenciar_vendedores'),
 ]
 
