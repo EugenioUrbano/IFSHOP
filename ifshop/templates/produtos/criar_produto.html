@@ -1,278 +1,170 @@
-{% extends 'base.html' %}
-{% load static %}
+{% extends "base.html" %}
 
-{% block title %}Adicionar Produto - IFSHOP{% endblock %}
+{% load static %}
+{% load crispy_forms_filters %}
+
+{% block title %}Criar Produto{% endblock %}
+{% block filtro %}{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <!-- Cabeçalho -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 hre class="h3 mb-0">
-                    <i class="fas fa-plus-circle text-primary me-2"></i>
-                    Adicionar Novo Produto
-                </h1>
-                <a href="{% url 'gerenciar_produtos' %}" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-left me-2"></i>Voltar aos Produtos
-                </a>
-            </div>
+<div class="card-body py-5 px-md-5">
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-8 border rounded-3 py-4 shadow mx-md-n5">
+            <div class="container">
 
-            <!-- Card do Formulário -->
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-info-circle me-2"></i>
-                        Informações do Produto
-                    </h5>
+                <!-- Voltar e Título -->
+                <div class="col-md-6 mb-4">
+                    <a href="{% url 'gerenciar_produtos' %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="" class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"></path>
+                        </svg>
+                    </a>
+                    <h2 class="fw-bold mb-5">Criar Produto</h2>
                 </div>
-                <div class="card-body p-4">
-                    <form method="post" enctype="multipart/form-data" id="produtoForm">
-                        {% csrf_token %}
-                        
-                        {% if form.errors %}
-                        <div class="alert alert-danger">
-                            <strong>Erro!</strong> Por favor, corrija os erros abaixo.
-                            <ul class="mb-0 mt-2">
-                                {% for field, errors in form.errors.items %}
-                                    {% for error in errors %}
-                                        <li>{{ error }}</li>
-                                    {% endfor %}
-                                {% endfor %}
-                            </ul>
+
+                <!-- Mensagens -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
-                        {% endif %}
+                    {% endfor %}
+                {% endif %}
 
+                <!-- Formulário -->
+                {% if form and form.fields %}
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <!-- Informações Básicas -->
+                    <div class="border p-4 rounded-3 mb-4">
+                        <h5 class="text-primary mb-3">Informações Básicas</h5>
                         <div class="row">
-                            <!-- Nome do Produto -->
                             <div class="col-md-12 mb-3">
-                                <label for="id_nome" class="form-label fw-bold">
-                                    Nome do Produto *
-                                </label>
-                                <input type="text" name="nome" class="form-control" id="id_nome" 
-                                       placeholder="Ex: Botton do Curso de Meio Ambiente" required
-                                       value="{{ form.nome.value|default:'' }}">
-                                <div class="form-text">Digite um nome claro e descritivo para o produto.</div>
+                                {{ form.titulo|as_crispy_field }}
                             </div>
+                        </div>
+                    </div>
 
-                            <!-- Descrição -->
+                    <!-- Informações de Preço -->
+                    <div class="border p-4 rounded-3 mb-4">
+                        <h5 class="text-primary mb-3">Informações de Preço</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.preco|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.preco_parcela|as_crispy_field }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Configurações de Pagamento -->
+                    <div class="border p-4 rounded-3 mb-4">
+                        <h5 class="text-primary mb-3">Configurações de Pagamento</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.forma_pag_op|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.data_pag1|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.data_pag2|as_crispy_field }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informações PIX -->
+                    <div class="border p-4 rounded-3 mb-4">
+                        <h5 class="text-primary mb-3">Informações PIX</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.pix_qr_code_parcela|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.pix_qr_code_total|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.pix_chave_parcela|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.pix_chave_total|as_crispy_field }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Configurações do Curso -->
+                    <div class="border p-4 rounded-3 mb-4">
+                        <h5 class="text-primary mb-3">Configurações do Curso</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.turnos|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.turma|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.cursos|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.data_limite_pedidos|as_crispy_field }}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Descrição do Produto -->
+                    <div class="border p-4 rounded-3 mb-4">
+                        <h5 class="text-primary mb-3">Descrição do Produto</h5>
+                        <div class="row">
                             <div class="col-md-12 mb-3">
-                                <label for="id_descricao" class="form-label fw-bold">
-                                    Descrição *
-                                </label>
-                                <textarea name="descricao" class="form-control" id="id_descricao" 
-                                          rows="4" placeholder="Descreva o produto detalhadamente..." 
-                                          required>{{ form.descricao.value|default:'' }}</textarea>
-                                <div class="form-text">Descreva detalhes importantes sobre o produto.</div>
+                                {{ form.descricao|as_crispy_field }}
                             </div>
+                        </div>
+                    </div>
 
-                            <!-- Preço  -->
-                            <div class="col-md-6 mb-3">
-                                <label for="id_preco" class="form-label fw-bold">
-                                    Preço (R$) *
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-text">R$</span>
-                                    <input type="number" name="preco" class="form-control" id="id_preco" 
-                                           step="0.01" min="0.01" placeholder="0.00" required
-                                           value="{{ form.preco.value|default:'' }}">
-                                </div>
-                            </div> 
-
-                            <!-- Quantidade em Estoque -->
-                            <div class="col-md-6 mb-3">
-                                <label for="id_quantidade_estoque" class="form-label fw-bold">
-                                    Quantidade em Estoque *
-                                </label>
-                                <input type="number" name="quantidade_estoque" class="form-control" 
-                                       id="id_quantidade_estoque" min="0" placeholder="0" required
-                                       value="{{ form.quantidade_estoque.value|default:'0' }}">
-                            </div>
-
-                            <!-- Imagem do Produto -->
-                            <div class="col-md-6 mb-3">
-                                <label for="id_imagem" class="form-label fw-bold">
-                                    Imagem do Produto
-                                </label>
-                                <input type="file" name="imagem" class="form-control" id="id_imagem" 
-                                       accept="image/jpeg,image/png,image/gif">
-                                <div class="form-text">Formatos: JPG, PNG, GIF. Tamanho máximo: 5MB.</div>
-                            </div>
-
-                            <!-- Opções Adicionais -->
-                            <div class="col-12 mb-4">
-                                <div class="card bg-light">
-                                    <div class="card-body">
-                                        <h6 class="card-title">
-                                            <i class="fas fa-cog me-2"></i>Opções Adicionais
-                                        </h6>
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <div class="form-check form-switch">
-                                                    <input type="checkbox" name="disponivel" 
-                                                           class="form-check-input" id="id_disponivel" 
-                                                           {% if form.disponivel.value %}checked{% endif %}>
-                                                    <label class="form-check-label fw-bold" for="id_disponivel">
-                                                        Produto Disponível
-                                                    </label>
+                    <!-- Formset de imagens -->
+                    {% if formset %}
+                    <div class="accordion mt-4" id="accordionExample">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseImages" aria-expanded="true" aria-controls="collapseImages">
+                                    Imagens do Produto
+                                </button>
+                            </h2>
+                            <div id="collapseImages" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    {{ formset.management_form }}
+                                    <div class="row">
+                                        {% for form_img in formset %}
+                                            <div class="col-md-6 mb-3">
+                                                <div class="border p-3 rounded-3">
+                                                    <h6>Imagem {{ forloop.counter }}</h6>
+                                                    {{ form_img|crispy }}
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
-                                                <div class="form-check form-switch">
-                                                    <input type="checkbox" name="destaque" 
-                                                           class="form-check-input" id="id_destaque"
-                                                           {% if form.destaque.value %}checked{% endif %}>
-                                                    <label class="form-check-label fw-bold" for="id_destaque">
-                                                        Produto em Destaque
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-check form-switch">
-                                                    <input type="checkbox" name="promocao" 
-                                                           class="form-check-input" id="id_promocao"
-                                                           {% if form.promocao.value %}checked{% endif %}>
-                                                    <label class="form-check-label fw-bold" for="id_promocao">
-                                                        Está em Promoção?
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        {% endfor %}
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Preço de Promoção (condicional) -->
-                            <div class="col-md-6 mb-3" id="precoPromocaoField" style="display: none;">
-                                <label for="id_preco_promocao" class="form-label fw-bold text-danger">
-                                    Preço Promocional (R$)
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-text">R$</span>
-                                    <input type="number" name="preco_promocao" class="form-control" 
-                                           id="id_preco_promocao" step="0.01" min="0.01" 
-                                           placeholder="0.00" value="{{ form.preco_promocao.value|default:'' }}">
-                                </div>
-                                <div class="form-text">Preço especial durante a promoção.</div>
-                            </div>
                         </div>
+                    </div>
+                    {% endif %}
 
-                        <!-- Botões de Ação -->
-                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-                            <button type="reset" class="btn btn-outline-secondary">
-                                <i class="fas fa-undo me-2"></i>Limpar
-                            </button>
-                            <div>
-                                <button type="submit" class="btn btn-success me-2">
-                                    <i class="fas fa-save me-2"></i>Salvar Produto
-                                </button>
-                                <button type="submit" name="adicionar_outro" value="true" class="btn btn-primary">
-                                    <i class="fas fa-plus me-2"></i>Salvar e Adicionar Outro
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+                    <!-- Botões de submit -->
+                    <div class="mt-4">
+                        <button type="submit" name="salvar" class="btn botoes shadow-lg rounded px-4 py-2">Salvar Produto</button>
+                        <button type="submit" name="adicionar_outro" class="btn btn-secondary shadow-lg rounded px-4 py-2 ms-2">Salvar e Adicionar Outro</button>
+                    </div>
+                </form>
+                {% else %}
+                <div class="alert alert-danger">
+                    <strong>ERRO CRÍTICO:</strong> O formulário não foi carregado ou não tem campos.
                 </div>
+                {% endif %}
+
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Mostrar/ocultar campo de preço promocional
-    const promocaoCheckbox = document.getElementById('id_promocao');
-    const precoPromocaoField = document.getElementById('precoPromocaoField');
-    
-    function togglePrecoPromocao() {
-        if (promocaoCheckbox.checked) {
-            precoPromocaoField.style.display = 'block';
-            // Torna o campo obrigatório quando visível
-            document.getElementById('id_preco_promocao').required = true;
-        } else {
-            precoPromocaoField.style.display = 'none';
-            document.getElementById('id_preco_promocao').required = false;
-        }
-    }
-    
-    promocaoCheckbox.addEventListener('change', togglePrecoPromocao);
-    togglePrecoPromocao(); // Estado inicial
-    
-    // Validação do preço promocional
-    const precoPromocaoInput = document.getElementById('id_preco_promocao');
-    const precoInput = document.getElementById('id_preco');
-    
-    precoPromocaoInput.addEventListener('blur', function() {
-        if (promocaoCheckbox.checked && this.value && precoInput.value) {
-            const preco = parseFloat(precoInput.value);
-            const precoPromo = parseFloat(this.value);
-            
-            if (precoPromo >= preco) {
-                alert('O preço promocional deve ser menor que o preço normal!');
-                this.focus();
-            }
-        }
-    });
-    
-    // Preview da imagem
-    const imagemInput = document.getElementById('id_imagem');
-    imagemInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            // Validação básica de tipo e tamanho
-            const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
-            const maxSize = 5 * 1024 * 1024; // 5MB
-            
-            if (!validTypes.includes(file.type)) {
-                alert('Por favor, selecione uma imagem nos formatos JPG, PNG ou GIF.');
-                this.value = '';
-                return;
-            }
-            
-            if (file.size > maxSize) {
-                alert('A imagem deve ter no máximo 5MB.');
-                this.value = '';
-                return;
-            }
-            
-            // Mostrar preview da imagem (opcional)
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                // Você pode adicionar um preview da imagem aqui se quiser
-                console.log('Imagem carregada para preview');
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-    
-    // Validação do formulário antes do envio
-    document.getElementById('produtoForm').addEventListener('submit', function(e) {
-        const preco = parseFloat(precoInput.value);
-        const quantidade = parseInt(document.getElementById('id_quantidade_estoque').value);
-        
-        if (preco <= 0) {
-            alert('O preço deve ser maior que zero!');
-            e.preventDefault();
-            return;
-        }
-        
-        if (quantidade < 0) {
-            alert('A quantidade em estoque não pode ser negativa!');
-            e.preventDefault();
-            return;
-        }
-        
-        if (promocaoCheckbox.checked && precoPromocaoInput.value) {
-            const precoPromo = parseFloat(precoPromocaoInput.value);
-            if (precoPromo >= preco) {
-                alert('O preço promocional deve ser menor que o preço normal!');
-                e.preventDefault();
-                return;
-            }
-        }
-    });
-});
-</script>
 {% endblock %}
