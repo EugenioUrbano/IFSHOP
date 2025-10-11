@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load crispy_forms_filters %}
+
+{% block title %}Gerencie Pedidos{% endblock %}
+{% block filtro %}{% endblock %}
+
+{% block content %}
+{% if messages %}
+  <div class="container mt-3">
+    {% for message in messages %}
+      <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="container text-center my-4">
+    <h1>Gerencie Pedidos dos seus produtos</h1>
+</div>
+
+
+
+{% if pedidos_com_forms %}
+<div class="table-responsive">
+    <table class="table table-striped table-hover table-bordered align-middle text-center">
+        <thead>
+            <tr>
+                <th>ID do Pedido</th>
+                <th>Cliente</th>
+                <th>Telefone</th>
+                <th>Título do Produto</th>
+                <th>Data</th>
+                <th>Opção Escolhida</th>
+                <th>Forma de Pagamento</th>
+                <th>Comprovante</th>
+                <th>Status</th>
+                <th>Salvar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in pedidos_com_forms %}
+            <tr>
+                <td>{{ item.pedido.id }}</td>
+                <td>{{ item.pedido.pedido.cliente }}</td>
+                <td>{{ item.pedido.pedido.cliente.telefone }}</td>
+                <td>{{ item.pedido.camiseta.titulo }}</td>
+                <td>{{ item.pedido.pedido.data_pedido }}</td>
+                <td>{{ item.pedido.pedido.opcao_escolhida }}</td>
+                <td>{{ item.pedido.nome_estampa }}</td>
+                <td>{{ item.pedido.numero_estampa }}</td>
+                <td>{{ item.pedido.tamanho }}</td>
+                <td>{{ item.pedido.estilo }}</td>
+                <td>{{ item.pedido.pedido.forma_pag }}</td>
+                <td>
+                    {% if item.pedido.forma_pag == "Pix" %}
+                        {% if item.pedido.comprovante_total %}
+                            <a href="{{ item.pedido.comprovante_total.url }}" target="_blank">Ver Comprovante</a>
+                        {% else %}
+                            Nenhum Comprovante
+                        {% endif %}
+                    {% elif item.pedido.forma_pag == "Parcelado 2x Pix" %}
+                        {% if item.pedido.comprovante_parcela1 %}
+                            <a href="{{ item.pedido.comprovante_parcela1.url }}" target="_blank">1° Parcela</a><br>
+                        {% else %}
+                            Sem 1° Comprovante<br>
+                        {% endif %}
+                        {% if item.pedido.comprovante_parcela2 %}
+                            <a href="{{ item.pedido.comprovante_parcela2.url }}" target="_blank">2° Parcela</a>
+                        {% else %}
+                            Sem 2° Comprovante
+                        {% endif %}
+                    {% else %}
+                        Não aplicável
+                    {% endif %}
+                </td>
+                <td>
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ item.form.status }}
+                        <input type="hidden" name="pedido_id" value="{{ item.pedido.id }}">
+                </td>
+                <td>
+                        <button type="submit" class="btn botoes shadow-lg rounded-pill px-2 py-1">Salvar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="pagination justify-content-center mt-4">
+    {% with request.GET.urlencode as query_params %}
+        {% if pedidos_com_forms.has_previous %}
+            <a href="?{{ query_params }}&pagina=1" class="btn botoes_paginacao">&laquo; Início</a>
+            <a href="?{{ query_params }}&pagina={{ pedidos_com_forms.previous_page_number }}" class="btn botoes_paginacao">Anterior</a>
+        {% endif %}
+        <span class="mx-2">Página {{ pedidos_com_forms.number }} de {{ pedidos_com_forms.paginator.num_pages }}</span>
+        {% if pedidos_com_forms.has_next %}
+            <a href="?{{ query_params }}&pagina={{ pedidos_com_forms.next_page_number }}" class="btn botoes_paginacao">Próxima</a>
+            <a href="?{{ query_params }}&pagina={{ pedidos_com_forms.paginator.num_pages }}" class="btn botoes_paginacao">Última &raquo;</a>
+        {% endif %}
+    {% endwith %}
+</div>
+
+{% else %}
+<p class="container text-center py-5">Nenhum pedido encontrado para seus produtos.</p>
+{% endif %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    fetch("/marcar-pedidos-vistos/", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === "success") console.log("Pedidos marcados como vistos.");
+    })
+    .catch(error => console.error("Erro ao marcar pedidos:", error));
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        let cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}
+
