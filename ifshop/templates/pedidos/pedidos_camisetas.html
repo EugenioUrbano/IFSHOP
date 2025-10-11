@@ -60,20 +60,20 @@
                 <td>{{ item.pedido.estilo }}</td>
                 <td>{{ item.pedido.pedido.forma_pag }}</td>
                 <td>
-                    {% if item.pedido.forma_pag == "Pix" %}
+                    {% if item.pedido.pedido.forma_pag == "Pix" %}
                         {% if item.pedido.comprovante_total %}
-                            <a href="{{ item.pedido.comprovante_total.url }}" target="_blank">Ver Comprovante</a>
+                            <a href="{{ item.pedido.pedido.comprovante_total.url }}" target="_blank">Ver Comprovante</a>
                         {% else %}
                             Nenhum Comprovante
                         {% endif %}
-                    {% elif item.pedido.forma_pag == "Parcelado 2x Pix" %}
+                    {% elif item.pedido.pedido.forma_pag == "Parcelado 2x Pix" %}
                         {% if item.pedido.comprovante_parcela1 %}
-                            <a href="{{ item.pedido.comprovante_parcela1.url }}" target="_blank">1° Parcela</a><br>
+                            <a href="{{ item.pedido.pedido.comprovante_parcela1.url }}" target="_blank">1° Parcela</a><br>
                         {% else %}
                             Sem 1° Comprovante<br>
                         {% endif %}
                         {% if item.pedido.comprovante_parcela2 %}
-                            <a href="{{ item.pedido.comprovante_parcela2.url }}" target="_blank">2° Parcela</a>
+                            <a href="{{ item.pedido.pedido.comprovante_parcela2.url }}" target="_blank">2° Parcela</a>
                         {% else %}
                             Sem 2° Comprovante
                         {% endif %}
@@ -85,7 +85,7 @@
                     <form method="POST">
                         {% csrf_token %}
                         {{ item.form.status }}
-                        <input type="hidden" name="pedido_id" value="{{ item.pedido.id }}">
+                        <input type="hidden" name="pedido_id" value="{{ item.pedido.pedido.id }}">
                 </td>
                 <td>
                         <button type="submit" class="btn botoes shadow-lg rounded-pill px-2 py-1">Salvar</button>

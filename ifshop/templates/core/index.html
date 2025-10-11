@@ -66,6 +66,27 @@
                         {% endif %}
                         <div class="card-body d-flex flex-column">
                             <h3>{{ item.produto.titulo }}</h3>
+                            <div class="avaliacao-produto ">
+                                {% with avaliacoes=item.produto.avaliacoes.all %}
+                                    {% if avaliacoes %}
+                                        <div class="d-flex align-items-center">
+                                            <div class="estrelas-avaliacao pequena">
+                                                {% for i in "12345" %}
+                                                    <span class="estrela {% if forloop.counter <= item.produto.media_avaliacoes %}preenchida{% endif %}">★</span>
+                                                {% endfor %}
+                                                <small class="text-muted ms-1">
+                                                    ({{ avaliacoes.count }})
+                                                </small>
+                                                <small class="text-muted ms-2">
+                                                    {{ item.produto.media_avaliacoes|floatformat:1 }} de 5
+                                                </small>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <small class="text-muted">Sem avaliações</small>
+                                    {% endif %}
+                                {% endwith %}
+                            </div>
                             {% if item.produto.data_limite_pedidos %}
                                 <h6 class="text-body-secondary">
                                     Data para pedido até {{ item.produto.data_limite_pedidos }}
@@ -84,27 +105,7 @@
                                     {% endif %}
                                 </div>
                                 <p class="text-body-secondary mb-0">R$ {{ item.produto.preco }}</p>
-                                <div class="avaliacao-produto mb-2">
-                                    {% with avaliacoes=item.produto.avaliacoes.all %}
-                                        {% if avaliacoes %}
-                                            <div class="d-flex align-items-center">
-                                                <div class="estrelas-avaliacao pequena">
-                                                    {% for i in "12345" %}
-                                                        <span class="estrela {% if forloop.counter <= item.produto.media_avaliacoes %}preenchida{% endif %}">★</span>
-                                                    {% endfor %}
-                                                </div>
-                                                <small class="text-muted ms-2">
-                                                    ({{ avaliacoes.count }})
-                                                </small>
-                                            </div>
-                                            <small class="text-muted">
-                                                {{ item.produto.media_avaliacoes|floatformat:1 }} de 5
-                                            </small>
-                                        {% else %}
-                                            <small class="text-muted">Sem avaliações</small>
-                                        {% endif %}
-                                    {% endwith %}
-                                </div>
+                                
                             </div>
                         </div>
                     </div>

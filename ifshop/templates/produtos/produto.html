@@ -134,11 +134,23 @@
                             <div class="border-bottom pb-3 mb-3">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <div>
-                                        <strong class="d-block">{{ avaliacao.cliente.nome }}</strong>
+                                        {% if avaliacao.cliente.nome == "" %}
+                                            <strong class="d-block">Sem Nome</strong>
+                                        {% else %}
+                                            <strong class="d-block">{{ avaliacao.cliente.nome }}</strong>
+                                        {% endif %}
                                         <div class="estrelas-avaliacao pequena">
-                                            {% for i in "12345" %}
-                                                <span class="estrela {% if forloop.counter <= avaliacao.estrelas %}preenchida{% endif %}">★</span>
-                                            {% endfor %}
+                                            {% if avaliacao.estrelas == 1 %}
+                                                <span>★</span>
+                                            {% elif avaliacao.estrelas == 2 %}
+                                                <span>★★</span>
+                                            {% elif avaliacao.estrelas == 3 %}
+                                                <span>★★★</span>
+                                            {% elif avaliacao.estrelas == 4 %}
+                                                <span>★★★★</span>
+                                            {% elif avaliacao.estrelas == 5 %}
+                                                <span>★★★★★</span>
+                                            {% endif %}
                                         </div>
                                     </div>
                                     <small class="text-muted">{{ avaliacao.data_criacao|date:"d/m/Y" }}</small>

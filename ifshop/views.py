@@ -380,7 +380,7 @@ def camiseta(request, camiseta_id):
     estilos_opcoes = [e.strip() for e in camiseta.estilos.split(',')]
     forma_pag_opcoes = [f.strip() for f in camiseta.forma_pag_op.split(',')]
 
-    avaliacoes = produto.avaliacoes.all().select_related('cliente')
+    avaliacoes = camiseta.avaliacoes.all().select_related('cliente')
     pagina_avaliacoes_num = request.GET.get('pagina_avaliacoes', 1)
     paginator_avaliacoes = Paginator(avaliacoes, 5)  # 5 avaliações por página
     pagina_avaliacoes = paginator_avaliacoes.get_page(pagina_avaliacoes_num)
