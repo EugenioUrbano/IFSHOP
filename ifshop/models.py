@@ -65,7 +65,7 @@ class ProdutoBase(models.Model):
     turma = models.CharField(max_length=50)
     
     turnos = models.CharField(max_length=50)
-    cursos = models.ManyToManyField('Curso')
+    curso = models.ManyToManyField('Curso')
     
     imagem = models.ImageField(blank=True, null=True)
     pix_qr_code_parcela = models.ImageField(upload_to='qrcode_parcela_produtos/', null=False, default="")
@@ -79,14 +79,6 @@ class ProdutoBase(models.Model):
     
     def lista_opcoes(self):
         return [opcao.strip() for opcao in self.opcoes.split(",") if opcao.strip()]
-    
-    def save(self, *args, **kwargs):
-        if self.pk: 
-            pedidos = PedidoBase.objects.filter(produto=self)
-            pedidos.update(revisado=False) 
-            
-        self.opcoes = ", ".join(self.lista_opcoes())
-        super().save(*args, **kwargs)
         
     def __str__(self):
         return self.titulo
@@ -127,17 +119,6 @@ class Camiseta(ProdutoBase):
     estilos = models.CharField(max_length=50, default="")
     tamanhos = JSONField(default=dict)
 
-
-    def save(self, *args, **kwargs):
-        if self.pk:
-            pedidos = PedidoBase.objects.filter(camisetas__camiseta=self)
-            pedidos.update(revisado=False)
-
-        if self.opcoes:  # garante que não quebra
-            self.opcoes = ", ".join(self.lista_opcoes())
-
-        super().save(*args, **kwargs)
-
     def __str__(self):
         return f"Camiseta: {self.titulo}"
 
@@ -160,7 +141,8 @@ class PedidoBase(models.Model):
 	    ('Pendente', 'Pendente'),
         ('Pago Totalmente', 'Pago Totalmente'),
         ('Pago 1° Parcela', 'Pago 1° Parcela'),
-        ('Negociando com Usuario', 'Negociando com Usuario'),        
+        ('Negociando com Usuario', 'Negociando com Usuario'), 
+        ('Entregue','Entregue')       
     ]
     FORMA_PAG_OPCOES = [
         ('Pix', 'Pix'),

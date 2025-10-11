@@ -72,6 +72,7 @@ class FiltroPedidosForm(forms.Form):
             ('Pago Totalmente', 'Pago Totalmente'),
             ('Pago 1° Parcela', 'Pago 1° Parcela'),
             ('Negociando com Usuario', 'Negociando com Usuario'),
+            ('Entregue', 'Entregue')
         ],
         required=False,
         widget=forms.Select(attrs={'class': 'form-select form-select-sm d-inline p-2'})
@@ -122,16 +123,11 @@ class ProdutoBaseForm(forms.ModelForm):
         required=True
     )
     
-    cursos = forms.ChoiceField(
-        choices=[
-            ('', 'Selecione um curso'),
-            ('Informática', 'Informática'),
-            ('Meio Ambiente', 'Meio Ambiente'),
-            ('Edificações', 'Edificações'),
-        ],
-        widget=forms.Select(attrs={'class': 'form-select rounded-3'}),
-        required=False,
-        label="Curso"
+    curso = forms.ModelMultipleChoiceField(
+        queryset=Curso.objects.all(),
+        widget=forms.SelectMultiple(attrs={'class': 'form-select rounded-3'}),
+        required=True,
+        label="Cursos deste produto"
     )
     
     turma = forms.CharField(
@@ -169,76 +165,34 @@ class ProdutoBaseForm(forms.ModelForm):
         widget=forms.TextInput(attrs={'class': 'form-control'}), 
         required=False
     )
-    
-    descricao = forms.CharField(
-        label="Descrição do Produto",
-        required=False,
-        widget=forms.Textarea(attrs={
-            'class': 'form-control rounded-3',
-            'placeholder': 'Descreva o produto em detalhes...',
-            'rows': 4
-        })
-    )
-
     class Meta:
         model = ProdutoBase
-        fields = [
-            'titulo', 'preco', 'preco_parcela', 'forma_pag_op', 'descricao', 
-            'data_limite_pedidos', 'turnos', 'pix_qr_code_parcela', 
-            'pix_qr_code_total', 'pix_chave_parcela', 'pix_chave_total',
-            'turma', 'data_pag1', 'data_pag2'
-        ]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        
-        # Pré-selecionar o curso se existir no campo opcoes
-        if self.instance and self.instance.opcoes and 'Curso:' in self.instance.opcoes:
-            curso_match = re.search(r'Curso: ([^|]+)', self.instance.opcoes)
-            if curso_match:
-                curso_valor = curso_match.group(1).strip()
-                self.fields['cursos'].initial = curso_valor
-        
-        # Preencher a descrição se existir no campo opcoes (sem o curso)
-        if self.instance and self.instance.opcoes:
-            # Remover a parte do curso para obter apenas a descrição
-            descricao_texto = re.sub(r'\s*\|\s*Curso: [^|]+', '', self.instance.opcoes).strip()
-            if descricao_texto and descricao_texto != 'Curso:':
-                self.fields['descricao'].initial = descricao_texto
+        fields = ['titulo', 'preco', 'preco_parcela', 'forma_pag_op', 'opcoes', 'data_limite_pedidos', 'curso', 
+                  'turnos', "pix_qr_code_parcela", "pix_qr_code_total", "pix_chave_parcela", "pix_chave_total",
+                  "turma", "data_pag1", "data_pag2"]
+        widgets = {
+            'opcoes': forms.TextInput(attrs={'placeholder': 'Ex: azul, vermelho, verde'})
+        }
 
     def save(self, commit=True):
         produto = super().save(commit=False)
-        
-        # Processar formas de pagamento
         if 'forma_pag_op' in self.cleaned_data:
             formas_pagamento = self.cleaned_data['forma_pag_op']
             produto.forma_pag_op = ", ".join(formas_pagamento)
         
-        # Processar descrição e curso
-        descricao_final = ""
-        
-        # Primeiro, processar a descrição
-        if 'descricao' in self.cleaned_data and self.cleaned_data['descricao']:
-            descricao_texto = self.cleaned_data['descricao'].strip()
-            if descricao_texto:
-                descricao_final = descricao_texto
-        
-        # Depois, adicionar o curso selecionado
-        if 'cursos' in self.cleaned_data and self.cleaned_data['cursos']:
-            curso_selecionado = self.cleaned_data['cursos']
-            if descricao_final:
-                descricao_final += f" | Curso: {curso_selecionado}"
-            else:
-                descricao_final = f"Curso: {curso_selecionado}"
-        
-        # Salvar no campo opcoes do modelo (mantendo compatibilidade)
-        produto.opcoes = descricao_final
+        if 'opcoes' in self.cleaned_data and self.cleaned_data['opcoes']:
+            opcoes_texto = self.cleaned_data['opcoes']
+            if isinstance(opcoes_texto, str):
+                opcoes_lista = [opcao.strip() for opcao in opcoes_texto.split(",") if opcao.strip()]
+                produto.opcoes = ", ".join(opcoes_lista)
         
         if commit:
             produto.save()
+            self.save_m2m()
         
         return produto
-        
+
+    
 ImagemProdutoBaseFormSet = modelformset_factory(
     ImagemProdutoBase,
     fields=('imagem', 'principal'),
@@ -328,7 +282,7 @@ class PedidoBaseForm(forms.ModelForm):
         fields = ['opcao_escolhida', "forma_pag", "comprovante_total", "comprovante_parcela1", "comprovante_parcela2"]
         
     def __init__(self, *args, **kwargs):
-        produto = kwargs.pop('produto', None)
+        produto = kwargs.pop('produto', None)  
         forma_pag_opcoes = kwargs.pop('forma_pag_opcoes', [])
         
         super().__init__(*args, **kwargs)
@@ -341,6 +295,7 @@ class PedidoBaseForm(forms.ModelForm):
                 self.fields['opcao_escolhida'].choices = [(opcao, opcao) for opcao in opcoes_disponiveis]
             else:
                 self.fields['opcao_escolhida'].choices = [("", "Nenhuma opção disponível")]
+                self.fields['opcao_escolhida'].widget.attrs['disabled'] = True
 
 
 class PedidoCamisetaForm(forms.ModelForm):
@@ -406,9 +361,3 @@ class AnexoComprovantesPedidoForm(forms.ModelForm):
         model = PedidoBase
         fields = ['comprovante_total', 'comprovante_parcela1', 'comprovante_parcela2']
 
-class ProdutoForm(ProdutoBaseForm):
-    class Meta(ProdutoBaseForm.Meta):
-        model = ProdutoBase
-        fields = ['titulo', 'preco', 'preco_parcela', 'forma_pag_op', 'data_limite_pedidos', 'cursos', 
-                  'turnos', "pix_qr_code_parcela", "pix_qr_code_total", "pix_chave_parcela", "pix_chave_total",
-                  "turma", "data_pag1", "data_pag2"]

@@ -22,46 +22,107 @@
                     <h2 class="fw-bold mb-5">Criar Camiseta</h2>
                 </div>
 
+                <!-- Mensagens -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
                 <!-- Formulário -->
-                <form class="row g-3" method="post" enctype="multipart/form-data">
+                {% if form and form.fields %}
+                <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
 
-                    {% if form.errors %}
-                        <div class="alert alert-danger">
-                            <strong>Erros no formulário:</strong>
-                            <ul>
-                                {% for field, errors in form.errors.items %}
-                                    <li>{{ field }}: {{ errors }}</li>
-                                {% endfor %}
-                            </ul>
+                    <!-- Informações Básicas -->
+                    <div class="border p-4 rounded-3 mb-4">
+                        <h5 class="text-primary mb-3">Informações Básicas</h5>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                {{ form.titulo|as_crispy_field }}
+                            </div>
                         </div>
-                    {% endif %}
+                    </div>
 
-                    {% if formset.non_form_errors %}
-                        <div class="alert alert-danger">
-                            <strong>Erros no formset:</strong>
-                            {{ formset.non_form_errors }}
+                    <!-- Informações de Preço -->
+                    <div class="border p-4 rounded-3 mb-4">
+                        <h5 class="text-primary mb-3">Informações de Preço</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.preco|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.preco_parcela|as_crispy_field }}
+                            </div>
                         </div>
-                    {% endif %}
+                    </div>
 
-                    <!-- Campos básicos -->
-                    <div class="col-12">{{ form.titulo|as_crispy_field }}</div>
-                    <div class="col-md-6">{{ form.preco|as_crispy_field }}</div>
-                    <div class="col-md-6">{{ form.preco_parcela|as_crispy_field }}</div>
-                    <div class="col-md-6">{{ form.opcoes|as_crispy_field }}</div>
+                    <!-- Configurações de Pagamento -->
+                    <div class="border p-4 rounded-3 mb-4">
+                        <h5 class="text-primary mb-3">Configurações de Pagamento</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.forma_pag_op|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.data_pag1|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.data_pag2|as_crispy_field }}
+                            </div>
+                        </div>
+                    </div>
 
-                    <!-- Datas -->
-                    <div class="col-md-6">{{ form.data_limite_pedidos|as_crispy_field }}</div>
-                    <div class="col-md-6">{{ form.data_pag1|as_crispy_field }}</div>
-                    <div class="col-md-6">{{ form.data_pag2|as_crispy_field }}</div>
+                    <!-- Informações PIX -->
+                    <div class="border p-4 rounded-3 mb-4">
+                        <h5 class="text-primary mb-3">Informações PIX</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.pix_qr_code_parcela|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.pix_qr_code_total|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.pix_chave_parcela|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.pix_chave_total|as_crispy_field }}
+                            </div>
+                        </div>
+                    </div>
 
-                    <!-- Indentificação e Forma de pagamento -->
-                    <div class="col-md-6">{{ form.curso|as_crispy_field }}</div>
-                    <div class="col-md-6">{{ form.turnos|as_crispy_field }}</div>
-                    <div class="col-md-6">{{ form.forma_pag_op|as_crispy_field }}</div>
-                    <div class="col-md-6">{{ form.turma|as_crispy_field }}</div>
+                    <!-- Configurações do Curso -->
+                    <div class="border p-4 rounded-3 mb-4">
+                        <h5 class="text-primary mb-3">Configurações do Informações</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.turnos|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.turma|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.curso|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.data_limite_pedidos|as_crispy_field }}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Opções do Produto -->
+                    <div class="border p-4 rounded-3 mb-4">
+                        <h5 class="text-primary mb-3">Opções de Cores da Camisetas</h5>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                {{ form.opcoes|as_crispy_field }}
+                            </div>
+                        </div>
+                    </div>
                     
-                    <!-- Dados Pix, Imagens, Tamanhos e Estilos -->
                     <div class="accordion" id="accordionExample">
                         <div class="accordion-item">
                             <h2 class="accordion-header">
@@ -96,76 +157,51 @@
                             </div>
                             </div>
                         </div>
+                    </div>
+                    <!-- Formset de imagens -->
+                    {% if formset %}
+                    <div class="accordion mt-4" id="accordionExample">
                         <div class="accordion-item">
                             <h2 class="accordion-header">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="False" aria-controls="collapseTwo">
-                                Dados Pix
-                            </button>
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseImages" aria-expanded="False" aria-controls="collapseImages">
+                                    Imagens do Produto
+                                </button>
                             </h2>
-                            <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                            <div class="accordion-body">
-                                <div class="row">
-                                    <div class="col-md-6">{{ form.pix_qr_code_total|as_crispy_field }}</div>
-                                    <div class="col-md-6">{{ form.pix_chave_total|as_crispy_field }}</div>
-                                    <div class="col-md-6">{{ form.pix_qr_code_parcela|as_crispy_field }}</div>
-                                    <div class="col-md-6">{{ form.pix_chave_parcela|as_crispy_field }}</div>
-                                </div>
-                            </div>
-                            </div>
-                        </div>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseTwo">
-                                Imagens Da Camiseta
-                            </button>
-                            </h2>
-                            <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                            <div class="accordion-body">
-                                <h5>Imagens Atuais</h5>
-                                <div class="row">
-                                    {% for imagem in camiseta.imagens.all %}
-                                        <div class="col-md-3 text-center mb-3">
-                                            <img src="{{ imagem.imagem.url }}" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover;">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" disabled {% if imagem.principal %}checked{% endif %}>
-                                                <label class="form-check-label">Principal</label>
+                            <div id="collapseImages" class="accordion-collapse collapse " data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    {{ formset.management_form }}
+                                    <div class="row">
+                                        {% for form_img in formset %}
+                                            <div class="col-md-6 mb-3">
+                                                <div class="border p-3 rounded-3">
+                                                    <h6>Imagem {{ forloop.counter }}</h6>
+                                                    {{ form_img|crispy }}
+                                                </div>
                                             </div>
-                                            <small>Imagem {{ forloop.counter }}</small>
-                                        </div>
-                                    {% empty %}
-                                        <div class="col-12">
-                                            <p class="text-muted">Nenhuma imagem cadastrada</p>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-
-                                <h6 class="mt-3">Alterar Imagens</h6>
-                                {{ formset.management_form }}
-                                <div class="row">
-                                    {% for form in formset %}
-                                        <div class="col-md-6 mb-3">
-                                            <div class="border p-3">
-                                                <h6>Imagem {{ forloop.counter }}</h6>
-                                                {{ form|crispy }}
-                                            </div>
-                                        </div>
-                                    {% endfor %}
+                                        {% endfor %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    {% endif %}
 
-                    <!-- Botão de submit -->
-                    <div class="col-md-6 mt-3">
-                        <button type="submit" class="btn botoes shadow-lg rounded px-3 d-block">Cadastrar Camiseta</button>
+                    <!-- Botões de submit -->
+                    <div class="mt-4">
+                        <button type="submit" name="salvar" class="btn botoes shadow-lg rounded px-4 py-2">Salvar Produto</button>
+                        <button type="submit" name="adicionar_outro" class="btn btn-secondary shadow-lg rounded px-4 py-2 ms-2">Salvar e Adicionar Outro</button>
                     </div>
-
                 </form>
+                {% else %}
+                <div class="alert alert-danger">
+                    <strong>ERRO CRÍTICO:</strong> O formulário não foi carregado ou não tem campos.
+                </div>
+                {% endif %}
+
             </div>
         </div>
     </div>
 </div>
-
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const estiloCheckboxes = document.querySelectorAll('.estilo-checkbox');

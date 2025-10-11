@@ -98,7 +98,7 @@
 
                     <!-- Configurações do Curso -->
                     <div class="border p-4 rounded-3 mb-4">
-                        <h5 class="text-primary mb-3">Configurações do Curso</h5>
+                        <h5 class="text-primary mb-3">Configurações do Informações</h5>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 {{ form.turnos|as_crispy_field }}
@@ -107,7 +107,7 @@
                                 {{ form.turma|as_crispy_field }}
                             </div>
                             <div class="col-md-6 mb-3">
-                                {{ form.cursos|as_crispy_field }}
+                                {{ form.curso|as_crispy_field }}
                             </div>
                             <div class="col-md-6 mb-3">
                                 {{ form.data_limite_pedidos|as_crispy_field }}
@@ -115,12 +115,12 @@
                         </div>
                     </div>
 
-                    <!-- Descrição do Produto -->
+                    <!-- Opções do Produto -->
                     <div class="border p-4 rounded-3 mb-4">
-                        <h5 class="text-primary mb-3">Descrição do Produto</h5>
+                        <h5 class="text-primary mb-3">Opções do Produto</h5>
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                {{ form.descricao|as_crispy_field }}
+                                {{ form.opcoes|as_crispy_field }}
                             </div>
                         </div>
                     </div>

@@ -65,13 +65,13 @@
                         <h5 class="text-primary mb-3">Configurações de Pagamento</h5>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                {{ form.forma_pag_op|as_crispy_field }}
-                            </div>
-                            <div class="col-md-6 mb-3">
                                 {{ form.data_pag1|as_crispy_field }}
                             </div>
                             <div class="col-md-6 mb-3">
                                 {{ form.data_pag2|as_crispy_field }}
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                {{ form.forma_pag_op|as_crispy_field }}
                             </div>
                         </div>
                     </div>
@@ -97,7 +97,7 @@
 
                     <!-- Configurações do Curso -->
                     <div class="border p-4 rounded-3 mb-4">
-                        <h5 class="text-primary mb-3">Configurações do Curso</h5>
+                        <h5 class="text-primary mb-3">Configurações do Informações</h5>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 {{ form.turnos|as_crispy_field }}
@@ -106,19 +106,19 @@
                                 {{ form.turma|as_crispy_field }}
                             </div>
                             <div class="col-md-6 mb-3">
-                                {{ form.cursos|as_crispy_field }}
+                                {{ form.curso|as_crispy_field }}
                             </div>
                             <div class="col-md-6 mb-3">
                                 {{ form.data_limite_pedidos|as_crispy_field }}
                             </div>
                         </div>
                     </div>
-                    <!-- Descrição do Produto -->
+                    <!-- Opções do Produto -->
                     <div class="border p-4 rounded-3 mb-4">
-                        <h5 class="text-primary mb-3">Descrição do Produto</h5>
+                        <h5 class="text-primary mb-3">Opções do Produto</h5>
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                {{ form.descricao|as_crispy_field }}
+                                {{ form.opcoes|as_crispy_field }}
                             </div>
                         </div>
                     </div>
@@ -128,11 +128,11 @@
                     <div class="accordion mt-4" id="accordionExample">
                         <div class="accordion-item">
                             <h2 class="accordion-header">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseImages" aria-expanded="true" aria-controls="collapseImages">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseImages" aria-expanded="False" aria-controls="collapseImages">
                                     Imagens do Produto
                                 </button>
                             </h2>
-                            <div id="collapseImages" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+                            <div id="collapseImages" class="accordion-collapse collapse " data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
                                     {{ formset.management_form }}
                                     <div class="row">

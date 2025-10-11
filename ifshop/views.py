@@ -1,4 +1,4 @@
-from .forms import CamisetaForm, PedidoBaseForm, ProdutoBaseForm, PedidoCamisetaForm, AlterarStatusPedidoForm, FiltroProdutoForm, FiltroPedidosForm, CadastroUsuarioForm, LoginUsuarioForm, ImagemProdutoBaseFormSet, AnexoComprovantesPedidoForm, ProdutoForm
+from .forms import CamisetaForm, PedidoBaseForm, ProdutoBaseForm, PedidoCamisetaForm, AlterarStatusPedidoForm, FiltroProdutoForm, FiltroPedidosForm, CadastroUsuarioForm, LoginUsuarioForm, ImagemProdutoBaseFormSet, AnexoComprovantesPedidoForm
 from .models import Camiseta, ProdutoBase, PedidoBase, ImagemProdutoBase, EstiloTamanho, PedidoCamiseta, UsuarioCustomizado
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect, get_object_or_404
@@ -19,38 +19,30 @@ import openpyxl, json, os
 def index(request):
     form = FiltroProdutoForm(request.GET)
     
-    # Buscar todos os produtos base
-    produtos_base = ProdutoBase.objects.all().prefetch_related('imagens', 'cursos')
+    produtos_base = ProdutoBase.objects.all().prefetch_related('imagens', 'curso') 
     camisetas_ids = Camiseta.objects.values_list('produtobase_ptr_id', flat=True)
     
-
     if form.is_valid():
         turnos = form.cleaned_data.get('turnos')
-        cursos = form.cleaned_data.get('cursos')
         
         if turnos:  
             produtos_base = produtos_base.filter(turnos__iexact=turnos)
             print(f"Filtro turnos aplicado: {turnos}")
-        
-        if cursos:  
-            produtos_com_curso = produtos_base.filter(cursos=cursos)
-            print(f"Filtro cursos aplicado: {cursos}")
-            produtos_base = produtos_com_curso
         
         print(f"Produtos após filtro: {produtos_base.count()}")
     else:
         print("Form inválido")
         print("Errors:", form.errors)
 
-    produtos_com_imagens = []
+    produtos_com_imagens = [] 
     data_hoje = now().date()
     
-    for produto in produtos_base:
+    for produto in produtos_base:  
         tipo = 'camiseta' if produto.id in camisetas_ids else 'produto'
         imagem_principal = produto.imagens.filter(principal=True).first() or produto.imagens.first()
         disponivel = data_hoje <= produto.data_limite_pedidos if produto.data_limite_pedidos else True
 
-        produtos_com_imagens.append({
+        produtos_com_imagens.append({  
             'produto': produto,
             'imagem_principal': imagem_principal,
             'disponivel': disponivel,
@@ -59,14 +51,13 @@ def index(request):
 
     print(f"Total produtos para exibir: {len(produtos_com_imagens)}")
 
-    # Paginação
-    paginator = Paginator(produtos_com_imagens, 9)
+    paginator = Paginator(produtos_com_imagens, 9)  
     page_number = request.GET.get('pagina')
     produtos_paginados = paginator.get_page(page_number)
 
     return render(request, 'core/index.html', {
         'form': form, 
-        'produtos_com_imagens': produtos_paginados
+        'produtos_com_imagens': produtos_paginados  
     })
 
 # ---- usuario ----- #
@@ -159,7 +150,7 @@ def exportar_pedidos_camisetas(request):
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Pedidos Pagos"
-    ws.append(['Nome na Estampa', 'cm do penis', 'Penis', 'Tamanho', 'Opção escolhida', "Status"])
+    ws.append(['Nome na Estampa', 'Numero na Estampa', 'Estilo', 'Tamanho', 'Opção escolhida', "Status"])
 
     for pedido in pedidos:
         ws.append([
@@ -437,7 +428,7 @@ def criar_camiseta(request):
             camiseta.estilos = ", ".join(form.cleaned_data['estilos'])
             camiseta.tamanhos = tamanhos_por_estilo
             camiseta.save()
-            form.save_m2m()
+            form.save()
 
             # limpa os tamanhos antigos e salva novos
             EstiloTamanho.objects.filter(camiseta=camiseta).delete()
@@ -609,12 +600,10 @@ def criar_produto(request):
         
         if form.is_valid() and formset.is_valid():
             try:
-                # Salvar o produto
                 produto = form.save(commit=False)
                 produto.vendedor = request.user
                 produto.save()
                 
-                # Salvar imagens
                 for form_img in formset:
                     if form_img.cleaned_data.get('imagem'):
                         imagem = form_img.save(commit=False)
@@ -656,41 +645,37 @@ def excluir_produto(request, produto_id):
 def edit_produto(request, produto_id):
     produto = get_object_or_404(ProdutoBase, id=produto_id, vendedor=request.user)
     
+    print("=== DEBUG EDIT PRODUTO ===")
+    print("Produto:", produto.titulo)
+    print("Cursos do produto:", list(produto.curso.values_list('nome', flat=True)))
+    
     if request.method == 'POST':
         form = ProdutoBaseForm(request.POST, request.FILES, instance=produto)
-        formset = ImagemProdutoBaseFormSet(request.POST, request.FILES, queryset=produto.imagens.all())
+        print("POST data - curso:", request.POST.getlist('curso'))
         
-        if form.is_valid() and formset.is_valid():
+        if form.is_valid():
             try:
-                # Salvar o produto
-                produto_editado = form.save()
-                
-                # Salvar imagens
-                instances = formset.save(commit=False)
-                for instance in instances:
-                    instance.produto = produto_editado
-                    instance.save()
-                
-                # Deletar imagens marcadas para exclusão
-                for form_img in formset.deleted_forms:
-                    if form_img.instance.pk:
-                        form_img.instance.delete()
-                
-                messages.success(request, 'Produto atualizado com sucesso!')
-                return redirect('gerenciar_produtos')
-                
+                with transaction.atomic():
+                    produto = form.save(commit=False)
+                    produto.save()
+                    
+                    form.save_m2m()  
+                    
+                    messages.success(request, 'Produto atualizado com sucesso!')
+                    return redirect('gerenciar_produtos')
+                    
             except Exception as e:
-                messages.error(request, f'Erro ao atualizar produto: {str(e)}')
+                messages.error(request, f'Erro ao salvar produto: {str(e)}')
+                print(f"Erro: {e}")
         else:
-            messages.error(request, 'Por favor, corrija os erros no formulário.')
+            messages.error(request, 'Erro no formulário. Verifique os campos.')
+            print("Form errors:", form.errors)
     else:
-        # Inicializar o formulário com a instância do produto
         form = ProdutoBaseForm(instance=produto)
-        formset = ImagemProdutoBaseFormSet(queryset=produto.imagens.all())
+        print("Form initial - curso:", form['curso'].value())
     
     return render(request, 'produtos/edit_produto.html', {
         'form': form,
-        'formset': formset,
         'produto': produto
     })
 
@@ -709,19 +694,22 @@ def produto(request, produto_id):
         form_base = PedidoBaseForm(
             request.POST,
             request.FILES,
+            produto=produto,  # ✅ ADICIONE ESTA LINHA
             forma_pag_opcoes=forma_pag_opcoes
         )
 
         if form_base.is_valid():
             pedido_base = form_base.save(commit=False)
+            pedido_base.produto = produto  # ✅ ADICIONE ESTA LINHA
             pedido_base.cliente = request.user
             pedido_base.save()
 
-            messages.success(request, "Pedido de camiseta realizado com sucesso!")
+            messages.success(request, "Pedido realizado com sucesso!")
             return redirect('carrinho')
 
     else:
         form_base = PedidoBaseForm(
+            produto=produto,  # ✅ ADICIONE ESTA LINHA
             forma_pag_opcoes=forma_pag_opcoes
         )
 

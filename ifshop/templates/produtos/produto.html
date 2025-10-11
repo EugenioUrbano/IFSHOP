@@ -3,7 +3,7 @@
 {% load static %}
 {% load crispy_forms_filters %}
 
-{% block title%}Camiseta{% endblock %}
+{% block title%}{{produto.titulo}}{% endblock %}
 {% block filtro%} {% endblock %}
 
 {% block content %}
@@ -54,8 +54,14 @@
                 <div class="mb-1 text-body-secondary">Preço das parcelas: R$ {{ produto.preco_parcela }}</div>
                 <form method="post" class="row g-3">
                     {% csrf_token %}
-                    <div class=" col-md-6">
-                        {{ form_base.opcao_escolhida|as_crispy_field }}
+                    <div class="col-md-6">
+                        {% if form_base.opcao_escolhida.field.choices %}
+                            {{ form_base.opcao_escolhida|as_crispy_field }}
+                        {% else %}
+                            <div class="alert alert-warning">
+                                Nenhuma opção disponível para este produto.
+                            </div>
+                        {% endif %}
                     </div>
                      <div class=" col-md-6">
                         {{ form_base.forma_pag|as_crispy_field }}
