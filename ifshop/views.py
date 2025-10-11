@@ -1,5 +1,7 @@
-from .forms import CamisetaForm, PedidoBaseForm, ProdutoBaseForm, PedidoCamisetaForm, AlterarStatusPedidoForm, FiltroProdutoForm, FiltroPedidosForm, CadastroUsuarioForm, LoginUsuarioForm, ImagemProdutoBaseFormSet, AnexoComprovantesPedidoForm
-from .models import Camiseta, ProdutoBase, PedidoBase, ImagemProdutoBase, EstiloTamanho, PedidoCamiseta, UsuarioCustomizado
+from .forms import CamisetaForm, PedidoBaseForm, ProdutoBaseForm, PedidoCamisetaForm
+from.forms import AlterarStatusPedidoForm, FiltroProdutoForm, FiltroPedidosForm, CadastroUsuarioForm
+from .forms import LoginUsuarioForm, ImagemProdutoBaseFormSet, AnexoComprovantesPedidoForm, AvaliacaoForm
+from .models import Camiseta, ProdutoBase, PedidoBase, ImagemProdutoBase, EstiloTamanho, PedidoCamiseta, UsuarioCustomizado, Avaliacao
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -339,13 +341,49 @@ def edit_pedido_produto(request, pedido_id):
         'pedido': pedido,
     })
 
+# ---- avaliações ----- #
+
+@login_required
+def criar_avaliacao(request, pedido_id):
+    pedido = get_object_or_404(PedidoBase, id=pedido_id, cliente=request.user)
+    
+    if pedido.status != 'Entregue':
+        messages.error(request, 'Você só pode avaliar produtos após a entrega.')
+        return redirect('carrinho')
+    
+    avaliacao_existente = Avaliacao.objects.filter(pedido=pedido, cliente=request.user).first()
+    
+    if request.method == 'POST':
+        form = AvaliacaoForm(request.POST, instance=avaliacao_existente)
+        if form.is_valid():
+            avaliacao = form.save(commit=False)
+            avaliacao.produto = pedido.produto
+            avaliacao.cliente = request.user
+            avaliacao.pedido = pedido
+            avaliacao.save()
+            
+            messages.success(request, 'Avaliação enviada com sucesso!')
+            return redirect('carrinho')
+    else:
+        form = AvaliacaoForm(instance=avaliacao_existente)
+    
+    return render(request, 'avaliacoes/criar_avaliacao.html', {
+        'form': form,
+        'pedido': pedido,
+        'avaliacao_existente': avaliacao_existente
+    })
 # ---- camiseta ----- #
 
 def camiseta(request, camiseta_id):
-    camiseta = get_object_or_404(Camiseta.objects.prefetch_related('imagens'), id=camiseta_id)
+    camiseta = get_object_or_404(Camiseta.objects.prefetch_related('imagens', 'avaliacoes__cliente'), id=camiseta_id)
     tamanhos_opcoes = list({t for lista in camiseta.tamanhos.values() for t in lista})
     estilos_opcoes = [e.strip() for e in camiseta.estilos.split(',')]
     forma_pag_opcoes = [f.strip() for f in camiseta.forma_pag_op.split(',')]
+
+    avaliacoes = produto.avaliacoes.all().select_related('cliente')
+    pagina_avaliacoes_num = request.GET.get('pagina_avaliacoes', 1)
+    paginator_avaliacoes = Paginator(avaliacoes, 5)  # 5 avaliações por página
+    pagina_avaliacoes = paginator_avaliacoes.get_page(pagina_avaliacoes_num)
 
     if request.method == 'POST':
         if not request.user.is_authenticated:
@@ -392,6 +430,7 @@ def camiseta(request, camiseta_id):
         'form_base': form_base,
         'form_camiseta': form_camiseta,
         'camiseta': camiseta,
+        'avaliacoes_paginadas': pagina_avaliacoes,
         'tamanhos_por_estilo_json': json.dumps(camiseta.tamanhos)
     })
 
@@ -683,8 +722,14 @@ def pedidos_produtos(request):
     return render(request, 'pedidos/pedidos_produtos.html')
 
 def produto(request, produto_id):
-    produto = get_object_or_404(ProdutoBase.objects.prefetch_related('imagens'), id=produto_id)
+    produto = get_object_or_404(ProdutoBase.objects.prefetch_related('imagens', 'avaliacoes__cliente'), id=produto_id)
     forma_pag_opcoes = [f.strip() for f in produto.forma_pag_op.split(',')]
+
+    avaliacoes = produto.avaliacoes.all().select_related('cliente')
+    pagina_avaliacoes_num = request.GET.get('pagina_avaliacoes', 1)
+    paginator_avaliacoes = Paginator(avaliacoes, 5)  # 5 avaliações por página
+    pagina_avaliacoes = paginator_avaliacoes.get_page(pagina_avaliacoes_num)
+
 
     if request.method == 'POST':
         if not request.user.is_authenticated:
@@ -694,13 +739,13 @@ def produto(request, produto_id):
         form_base = PedidoBaseForm(
             request.POST,
             request.FILES,
-            produto=produto,  # ✅ ADICIONE ESTA LINHA
+            produto=produto,  
             forma_pag_opcoes=forma_pag_opcoes
         )
 
         if form_base.is_valid():
             pedido_base = form_base.save(commit=False)
-            pedido_base.produto = produto  # ✅ ADICIONE ESTA LINHA
+            pedido_base.produto = produto  
             pedido_base.cliente = request.user
             pedido_base.save()
 
@@ -709,11 +754,12 @@ def produto(request, produto_id):
 
     else:
         form_base = PedidoBaseForm(
-            produto=produto,  # ✅ ADICIONE ESTA LINHA
+            produto=produto,  
             forma_pag_opcoes=forma_pag_opcoes
         )
 
     return render(request, 'produtos/produto.html', {
         'produto': produto,
         'form_base': form_base,
+        'avaliacoes_paginadas': pagina_avaliacoes,
     })

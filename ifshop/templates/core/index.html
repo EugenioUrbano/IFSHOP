@@ -84,6 +84,27 @@
                                     {% endif %}
                                 </div>
                                 <p class="text-body-secondary mb-0">R$ {{ item.produto.preco }}</p>
+                                <div class="avaliacao-produto mb-2">
+                                    {% with avaliacoes=item.produto.avaliacoes.all %}
+                                        {% if avaliacoes %}
+                                            <div class="d-flex align-items-center">
+                                                <div class="estrelas-avaliacao pequena">
+                                                    {% for i in "12345" %}
+                                                        <span class="estrela {% if forloop.counter <= item.produto.media_avaliacoes %}preenchida{% endif %}">★</span>
+                                                    {% endfor %}
+                                                </div>
+                                                <small class="text-muted ms-2">
+                                                    ({{ avaliacoes.count }})
+                                                </small>
+                                            </div>
+                                            <small class="text-muted">
+                                                {{ item.produto.media_avaliacoes|floatformat:1 }} de 5
+                                            </small>
+                                        {% else %}
+                                            <small class="text-muted">Sem avaliações</small>
+                                        {% endif %}
+                                    {% endwith %}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -125,4 +146,27 @@
     </ul>
 </div>
 {% endif %}
+<style>
+.estrelas-avaliacao.pequena .estrela {
+    font-size: 0.9rem;
+    color: #ddd;
+    margin-right: 1px;
+}
+
+.estrelas-avaliacao.pequena .estrela.preenchida {
+    color: #ffc107;
+}
+
+.avaliacao-produto {
+    min-height: 40px;
+}
+
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+</style>
 {% endblock %}

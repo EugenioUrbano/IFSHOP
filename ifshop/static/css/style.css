@@ -143,3 +143,32 @@ footer.fixar-rodape{
   max-height: 100px;
 
 }
+
+.estrelas-avaliacao.pequena .estrela {
+    font-size: 0.9rem;
+    color: #ddd;
+    margin-right: 1px;
+}
+
+.estrelas-avaliacao.media .estrela {
+    font-size: 1.5rem;
+    color: #ddd;
+    margin-right: 2px;
+}
+
+.estrelas-avaliacao.grande .estrela {
+    font-size: 3rem;
+    color: #ddd;
+    margin-right: 5px;
+}
+
+.estrelas-avaliacao .estrela.preenchida {
+    color: #ffc107;
+}
+
+/* Efeitos hover */
+.estrelas-avaliacao.grande label:hover,
+.estrelas-avaliacao.grande label:hover ~ label {
+    color: #ffc107;
+    transform: scale(1.1);
+}

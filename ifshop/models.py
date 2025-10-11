@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.utils.timezone import now
+from django.utils import timezone
 from django.db.models import JSONField
 from django.conf import settings
 from django.db import models
@@ -82,6 +83,34 @@ class ProdutoBase(models.Model):
         
     def __str__(self):
         return self.titulo
+    
+    @property
+    def media_avaliacoes(self):
+        """Calcula a média das avaliações"""
+        avaliacoes = self.avaliacoes.all()
+        if avaliacoes:
+            return sum(av.estrelas for av in avaliacoes) / len(avaliacoes)
+        return 0
+    
+    @property
+    def total_avaliacoes(self):
+        """Retorna o total de avaliações"""
+        return self.avaliacoes.count()
+    
+    def get_avaliacoes_por_estrela(self, estrelas):
+        """Retorna avaliações por quantidade de estrelas"""
+        return self.avaliacoes.filter(estrelas=estrelas).count()
+    
+    def get_distribuicao_estrelas(self):
+        """Retorna a distribuição percentual das estrelas"""
+        total = self.total_avaliacoes
+        if total == 0:
+            return {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+        
+        return {
+            estrelas: (self.get_avaliacoes_por_estrela(estrelas) / total) * 100
+            for estrelas in range(1, 6)
+        }
 
 class ImagemProdutoBase(models.Model):
     produto = models.ForeignKey(ProdutoBase, related_name='imagens', on_delete=models.CASCADE)
@@ -181,6 +210,65 @@ class PedidoCamiseta(models.Model):
     
     def __str__(self):
         return f"Pedido de camiseta para {self.camiseta.titulo} - {self.nome_estampa} ({self.numero_estampa})"
+    
+    @property
+    def pode_ser_avaliado(self):
+        """Verifica se o pedido pode ser avaliado"""
+        return self.status == 'Entregue'
+    
+    def get_avaliacao_cliente(self):
+        """Retorna a avaliação do cliente para este pedido"""
+        return self.avaliacoes.filter(cliente=self.cliente).first()
 
 
 ####################################################################################################
+
+class Avaliacao(models.Model):
+    ESTRELAS_OPCOES = [
+        (1, '⭐'),
+        (2, '⭐⭐'),
+        (3, '⭐⭐⭐'),
+        (4, '⭐⭐⭐⭐'),
+        (5, '⭐⭐⭐⭐⭐'),
+    ]
+    
+    produto = models.ForeignKey(
+        'ProdutoBase', 
+        on_delete=models.CASCADE, 
+        related_name='avaliacoes'
+    )
+    cliente = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE,
+        related_name='avaliacoes'
+    )
+    pedido = models.ForeignKey(
+        'PedidoBase', 
+        on_delete=models.CASCADE, 
+        related_name='avaliacoes'
+    )
+    estrelas = models.IntegerField(
+        choices=ESTRELAS_OPCOES,
+        verbose_name='Avaliação'
+    )
+    comentario = models.TextField(
+        max_length=500, 
+        blank=True, 
+        null=True,
+        verbose_name='Comentário'
+    )
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        unique_together = ['produto', 'cliente', 'pedido']  # Uma avaliação por pedido
+        verbose_name = 'Avaliação'
+        verbose_name_plural = 'Avaliações'
+        ordering = ['-data_criacao']
+    
+    def __str__(self):
+        return f"Avaliação de {self.cliente.nome} para {self.produto.titulo} - {self.estrelas} estrelas"
+    
+    def get_estrelas_display(self):
+        """Retorna as estrelas em formato de texto"""
+        return '⭐' * self.estrelas

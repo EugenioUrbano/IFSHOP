@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Avaliar Produto{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="bi bi-star-fill me-2"></i>Avaliar Produto Entregue
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Informações do Pedido -->
+                    <div class="d-flex align-items-center mb-4 p-3 border rounded bg-light">
+                        {% if pedido.produto.imagens.first %}
+                            <img src="{{ pedido.produto.imagens.first.imagem.url }}" 
+                                 class="rounded me-3" 
+                                 alt="{{ pedido.produto.titulo }}"
+                                 style="width: 80px; height: 80px; object-fit: cover;">
+                        {% endif %}
+                        <div>
+                            <h5 class="mb-1">{{ pedido.produto.titulo }}</h5>
+                            <p class="text-muted mb-0">Pedido #{{ pedido.id }} - Entregue em {{ pedido.data_entrega|default:"Data de entrega" }}</p>
+                            {% if pedido.opcao_escolhida %}
+                                <p class="text-muted mb-0">Opção: {{ pedido.opcao_escolhida }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Avaliação com Estrelas -->
+                        <div class="mb-4 text-center">
+                            <label class="form-label fw-bold h5">Como você avalia este produto?</label>
+                            <div class="estrelas-avaliacao grande mt-3">
+                                {% for value, label in form.estrelas.field.choices %}
+                                <input type="radio" id="estrela{{ value }}" name="estrelas" value="{{ value }}" 
+                                       {% if form.estrelas.value == value|stringformat:"i" %}checked{% endif %}
+                                       required>
+                                <label for="estrela{{ value }}" title="{{ label }}">★</label>
+                                {% endfor %}
+                            </div>
+                            <div class="mt-2">
+                                <small class="text-muted">Selecione de 1 a 5 estrelas</small>
+                            </div>
+                            {% if form.estrelas.errors %}
+                            <div class="text-danger text-center mt-2">{{ form.estrelas.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Comentário -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Comentário (opcional)</label>
+                            {{ form.comentario }}
+                            <div class="form-text">Compartilhe sua experiência com outros compradores</div>
+                            {% if form.comentario.errors %}
+                            <div class="text-danger">{{ form.comentario.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Botões -->
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a href="{% url 'carrinho' %}" class="btn btn-secondary">Voltar ao Carrinho</a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-star-fill me-1"></i>Enviar Avaliação
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.estrelas-avaliacao.grande {
+    direction: rtl;
+    unicode-bidi: bidi-override;
+    display: inline-block;
+}
+
+.estrelas-avaliacao.grande input[type="radio"] {
+    display: none;
+}
+
+.estrelas-avaliacao.grande label {
+    font-size: 3rem;
+    color: #ddd;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin: 0 5px;
+}
+
+.estrelas-avaliacao.grande label:hover,
+.estrelas-avaliacao.grande label:hover ~ label,
+.estrelas-avaliacao.grande input[type="radio"]:checked ~ label {
+    color: #ffc107;
+    transform: scale(1.1);
+}
+
+.estrelas-avaliacao.grande input[type="radio"]:checked + label {
+    color: #ffc107;
+}
+</style>
+{% endblock %}

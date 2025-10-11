@@ -87,6 +87,123 @@
         
     </div>
   </div>
+
+<!-- Avaliações -->
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="bi bi-star-fill text-warning"></i>
+                        Avaliações dos Clientes
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% with avaliacoes=camiseta.avaliacoes.all %}
+                    {% if avaliacoes %}
+                        <!-- Resumo das Avaliações -->
+                        <div class="row mb-4">
+                            <div class="col-md-4 text-center">
+                                <h2 class="text-primary">{{ camiseta.media_avaliacoes|floatformat:1 }}</h2>
+                                <div class="estrelas-avaliacao media mb-2">
+                                    {% for i in "12345" %}
+                                        <span class="estrela {% if forloop.counter <= camiseta.media_avaliacoes %}preenchida{% endif %}">★</span>
+                                    {% endfor %}
+                                </div>
+                                <p class="text-muted">{{ avaliacoes.count }} avaliação(ões)</p>
+                            </div>
+                            <div class="col-md-8">
+                                <!-- Distribuição de estrelas -->
+                                {% for i in "54321" %}
+                                {% with star_count=i|add:0 total=avaliacoes.count %}
+                                {% with count=avaliacoes|length star_percent=avaliacoes|length|divisibleby:star_count %}
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="me-2">{{ i }} estrela{{ i|pluralize }}</span>
+                                    <div class="progress flex-grow-1" style="height: 8px;">
+                                        <div class="progress-bar bg-warning" 
+                                             style="width: {% widthratio avaliacoes.count total 100 %}%">
+                                        </div>
+                                    </div>
+                                    <span class="ms-2 text-muted small">({% widthratio avaliacoes.count total 100 %}%)</span>
+                                </div>
+                                {% endwith %}
+                                {% endwith %}
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Lista de Avaliações -->
+                        <div class="avaliacoes-lista">
+                            {% for avaliacao in avaliacoes %}
+                            <div class="border-bottom pb-3 mb-3">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <strong class="d-block">{{ avaliacao.cliente.nome }}</strong>
+                                        <div class="estrelas-avaliacao pequena">
+                                            {% for i in "12345" %}
+                                                <span class="estrela {% if forloop.counter <= avaliacao.estrelas %}preenchida{% endif %}">★</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">{{ avaliacao.data_criacao|date:"d/m/Y" }}</small>
+                                </div>
+                                
+                                {% if avaliacao.comentario %}
+                                <p class="mb-0 mt-2">{{ avaliacao.comentario }}</p>
+                                {% else %}
+                                <p class="text-muted mb-0 mt-2"><em>Sem comentário</em></p>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Paginação -->
+                        {% if avaliacoes.has_other_pages %}
+                        <nav aria-label="Navegação de avaliações">
+                            <ul class="pagination justify-content-center mt-4">
+                                {% if avaliacoes.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?pagina_avaliacoes=1">&laquo; Primeira</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?pagina_avaliacoes={{ avaliacoes.previous_page_number }}">Anterior</a>
+                                    </li>
+                                {% endif %}
+
+                                <li class="page-item active">
+                                    <span class="page-link">
+                                        Página {{ avaliacoes.number }} de {{ avaliacoes.paginator.num_pages }}
+                                    </span>
+                                </li>
+
+                                {% if avaliacoes.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?pagina_avaliacoes={{ avaliacoes.next_page_number }}">Próxima</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?pagina_avaliacoes={{ avaliacoes.paginator.num_pages }}">Última &raquo;</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
+
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-star" style="font-size: 3rem; color: #ddd;"></i>
+                            <h5 class="mt-3 text-muted">Este produto ainda não possui avaliações</h5>
+                            <p class="text-muted">Seja o primeiro a avaliar após receber seu pedido!</p>
+                        </div>
+                    {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const tamanhosPorEstilo = {{ tamanhos_por_estilo_json|safe }};

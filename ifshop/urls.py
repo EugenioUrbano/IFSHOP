@@ -58,6 +58,9 @@ urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),
     path('gerenciar_vendedores/', views.gerenciar_vendedores, name='gerenciar_vendedores'),
+    
+    # Avaliações
+    path('avaliar/<int:pedido_id>/', views.criar_avaliacao, name='criar_avaliacao'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

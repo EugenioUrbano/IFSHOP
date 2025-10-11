@@ -1,7 +1,7 @@
 import re
 from django import forms
 from django.forms import modelformset_factory
-from .models import Camiseta, ProdutoBase, PedidoBase, PedidoCamiseta, UsuarioCustomizado, ImagemProdutoBase, EstiloTamanho, Curso
+from .models import Camiseta, ProdutoBase, PedidoBase, PedidoCamiseta, UsuarioCustomizado, ImagemProdutoBase, EstiloTamanho, Curso, Avaliacao
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 
@@ -46,6 +46,45 @@ class LoginUsuarioForm(AuthenticationForm):
     password = forms.CharField(label="Senha",widget=forms.PasswordInput(attrs={'class': 'form-control rounded-3 '}))
     
 ### Filtro ###
+class FiltroAvaliacoesForm(forms.Form):
+    ORDENACAO_OPCOES = [
+        ('-data_criacao', 'Mais Recentes'),
+        ('data_criacao', 'Mais Antigas'),
+        ('-estrelas', 'Melhores Avaliações'),
+        ('estrelas', 'Piores Avaliações'),
+    ]
+    
+    ESTRELAS_OPCOES = [
+        ('', 'Todas as Estrelas'),
+        (5, '⭐️⭐️⭐️⭐️⭐️ (5 estrelas)'),
+        (4, '⭐️⭐️⭐️⭐️ (4 estrelas)'),
+        (3, '⭐️⭐️⭐️ (3 estrelas)'),
+        (2, '⭐️⭐️ (2 estrelas)'),
+        (1, '⭐️ (1 estrela)'),
+    ]
+    
+    ordenacao = forms.ChoiceField(
+        choices=ORDENACAO_OPCOES,
+        required=False,
+        initial='-data_criacao',
+        label='Ordenar por',
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    
+    estrelas = forms.ChoiceField(
+        choices=ESTRELAS_OPCOES,
+        required=False,
+        label='Filtrar por estrelas',
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    
+    apenas_com_comentarios = forms.BooleanField(
+        required=False,
+        initial=False,
+        label='Apenas avaliações com comentários',
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
+
 class FiltroProdutoForm(forms.Form):
     turnos = forms.ChoiceField(
         choices=[
@@ -361,3 +400,58 @@ class AnexoComprovantesPedidoForm(forms.ModelForm):
         model = PedidoBase
         fields = ['comprovante_total', 'comprovante_parcela1', 'comprovante_parcela2']
 
+        
+class AvaliacaoForm(forms.ModelForm):
+    estrelas = forms.ChoiceField(
+        choices=Avaliacao.ESTRELAS_OPCOES,
+        widget=forms.RadioSelect(attrs={
+            'class': 'estrelas-radio',
+            'style': 'display: none;'  # Esconde os radios padrão
+        }),
+        label='',
+        required=True
+    )
+    
+    comentario = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 4,
+            'placeholder': 'Compartilhe sua experiência com este produto... (opcional)',
+            'maxlength': '500'
+        }),
+        required=False,
+        label='Comentário'
+    )
+    
+    class Meta:
+        model = Avaliacao
+        fields = ['estrelas', 'comentario']
+        labels = {
+            'estrelas': 'Sua Avaliação',
+            'comentario': 'Comentário (opcional)'
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Personalizar labels das estrelas
+        self.fields['estrelas'].choices = [
+            (1, '1 Estrela - Péssimo'),
+            (2, '2 Estrelas - Ruim'),
+            (3, '3 Estrelas - Regular'),
+            (4, '4 Estrelas - Bom'),
+            (5, '5 Estrelas - Excelente'),
+        ]
+    
+    def clean_estrelas(self):
+        estrelas = self.cleaned_data.get('estrelas')
+        if estrelas:
+            return int(estrelas)
+        return estrelas
+    
+    def clean_comentario(self):
+        comentario = self.cleaned_data.get('comentario')
+        if comentario and len(comentario.strip()) < 10:
+            raise forms.ValidationError(
+                "O comentário deve ter pelo menos 10 caracteres."
+            )
+        return comentario
