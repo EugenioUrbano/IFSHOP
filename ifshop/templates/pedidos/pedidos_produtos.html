@@ -47,13 +47,9 @@
                 <td>{{ item.pedido.id }}</td>
                 <td>{{ item.pedido.pedido.cliente }}</td>
                 <td>{{ item.pedido.pedido.cliente.telefone }}</td>
-                <td>{{ item.pedido.camiseta.titulo }}</td>
+                <td>{{ item.pedido.produto.titulo }}</td>
                 <td>{{ item.pedido.pedido.data_pedido }}</td>
                 <td>{{ item.pedido.pedido.opcao_escolhida }}</td>
-                <td>{{ item.pedido.nome_estampa }}</td>
-                <td>{{ item.pedido.numero_estampa }}</td>
-                <td>{{ item.pedido.tamanho }}</td>
-                <td>{{ item.pedido.estilo }}</td>
                 <td>{{ item.pedido.pedido.forma_pag }}</td>
                 <td>
                     {% if item.pedido.forma_pag == "Pix" %}
