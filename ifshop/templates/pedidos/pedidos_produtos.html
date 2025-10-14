@@ -45,12 +45,12 @@
             {% for item in pedidos_com_forms %}
             <tr>
                 <td>{{ item.pedido.id }}</td>
-                <td>{{ item.pedido.pedido.cliente }}</td>
-                <td>{{ item.pedido.pedido.cliente.telefone }}</td>
+                <td>{{ item.pedido.cliente }}</td>
+                <td>{{ item.pedido.cliente.telefone }}</td>
                 <td>{{ item.pedido.produto.titulo }}</td>
-                <td>{{ item.pedido.pedido.data_pedido }}</td>
-                <td>{{ item.pedido.pedido.opcao_escolhida }}</td>
-                <td>{{ item.pedido.pedido.forma_pag }}</td>
+                <td>{{ item.pedido.data_pedido }}</td>
+                <td>{{ item.pedido.opcao_escolhida }}</td>
+                <td>{{ item.pedido.forma_pag }}</td>
                 <td>
                     {% if item.pedido.forma_pag == "Pix" %}
                         {% if item.pedido.comprovante_total %}

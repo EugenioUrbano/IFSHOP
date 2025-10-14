@@ -288,6 +288,57 @@ def pedidos_camisetas(request):
             for p in pedidos_all
         )
     })
+   
+@login_required
+@user_passes_test(vendedor)
+def pedidos_produtos(request):
+    if request.method == 'POST':
+        pedido_id = request.POST.get('pedido_id')
+        novo_status = request.POST.get('status')
+        
+        if pedido_id and novo_status:
+            try:
+                pedido = PedidoBase.objects.get(
+                    id=pedido_id, 
+                    produto__vendedor=request.user 
+                )
+                pedido.status = novo_status
+                pedido.save()
+                messages.success(request, f'Status do pedido #{pedido_id} atualizado para {novo_status}!')
+            except PedidoBase.DoesNotExist:
+                messages.error(request, 'Pedido não encontrado ou você não tem permissão para editá-lo.')
+        
+        return redirect('pedidos_produtos')
+    
+    pedidos_all = PedidoBase.objects.filter(
+        produto__vendedor=request.user,  
+        produto__camiseta__isnull=True   
+    ).select_related('produto', 'cliente').prefetch_related('produto__imagens').order_by('-data_pedido')
+
+    form_filtro = FiltroPedidosForm(request.GET or None)
+    if form_filtro.is_valid():
+        status = form_filtro.cleaned_data.get('status')
+        if status:
+            pedidos_all = pedidos_all.filter(status=status)
+
+    pedidos_com_forms = [{'pedido': p, 'form': AlterarStatusPedidoForm(instance=p)} for p in pedidos_all]
+
+    paginator = Paginator(pedidos_com_forms, 10)
+    page = request.GET.get("pagina")
+    pedidos_paginados = paginator.get_page(page)
+
+    return render(request, 'pedidos/pedidos_produtos.html', {
+        'pedidos_com_forms': pedidos_paginados,
+        'form_filtro': form_filtro,
+        'total_pedidos': pedidos_all.count(),
+        'total_pagos': pedidos_all.filter(status='Pago Totalmente').count(),
+        'total_pago_primeira': pedidos_all.filter(status='Pago 1° Parcela').count(),
+        'arrecadado': sum(
+            p.produto.preco if p.status == "Pago Totalmente" else
+            p.produto.preco_parcela if p.status == "Pago 1° Parcela" else 0
+            for p in pedidos_all
+        )
+    })
 
 @login_required
 def edit_pedido_camiseta(request, pedido_id):
@@ -717,9 +768,6 @@ def edit_produto(request, produto_id):
         'form': form,
         'produto': produto
     })
-
-def pedidos_produtos(request):
-    return render(request, 'pedidos/pedidos_produtos.html')
 
 def produto(request, produto_id):
     produto = get_object_or_404(ProdutoBase.objects.prefetch_related('imagens', 'avaliacoes__cliente'), id=produto_id)
