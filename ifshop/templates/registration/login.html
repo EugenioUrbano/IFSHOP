@@ -7,10 +7,9 @@
 {% block filtro%} {% endblock %}
 
 {%block content%}
-<div class="card-body py-5 px-md-5 ">
-
+<div class="card-body  ">
     <div class="row d-flex justify-content-center ">
-        <div class="col-lg-8 border rounded-3 py-4 shadow mx-md-n5 ">
+        <div class="col-3 border rounded-3 py-4 shadow mx-md-n5 ">
             <div class="container">
                 <h2 class="fw-bold mb-5">Login</h2>
                 <form class="row g-3" method="post">
@@ -27,8 +26,16 @@
                         
                     </div>
                     <button class="btn botoes shadow-lg rounded-pill px-3" type="submit">Realizar Login</button>
+                    <div class="text-center col-12">
+                        <a class="btn btn-light btn-lg d-flex text-center align-items-center shadow-sm border rounded-pill px-4 py-2 col-12" href="/accounts/google/login/" >
+                            <img src="https://img.icons8.com/color/48/000000/google-logo.png" alt="Google Logo" class="me-2" width="24" height="24">
+                            <span class="text-center">Entrar com Google</span>
+                        </a>
+                        <small class="text-muted text-center d-block mt-2">
+                            Acesso rápido e seguro
+                        </small>
+                    </div>
                     <div>
-                        
                         Não tem conta ainda? 
                         <a href="{% url 'cadastro' %}">Faça seu cadastro</a>
                     </div>   

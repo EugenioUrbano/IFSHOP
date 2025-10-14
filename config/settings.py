@@ -1,7 +1,11 @@
-from  decouple import config
+from decouple import config
 import os
 from pathlib import Path
 from django.contrib.messages import constants as messages
+from django.urls import reverse_lazy
+
+
+LOGIN_URL = reverse_lazy('login')
 
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='teste@example.com')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default= '1234')
@@ -44,6 +48,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount', 
+    'allauth.socialaccount.providers.google',
+    'django.contrib.sites',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -56,13 +65,49 @@ AUTH_USER_MODEL = 'ifshop.UsuarioCustomizado'
 
 LOGIN_URL = '/login/'
 
-LOGIN_REDIRECT_URL = '/perfil/'
+LOGIN_REDIRECT_URL = '/'
 
-LOGOUT_REDIRECT_URL = '/login/'
+LOGOUT_REDIRECT_URL = '/'
 
-AUTHENTICATION_BACKENDS = ['ifshop.backends.EmailBackend']
+ACCOUNT_LOGOUT_ON_GET = True
+
+AUTHENTICATION_BACKENDS = [
+    'ifshop.backends.EmailBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+    ]
 
 # CONFIGURAÇÃOM LOGIN
+
+# Configurações do allauth
+SITE_ID = 1
+
+# Configurações de email (opcional)
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'optional'  # 'mandatory', 'optional', or 'none'
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+
+ACCOUNT_LOGIN_METHODS = {'email'} 
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+
+# Configurações específicas do Google
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        'OAUTH_PKCE_ENABLED': True,
+        'APP': {
+            'client_id': config('CLIENT_GOOGLE_ID'),  # Você vai pegar no Google Console
+            'secret': config('CLIENT_GOOGLE_SECRET'), 
+            'key': ''
+        }
+    }
+}
 
 # CONFIGURAÇÃO RESTAURAÇÃO DE SENHA PELO CONSOLE
  
@@ -85,6 +130,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
