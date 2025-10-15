@@ -106,7 +106,13 @@ SOCIALACCOUNT_PROVIDERS = {
             'secret': config('CLIENT_GOOGLE_SECRET'), 
             'key': ''
         }
-    }
+    },
+    'suap': {  
+         'APP': {
+             'client_id': config('SUAP_CLIENT_ID'),
+             'secret': config('SUAP_CLIENT_SECRET'),
+         }
+     }
 }
 
 # CONFIGURAÇÃO RESTAURAÇÃO DE SENHA PELO CONSOLE
