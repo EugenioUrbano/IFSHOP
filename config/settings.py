@@ -107,13 +107,15 @@ SOCIALACCOUNT_PROVIDERS = {
             'key': ''
         }
     },
-    'suap': {  
-         'APP': {
-             'client_id': config('SUAP_CLIENT_ID'),
-             'secret': config('SUAP_CLIENT_SECRET'),
-         }
-     }
+    #'suap': {  
+    #     'APP': {
+    #         'client_id': config('SUAP_CLIENT_ID'),
+    #         'secret': config('SUAP_CLIENT_SECRET'),
+    #     }
+    # }
 }
+
+SOCIALACCOUNT_ADAPTER = 'ifshop.adapters.CustomSocialAccountAdapter'
 
 # CONFIGURAÇÃO RESTAURAÇÃO DE SENHA PELO CONSOLE
  
