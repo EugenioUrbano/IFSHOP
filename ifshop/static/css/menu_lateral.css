@@ -1,0 +1,210 @@
+/* static/css/menu_lateral.css */
+/* Estilos do Menu Lateral */
+.sidebar {
+    width: 250px;
+    background: #2671bc;
+    color: white;
+    padding: 20px 0;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+    left: 0;
+}
+
+.sidebar.fechado {
+    width: 70px;
+}
+
+.sidebar-header {
+    text-align: center;
+    padding: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.sidebar-header h2 {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: white;
+    margin: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar.fechado .sidebar-header h2 {
+    opacity: 0;
+}
+
+.menu-toggle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.sidebar.fechado .menu-toggle {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+.menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-item {
+    margin: 8px 15px;
+}
+
+.menu-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    border: none;
+    white-space: nowrap;
+}
+
+.menu-link:hover {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    text-decoration: none;
+}
+
+.menu-link i {
+    margin-right: 12px;
+    width: 20px;
+    text-align: center;
+    font-size: 1.1em;
+    flex-shrink: 0;
+}
+
+.menu-link span {
+    transition: opacity 0.3s ease;
+}
+
+.sidebar.fechado .menu-link span {
+    opacity: 0;
+}
+
+.menu-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.2);
+    margin: 20px 15px;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar.fechado .menu-divider {
+    opacity: 0;
+}
+
+.menu-section {
+    padding: 10px 20px 5px 20px;
+    font-size: 0.75em;
+    color: rgba(255,255,255,0.8);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar.fechado .menu-section {
+    opacity: 0;
+}
+
+.user-badge, .vendedor-badge {
+    transition: opacity 0.3s ease;
+}
+
+.sidebar.fechado .user-badge,
+.sidebar.fechado .vendedor-badge {
+    opacity: 0;
+}
+
+.user-badge {
+    background: rgba(255,255,255,0.2);
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    margin-left: auto;
+}
+
+.vendedor-badge {
+    background: rgba(255,193,7,0.2);
+    color: #ffc107;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.7em;
+    margin-left: 8px;
+}
+
+/* Conteúdo principal com margin para o menu lateral */
+.main-content-with-sidebar {
+    margin-left: 250px;
+    min-height: 100vh;
+    transition: margin-left 0.3s ease;
+}
+
+.main-content-with-sidebar.fechado {
+    margin-left: 70px;
+}
+
+/* Tooltip para menu fechado */
+.menu-link .tooltip-text {
+    visibility: hidden;
+    width: 120px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1001;
+    left: 80px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.8em;
+}
+
+.sidebar.fechado .menu-link:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 70px;
+    }
+    .sidebar-header h2, .menu-link span, .menu-section, 
+    .user-badge, .vendedor-badge, .menu-divider {
+        display: none;
+    }
+    .menu-link {
+        justify-content: center;
+        padding: 15px;
+    }
+    .menu-link i {
+        margin-right: 0;
+        font-size: 1.3em;
+    }
+    .main-content-with-sidebar {
+        margin-left: 70px;
+    }
+    
+    .menu-toggle {
+        display: none;
+    }
+}

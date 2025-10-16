@@ -1,0 +1,101 @@
+<!-- templates/menu_lateral.html -->
+<!-- Menu Lateral -->
+<nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <h2>IFSHOP</h2>
+        <button class="menu-toggle" id="menuToggle">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+    </div>
+    
+    <ul class="menu">
+        <!-- Itens para visitantes -->
+        {% if not user.is_authenticated %}
+        <li class="menu-item">
+            <a href="{% url 'login' %}" class="menu-link">
+                <i class="bi bi-box-arrow-in-right"></i>
+                <span>Login</span>
+                <span class="tooltip-text">Login</span>
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="{% url 'cadastro' %}" class="menu-link">
+                <i class="bi bi-person-plus"></i>
+                <span>Cadastro</span>
+                <span class="tooltip-text">Cadastro</span>
+            </a>
+        </li>
+        {% endif %}
+
+        <!-- Itens para usuários logados -->
+        {% if user.is_authenticated %}
+        <div class="menu-section">Minha Conta</div>
+        
+        <li class="menu-item">
+            <a href="{% url 'perfil' %}" class="menu-link">
+                <i class="bi bi-person"></i>
+                <span>Perfil</span>
+                <span class="user-badge">{{ user.username }}</span>
+                {% if user.is_vendedor %}
+                <span class="vendedor-badge">Vendedor</span>
+                {% endif %}
+                <span class="tooltip-text">Perfil</span>
+            </a>
+        </li>
+
+        <!-- Link para Adicionar Produto (apenas para vendedores) -->
+        {% if user.is_authenticated and user.is_vendedor %}
+        <li class="menu-item">
+            <a href="{% url 'adicionar_produto' %}" class="menu-link">
+                <i class="bi bi-plus-circle"></i>
+                <span>Adicionar Produto</span>
+                <span class="tooltip-text">Adicionar Produto</span>
+            </a>
+        </li>
+        {% endif %}
+        
+        <li class="menu-item">
+            <a href="{% url 'password_change' %}" class="menu-link">
+                <i class="bi bi-key"></i>
+                <span>Alterar Senha</span>
+                <span class="tooltip-text">Alterar Senha</span>
+            </a>
+        </li>
+
+        <li class="menu-divider"></li>
+
+        <!-- Itens administrativos -->
+        {% if user.is_staff or user.is_superuser %}
+        <div class="menu-section">Administração</div>
+        
+        <li class="menu-item">
+            <a href="{% url 'admin:index' %}" class="menu-link">
+                <i class="bi bi-speedometer2"></i>
+                <span>Admin Django</span>
+                <span class="tooltip-text">Admin Django</span>
+            </a>
+        </li>
+
+        <!-- Gerenciar Vendedores (apenas para admin) -->
+        <li class="menu-item">
+            <a href="{% url 'gerenciar_vendedores' %}" class="menu-link">
+                <i class="bi bi-people"></i>
+                <span>Gerenciar Vendedores</span>
+                <span class="tooltip-text">Gerenciar Vendedores</span>
+            </a>
+        </li>
+        {% endif %}
+
+        <li class="menu-divider"></li>
+
+        <!-- Logout -->
+        <li class="menu-item">
+            <a href="{% url 'logout' %}" class="menu-link">
+                <i class="bi bi-box-arrow-left"></i>
+                <span>Sair</span>
+                <span class="tooltip-text">Sair</span>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
