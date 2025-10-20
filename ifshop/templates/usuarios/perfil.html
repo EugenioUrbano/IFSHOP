@@ -8,7 +8,7 @@
 
 {% block content %}
 <div class="container py-3">
-    <h1 class="text-primary text-center mb-4">Bem-vindo(a), {{ request.user.username }}</h1>
+    <h1 class="text-primary text-center mb-4">Bem-vindo(a), {{ request.user.nome }}</h1>
 
     {% if user.vendedor %}
     <!-- Se usuário é vendedor -->

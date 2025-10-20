@@ -62,10 +62,13 @@
             </a>
         </li>
 
-        <li class="menu-divider"></li>
+        
 
         <!-- Itens administrativos -->
         {% if user.is_staff or user.is_superuser %}
+        
+        <li class="menu-divider"></li>
+        
         <div class="menu-section">Administração</div>
         
         <li class="menu-item">
