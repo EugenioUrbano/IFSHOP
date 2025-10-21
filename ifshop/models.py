@@ -56,8 +56,8 @@ class ProdutoBase(models.Model):
     titulo = models.CharField(max_length=100)
     
     preco = models.DecimalField(max_digits=10, decimal_places=2)
-    preco_parcela = models.DecimalField(max_digits=10, decimal_places=2, null=False, default=0.00)
-    forma_pag_op = models.CharField(max_length=200,null=True)
+    preco_parcela = models.DecimalField(max_digits=10, decimal_places=2, null=True, default=0.00)
+    forma_pag_op = models.CharField(max_length=200,null=True, blank=True)
     
     data_limite_pedidos = models.DateField()
     data_pag1 = models.DateField(help_text="Total ou primeira parcela")

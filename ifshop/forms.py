@@ -162,9 +162,9 @@ class ProdutoBaseForm(forms.ModelForm):
         required=True
     )
     
-    curso = forms.ModelMultipleChoiceField(
+    curso = forms.ModelChoiceField(
         queryset=Curso.objects.all(),
-        widget=forms.SelectMultiple(attrs={'class': 'form-select rounded-3'}),
+        widget=forms.Select(attrs={'class': 'form-select rounded-3'}),
         required=True,
         label="Cursos deste produto"
     )
