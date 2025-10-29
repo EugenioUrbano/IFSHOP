@@ -3,6 +3,7 @@ from django.conf.urls.static import static
 from django.urls import path
 from django.contrib import admin
 from . import views
+from . import views_2fa
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -21,6 +22,8 @@ urlpatterns = [
     # Usuário
     path('perfil/', views.perfil, name='perfil'),
     path('logout/', views.logout_usuario, name='logout'),
+    path('2fa/verificar/', views_2fa.verificar_2fa, name='verificar_2fa'),
+    path('2fa/reenviar/', views_2fa.reenviar_codigo_2fa, name='reenviar_codigo_2fa'),
     
     # Gestão de Produtos
     path('gerenciar_produtos/', views.gerenciar_produtos, name='gerenciar_produtos'),

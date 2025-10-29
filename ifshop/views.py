@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import login, logout
 from django.core.paginator import Paginator
+from .views_2fa import enviar_codigo_2fa
 from django.utils.timezone import now
 from django.db.models import Prefetch
 from django.contrib import messages
@@ -71,11 +72,27 @@ def login_view(request):
     if request.method == 'POST':
         form = LoginUsuarioForm(data=request.POST)
         if form.is_valid():
-            user = form.get_user()  
+            user = form.get_user()
+            
+            # ⬇️ VERIFICAÇÃO 2FA - Redireciona para verificação ⬇️
+            if hasattr(user, 'email'):  # Garante que é seu UsuarioCustomizado
+                # Envia código 2FA por email
+                enviar_codigo_2fa(request, user)
+                
+                # Salva ID do usuário na sessão para verificação posterior
+                request.session['usuario_2fa_id'] = user.id
+                request.session['usuario_autenticado'] = True
+                
+                # Redireciona para página de verificação 2FA
+                return redirect('verificar_2fa')
+            
+            # ⬇️ FALLBACK - Se algo der errado, faz login normal ⬇️
             login(request, user)
-            return redirect('index')  
+            return redirect('index')
+            
     else:
         form = LoginUsuarioForm()
+    
     return render(request, 'registration/login.html', {'form': form})
 
 def logout_usuario(request):
