@@ -1,3 +1,4 @@
+from datetime import timedelta
 from .forms import CamisetaForm, PedidoBaseForm, ProdutoBaseForm, PedidoCamisetaForm
 from.forms import AlterarStatusPedidoForm, FiltroProdutoForm, FiltroPedidosForm, CadastroUsuarioForm
 from .forms import LoginUsuarioForm, ImagemProdutoBaseFormSet, AnexoComprovantesPedidoForm, AvaliacaoForm
@@ -10,14 +11,13 @@ from django.contrib.auth import login, logout
 from django.core.paginator import Paginator
 from .views_2fa import enviar_codigo_2fa
 from django.utils.timezone import now
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Sum, Count
 from django.contrib import messages
 from django.db import transaction
 from django.utils import timezone
 import openpyxl, json, os
+from datetime import timedelta
 
-
-# ---- index ----- #
 
 def index(request):
     form = FiltroProdutoForm(request.GET)
@@ -828,3 +828,169 @@ def produto(request, produto_id):
         'form_base': form_base,
         'avaliacoes_paginadas': pagina_avaliacoes,
     })
+    
+    
+
+@login_required
+def dashboard_vendedor(request):
+    """Dashboard principal para vendedores"""
+    
+    if not request.user.vendedor:
+        messages.error(request, "Acesso restrito a vendedores.")
+        return redirect('index')
+    
+    try:
+        # Data atual e do mês anterior
+        hoje = timezone.now()
+        mes_atual = hoje.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        
+        # Métricas do mês atual
+        vendas_camisetas_mes = PedidoCamiseta.objects.filter(
+            camiseta__vendedor=request.user,
+            pedido__data_pedido__gte=mes_atual,
+            pedido__status__in=['Pago Totalmente', 'Pago 1° Parcela']
+        ).aggregate(total=Sum('camiseta__preco'))['total'] or 0
+        
+        vendas_produtos_mes = PedidoBase.objects.filter(
+            produto__vendedor=request.user,
+            produto__camiseta__isnull=True,
+            data_pedido__gte=mes_atual,
+            status__in=['Pago Totalmente', 'Pago 1° Parcela']
+        ).aggregate(total=Sum('produto__preco'))['total'] or 0
+        
+        vendas_mes = float(vendas_camisetas_mes) + float(vendas_produtos_mes)
+        
+        # Produtos vendidos
+        produtos_vendidos = (
+            PedidoCamiseta.objects.filter(
+                camiseta__vendedor=request.user,
+                pedido__data_pedido__gte=mes_atual,
+                pedido__status__in=['Pago Totalmente', 'Pago 1° Parcela']
+            ).count() +
+            PedidoBase.objects.filter(
+                produto__vendedor=request.user,
+                produto__camiseta__isnull=True,
+                data_pedido__gte=mes_atual,
+                status__in=['Pago Totalmente', 'Pago 1° Parcela']
+            ).count()
+        )
+        
+        # Novos clientes
+        novos_clientes = UsuarioCustomizado.objects.filter(
+            pedidos__produto__vendedor=request.user,
+            pedidos__data_pedido__gte=mes_atual
+        ).distinct().count()
+        
+        # Ticket médio
+        total_pedidos_pagos = (
+            PedidoCamiseta.objects.filter(
+                camiseta__vendedor=request.user,
+                pedido__data_pedido__gte=mes_atual,
+                pedido__status__in=['Pago Totalmente', 'Pago 1° Parcela']
+            ).count() +
+            PedidoBase.objects.filter(
+                produto__vendedor=request.user,
+                produto__camiseta__isnull=True,
+                data_pedido__gte=mes_atual,
+                status__in=['Pago Totalmente', 'Pago 1° Parcela']
+            ).count()
+        )
+        ticket_medio = vendas_mes / total_pedidos_pagos if total_pedidos_pagos > 0 else 0
+        
+        # Pedidos recentes
+        pedidos_recentes = PedidoBase.objects.filter(
+            produto__vendedor=request.user
+        ).select_related('cliente').order_by('-data_pedido')[:5]
+        
+        # Produtos em destaque
+        produtos_destaque = []
+        
+        # Camisetas
+        camisetas_destaque = Camiseta.objects.filter(
+            vendedor=request.user
+        ).annotate(
+            total_vendido=Count('pedidos_base')
+        ).order_by('-total_vendido')[:3]
+        
+        for camiseta in camisetas_destaque:
+            produtos_destaque.append({
+                'nome': camiseta.titulo,
+                'total_vendido': camiseta.total_vendido,
+                'estoque': 50,  # Exemplo
+                'imagem': camiseta.imagens.first()
+            })
+        
+        # Produtos base
+        produtos_base_destaque = ProdutoBase.objects.filter(
+            vendedor=request.user,
+            camiseta__isnull=True
+        ).annotate(
+            total_vendido=Count('pedidos_base')
+        ).order_by('-total_vendido')[:3]
+        
+        for produto in produtos_base_destaque:
+            produtos_destaque.append({
+                'nome': produto.titulo,
+                'total_vendido': produto.total_vendido,
+                'estoque': 30,  # Exemplo
+                'imagem': produto.imagens.first()
+            })
+        
+        # Dados para gráficos
+        vendas_mensais = {
+            'meses': ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+            'valores': [1500, 2000, 1800, 2200, 2500, vendas_mes]
+        }
+        
+        # Estatísticas gerais
+        total_camisetas = Camiseta.objects.filter(vendedor=request.user).count()
+        total_produtos = ProdutoBase.objects.filter(vendedor=request.user, camiseta__isnull=True).count()
+        pedidos_pendentes = PedidoBase.objects.filter(
+            produto__vendedor=request.user,
+            status='Pendente'
+        ).count()
+        
+        # Variações (exemplo)
+        variacao_vendas = 12.5
+        variacao_produtos = 8.5
+        variacao_clientes = 5.2
+        variacao_ticket = -3.1
+        
+        context = {
+            'vendas_mes': vendas_mes,
+            'produtos_vendidos': produtos_vendidos,
+            'novos_clientes': novos_clientes,
+            'ticket_medio': ticket_medio,
+            'variacao_vendas': variacao_vendas,
+            'variacao_produtos': variacao_produtos,
+            'variacao_clientes': variacao_clientes,
+            'variacao_ticket': variacao_ticket,
+            'pedidos_recentes': pedidos_recentes,
+            'produtos_destaque': produtos_destaque,
+            'vendas_mensais': vendas_mensais,
+            'total_camisetas': total_camisetas,
+            'total_produtos': total_produtos,
+            'pedidos_pendentes': pedidos_pendentes,
+        }
+        
+    except Exception as e:
+        print(f"Erro no dashboard: {e}")
+        context = {
+            'vendas_mes': 0,
+            'produtos_vendidos': 0,
+            'novos_clientes': 0,
+            'ticket_medio': 0,
+            'variacao_vendas': 0,
+            'variacao_produtos': 0,
+            'variacao_clientes': 0,
+            'variacao_ticket': 0,
+            'pedidos_recentes': [],
+            'produtos_destaque': [],
+            'vendas_mensais': {'meses': [], 'valores': []},
+            'total_camisetas': 0,
+            'total_produtos': 0,
+            'pedidos_pendentes': 0,
+            'erro': str(e)
+        }
+    
+    return render(request, 'dashboard.html', context)

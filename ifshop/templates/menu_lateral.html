@@ -36,20 +36,68 @@
                 <i class="bi bi-person"></i>
                 <span>Perfil</span>
                 <span class="user-badge">{{ user.username }}</span>
-                {% if user.is_vendedor %}
+                {% if user.vendedor %}
                 <span class="vendedor-badge">Vendedor</span>
                 {% endif %}
                 <span class="tooltip-text">Perfil</span>
             </a>
         </li>
 
-        <!-- Link para Adicionar Produto (apenas para vendedores) -->
-        {% if user.is_authenticated and user.is_vendedor %}
+        <!-- Seção para Vendedores -->
+        {% if user.vendedor %}
+        <div class="menu-section">Área do Vendedor</div>
+        
+        <!-- Dashboard do Vendedor -->
         <li class="menu-item">
-            <a href="{% url 'adicionar_produto' %}" class="menu-link">
+            <a href="{% url 'dashboard_vendedor' %}" class="menu-link">
+                <i class="bi bi-speedometer2"></i>
+                <span>Dashboard</span>
+                <span class="tooltip-text">Painel do Vendedor</span>
+            </a>
+        </li>
+
+        <!-- Link para Adicionar Produto -->
+        <li class="menu-item">
+            <a href="{% url 'criar_produto' %}" class="menu-link">
                 <i class="bi bi-plus-circle"></i>
-                <span>Adicionar Produto</span>
+                <span>Novo Produto</span>
                 <span class="tooltip-text">Adicionar Produto</span>
+            </a>
+        </li>
+
+        <!-- Link para Adicionar Camiseta -->
+        <li class="menu-item">
+            <a href="{% url 'criar_camiseta' %}" class="menu-link">
+                <i class="bi bi-plus-square"></i>
+                <span>Nova Camiseta</span>
+                <span class="tooltip-text">Adicionar Camiseta</span>
+            </a>
+        </li>
+
+        <!-- Gerenciar Produtos -->
+        <li class="menu-item">
+            <a href="{% url 'gerenciar_produtos' %}" class="menu-link">
+                <i class="bi bi-box-seam"></i>
+                <span>Meus Produtos</span>
+                <span class="tooltip-text">Gerenciar Produtos</span>
+            </a>
+        </li>
+
+        <!-- Pedidos de Camisetas -->
+        <li class="menu-item">
+            <a href="{% url 'pedidos_camisetas' %}" class="menu-link">
+                <i class="bi bi-cart-check"></i>
+                <span>Pedidos Camisetas</span>
+                <span class="tooltip-text">Ver Pedidos de Camisetas</span>
+            </a>
+        </li>
+
+        <!-- Pedidos de Produtos -->
+        <li class="menu-item">
+            <a href="{% url 'pedidos_produtos' %}" class="menu-link">
+                <i class="bi bi-bag-check"></i>
+                <span>Pedidos Produtos</span>
+                <span class="tooltip-text">Ver Pedidos de Produtos</span>
             </a>
         </li>
         {% endif %}
@@ -62,8 +110,6 @@
             </a>
         </li>
 
-        
-
         <!-- Itens administrativos -->
         {% if user.is_staff or user.is_superuser %}
         
@@ -73,7 +119,7 @@
         
         <li class="menu-item">
             <a href="{% url 'admin:index' %}" class="menu-link">
-                <i class="bi bi-speedometer2"></i>
+                <i class="bi bi-gear"></i>
                 <span>Admin Django</span>
                 <span class="tooltip-text">Admin Django</span>
             </a>

@@ -1,0 +1,547 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - IFSHOP{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="header">
+        <h1>Painel Administrativo</h1>
+        <div class="user-info">
+            <img src="https://ui-avatars.com/api/?name={{ user.nome|urlencode }}&background=2874a6&color=fff" alt="Usuário">
+            <div>
+                <div>{{ user.nome }}</div>
+                <small>{{ user.email }}</small>
+            </div>
+        </div>
+    </div>
+
+    {% if erro %}
+    <div class="alert alert-danger">
+        <strong>Erro no dashboard:</strong> {{ erro }}
+    </div>
+    {% endif %}
+
+    <!-- Cards -->
+    <div class="cards">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Vendas do Mês</div>
+                <div class="card-icon sales">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+            </div>
+            <div class="card-value">R$ {{ vendas_mes|floatformat:2 }}</div>
+            <div class="card-change {% if variacao_vendas > 0 %}positive{% else %}negative{% endif %}">
+                <i class="fas fa-arrow-{% if variacao_vendas > 0 %}up{% else %}down{% endif %}"></i> 
+                {{ variacao_vendas|floatformat:1 }}% em relação ao mês anterior
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Produtos Vendidos</div>
+                <div class="card-icon products">
+                    <i class="fas fa-tshirt"></i>
+                </div>
+            </div>
+            <div class="card-value">{{ produtos_vendidos }}</div>
+            <div class="card-change {% if variacao_produtos > 0 %}positive{% else %}negative{% endif %}">
+                <i class="fas fa-arrow-{% if variacao_produtos > 0 %}up{% else %}down{% endif %}"></i> 
+                {{ variacao_produtos|floatformat:1 }}% em relação ao mês anterior
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Novos Clientes</div>
+                <div class="card-icon customers">
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+            <div class="card-value">{{ novos_clientes }}</div>
+            <div class="card-change {% if variacao_clientes > 0 %}positive{% else %}negative{% endif %}">
+                <i class="fas fa-arrow-{% if variacao_clientes > 0 %}up{% else %}down{% endif %}"></i> 
+                {{ variacao_clientes|floatformat:1 }}% em relação ao mês anterior
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="quick-stats">
+        <div class="stat-card">
+            <i class="fas fa-tshirt" style="color: #2874a6;"></i>
+            <div class="stat-value">{{ total_camisetas }}</div>
+            <div class="stat-label">Camisetas Ativas</div>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-box" style="color: #f39c12;"></i>
+            <div class="stat-value">{{ total_produtos }}</div>
+            <div class="stat-label">Produtos Ativos</div>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-clock" style="color: #e74c3c;"></i>
+            <div class="stat-value">{{ pedidos_pendentes }}</div>
+            <div class="stat-label">Pedidos Pendentes</div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts">
+        <div class="chart-container">
+            <div class="chart-header">
+                <div class="chart-title">Vendas Mensais</div>
+                <div class="chart-actions">
+                    <select>
+                        <option>Últimos 6 meses</option>
+                        <option>Últimos 12 meses</option>
+                        <option>Este ano</option>
+                    </select>
+                </div>
+            </div>
+            <div class="chart">
+                <canvas id="vendasChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <div class="chart-header">
+                <div class="chart-title">Produtos Mais Vendidos</div>
+                <div class="chart-actions">
+                    <select>
+                        <option>Este mês</option>
+                        <option>Últimos 3 meses</option>
+                        <option>Este ano</option>
+                    </select>
+                </div>
+            </div>
+            <div class="chart">
+                <canvas id="produtosChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tables -->
+    <div class="tables">
+        <div class="table-container">
+            <div class="table-header">
+                <div class="table-title">Pedidos Recentes</div>
+                <div class="table-actions">
+                    <a href="{% url 'pedidos_camisetas' %}">Ver todos</a>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>Data</th>
+                        <th>Valor</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pedido in pedidos_recentes %}
+                    <tr>
+                        <td>#{{ pedido.id }}</td>
+                        <td>{{ pedido.cliente.nome }}</td>
+                        <td>{{ pedido.data_pedido|date:"d/m/Y" }}</td>
+                        <td>R$ {{ pedido.total|floatformat:2 }}</td>
+                        <td>
+                            <span class="status 
+                                {% if pedido.status == 'Entregue' %}completed
+                                {% elif pedido.status == 'cancelado' %}cancelled
+                                {% else %}pending{% endif %}">
+                                {{ pedido.get_status_display }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align: center;">Nenhum pedido recente</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="table-container">
+            <div class="table-header">
+                <div class="table-title">Produtos em Destaque</div>
+                <div class="table-actions">
+                    <a href="{% url 'gerenciar_produtos' %}">Ver todos</a>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Vendas</th>
+                        <th>Estoque</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for produto in produtos_destaque %}
+                    <tr>
+                        <td>
+                            <div class="product-info">
+                                {% if produto.imagem %}
+                                <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}">
+                                {% else %}
+                                <img src="https://via.placeholder.com/40" alt="Produto">
+                                {% endif %}
+                                <div>{{ produto.nome }}</div>
+                            </div>
+                        </td>
+                        <td>{{ produto.total_vendido }}</td>
+                        <td>{{ produto.estoque }}</td>
+                        <td>
+                            <span class="status 
+                                {% if produto.estoque > 10 %}completed
+                                {% elif produto.estoque > 0 %}pending
+                                {% else %}cancelled{% endif %}">
+                                {% if produto.estoque > 10 %}Disponível
+                                {% elif produto.estoque > 0 %}Baixo Estoque
+                                {% else %}Esgotado{% endif %}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center;">Nenhum produto em destaque</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Gráfico de Vendas
+        const vendasCtx = document.getElementById('vendasChart').getContext('2d');
+        const vendasChart = new Chart(vendasCtx, {
+            type: 'line',
+            data: {
+                labels: {{ vendas_mensais.meses|safe }},
+                datasets: [{
+                    label: 'Vendas Mensais',
+                    data: {{ vendas_mensais.valores|safe }},
+                    borderColor: '#2874a6',
+                    backgroundColor: 'rgba(40, 116, 166, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        // Gráfico de Produtos
+        const produtosCtx = document.getElementById('produtosChart').getContext('2d');
+        const produtosChart = new Chart(produtosCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Camisetas', 'Produtos'],
+                datasets: [{
+                    data: [{{ total_camisetas }}, {{ total_produtos }}],
+                    backgroundColor: ['#2874a6', '#f39c12']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    });
+</script>
+
+<style>
+    :root {
+        --primary-color: #1a5276;
+        --secondary-color: #2874a6;
+        --accent-color: #f39c12;
+        --light-color: #ecf0f1;
+        --dark-color: #2c3e50;
+        --success-color: #27ae60;
+        --warning-color: #e74c3c;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .container-fluid {
+        padding: 20px;
+    }
+    
+    /* Header */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .header h1 {
+        color: var(--primary-color);
+        font-size: 1.8rem;
+    }
+    
+    .user-info {
+        display: flex;
+        align-items: center;
+    }
+    
+    .user-info img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+    
+    /* Cards */
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .card {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+        transition: transform 0.3s;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    
+    .card-title {
+        font-size: 1rem;
+        color: #777;
+    }
+    
+    .card-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+    
+    .card-icon.sales {
+        background: var(--success-color);
+    }
+    
+    .card-icon.products {
+        background: var(--secondary-color);
+    }
+    
+    .card-icon.customers {
+        background: var(--accent-color);
+    }
+    
+    .card-icon.revenue {
+        background: var(--warning-color);
+    }
+    
+    .card-value {
+        font-size: 1.8rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    
+    .card-change {
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .card-change.positive {
+        color: var(--success-color);
+    }
+    
+    .card-change.negative {
+        color: var(--warning-color);
+    }
+    
+    /* Quick Stats */
+    .quick-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+    
+    .stat-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        text-align: center;
+    }
+    
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: var(--primary-color);
+        margin: 10px 0;
+    }
+    
+    .stat-label {
+        color: #777;
+        font-size: 0.9rem;
+    }
+    
+    /* Charts */
+    .charts {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .chart-container {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+    }
+    
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .chart-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--dark-color);
+    }
+    
+    .chart-actions select {
+        padding: 5px 10px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+    }
+    
+    .chart {
+        height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Tables */
+    .tables {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    
+    .table-container {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+    }
+    
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .table-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--dark-color);
+    }
+    
+    .table-actions a {
+        color: var(--secondary-color);
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    th, td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+    
+    th {
+        color: #777;
+        font-weight: 600;
+    }
+    
+    .status {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .status.completed {
+        background: #e6f7ee;
+        color: var(--success-color);
+    }
+    
+    .status.pending {
+        background: #fff4e6;
+        color: var(--accent-color);
+    }
+    
+    .status.cancelled {
+        background: #ffe6e6;
+        color: var(--warning-color);
+    }
+    
+    .product-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 4px;
+        object-fit: cover;
+        margin-right: 10px;
+    }
+    
+    .product-info {
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Responsive */
+    @media (max-width: 992px) {
+        .charts, .tables {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
