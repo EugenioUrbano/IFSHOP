@@ -48,7 +48,6 @@ urlpatterns = [
     path('pedidos_produtos/', views.pedidos_produtos, name="pedidos_produtos"),
     path('edit_pedido_camiseta/<int:pedido_id>/', views.edit_pedido_camiseta, name='edit_pedido_camiseta'),
     path('edit_pedido_produto/<int:pedido_id>/', views.edit_pedido_produto, name='edit_pedido_produto'),
-    path('dashboard/', views.dashboard_vendedor, name='dashboard_vendedor'),
     # Carrinho e Comprovantes
     path('carrinho/', views.carrinho, name='carrinho'),
     path('comprovantes/<int:pedido_id>/', views.comprovantes, name='comprovantes'),

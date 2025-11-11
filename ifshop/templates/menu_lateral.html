@@ -35,9 +35,12 @@
             <a href="{% url 'perfil' %}" class="menu-link">
                 <i class="bi bi-person"></i>
                 <span>Perfil</span>
-                <span class="user-badge">{{ user.username }}</span>
                 {% if user.vendedor %}
                 <span class="vendedor-badge">Vendedor</span>
+                {% elif user.is_staff %}
+                <span class="vendedor-badge">Admin</span>
+                {% else%}
+                <span class="user-badge">{{ user.username }}</span>
                 {% endif %}
                 <span class="tooltip-text">Perfil</span>
             </a>
@@ -46,15 +49,6 @@
         <!-- Seção para Vendedores -->
         {% if user.vendedor %}
         <div class="menu-section">Área do Vendedor</div>
-        
-        <!-- Dashboard do Vendedor -->
-        <li class="menu-item">
-            <a href="{% url 'dashboard_vendedor' %}" class="menu-link">
-                <i class="bi bi-speedometer2"></i>
-                <span>Dashboard</span>
-                <span class="tooltip-text">Painel do Vendedor</span>
-            </a>
-        </li>
 
         <!-- Link para Adicionar Produto -->
         <li class="menu-item">
