@@ -26,17 +26,159 @@
 
 <body>
     <!-- Inclui o Menu Lateral -->
-    {% include 'menu_lateral.html' %}
 
     <!-- Conteúdo Principal com margin para o menu lateral -->
-    <div class="main-content-with-sidebar" id="mainContent">
+    <div class="" id="mainContent">
         <!-- Header Original -->
         <div class="container-footer">
             <header class="custom-header d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
+                <!-- logo/menu-lateral -->
+                <a  class="ms-4" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample"><img src="{% static 'img/logo.png' %}" alt="logo ifshop" class="rounded float-start" width="80" height="80"></a>
                 <!-- logo -->
-                <a href="{% url 'index' %}" class="ms-4"><img src="{% static 'img/logo.png' %}" alt="logo ifshop" class="rounded float-start" width="80" height="80"></a>
-                <!-- logo -->
+                <div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+                    <div class="offcanvas-header">
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <div class="sidebar-header">
+                            <h2>IFSHOP</h2>
+                        </div>
+                        
+                        <ul class="menu">
+                            <!-- Itens para visitantes -->
+                            {% if not user.is_authenticated %}
+                            <li class="menu-item">
+                                <a href="{% url 'login' %}" class="menu-link">
+                                    <i class="bi bi-box-arrow-in-right"></i>
+                                    <span>Login</span>
+                                    <span class="tooltip-text">Login</span>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="{% url 'cadastro' %}" class="menu-link">
+                                    <i class="bi bi-person-plus"></i>
+                                    <span>Cadastro</span>
+                                    <span class="tooltip-text">Cadastro</span>
+                                </a>
+                            </li>
+                            {% endif %}
 
+                            <!-- Itens para usuários logados -->
+                            {% if user.is_authenticated %}
+                            <div class="menu-section">Minha Conta</div>
+                            
+                            <li class="menu-item">
+                                <a href="{% url 'perfil' %}" class="menu-link">
+                                    <i class="bi bi-person"></i>
+                                    <span>Perfil</span>
+                                    {% if user.vendedor %}
+                                    <span class="vendedor-badge">Vendedor</span>
+                                    {% elif user.is_staff %}
+                                    <span class="vendedor-badge">Admin</span>
+                                    {% else%}
+                                    <span class="user-badge">{{ user.username }}</span>
+                                    {% endif %}
+                                    <span class="tooltip-text">Perfil</span>
+                                </a>
+                            </li>
+
+                            <!-- Seção para Vendedores -->
+                            {% if user.vendedor %}
+                            <div class="menu-section">Área do Vendedor</div>
+
+                            <!-- Link para Adicionar Produto -->
+                            <li class="menu-item">
+                                <a href="{% url 'criar_produto' %}" class="menu-link">
+                                    <i class="bi bi-plus-circle"></i>
+                                    <span>Novo Produto</span>
+                                    <span class="tooltip-text">Adicionar Produto</span>
+                                </a>
+                            </li>
+
+                            <!-- Link para Adicionar Camiseta -->
+                            <li class="menu-item">
+                                <a href="{% url 'criar_camiseta' %}" class="menu-link">
+                                    <i class="bi bi-plus-square"></i>
+                                    <span>Nova Camiseta</span>
+                                    <span class="tooltip-text">Adicionar Camiseta</span>
+                                </a>
+                            </li>
+
+                            <!-- Gerenciar Produtos -->
+                            <li class="menu-item">
+                                <a href="{% url 'gerenciar_produtos' %}" class="menu-link">
+                                    <i class="bi bi-box-seam"></i>
+                                    <span>Meus Produtos</span>
+                                    <span class="tooltip-text">Gerenciar Produtos</span>
+                                </a>
+                            </li>
+
+                            <!-- Pedidos de Camisetas -->
+                            <li class="menu-item">
+                                <a href="{% url 'pedidos_camisetas' %}" class="menu-link">
+                                    <i class="bi bi-cart-check"></i>
+                                    <span>Pedidos Camisetas</span>
+                                    <span class="tooltip-text">Ver Pedidos de Camisetas</span>
+                                </a>
+                            </li>
+
+                            <!-- Pedidos de Produtos -->
+                            <li class="menu-item">
+                                <a href="{% url 'pedidos_produtos' %}" class="menu-link">
+                                    <i class="bi bi-bag-check"></i>
+                                    <span>Pedidos Produtos</span>
+                                    <span class="tooltip-text">Ver Pedidos de Produtos</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            <li class="menu-item">
+                                <a href="{% url 'password_change' %}" class="menu-link">
+                                    <i class="bi bi-key"></i>
+                                    <span>Alterar Senha</span>
+                                    <span class="tooltip-text">Alterar Senha</span>
+                                </a>
+                            </li>
+
+                            <!-- Itens administrativos -->
+                            {% if user.is_staff or user.is_superuser %}
+                            
+                            <li class="menu-divider"></li>
+                            
+                            <div class="menu-section">Administração</div>
+                            
+                            <li class="menu-item">
+                                <a href="{% url 'admin:index' %}" class="menu-link">
+                                    <i class="bi bi-gear"></i>
+                                    <span>Admin Django</span>
+                                    <span class="tooltip-text">Admin Django</span>
+                                </a>
+                            </li>
+
+                            <!-- Gerenciar Vendedores (apenas para admin) -->
+                            <li class="menu-item">
+                                <a href="{% url 'gerenciar_vendedores' %}" class="menu-link">
+                                    <i class="bi bi-people"></i>
+                                    <span>Gerenciar Vendedores</span>
+                                    <span class="tooltip-text">Gerenciar Vendedores</span>
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            <li class="menu-divider"></li>
+
+                            <!-- Logout -->
+                            <li class="menu-item">
+                                <a href="{% url 'logout' %}" class="menu-link">
+                                    <i class="bi bi-box-arrow-left"></i>
+                                    <span>Sair</span>
+                                    <span class="tooltip-text">Sair</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
                 <!-- botões -->
                 <div class="col-md-6 p-3 text-end">
                     {% block botoes_header %}
