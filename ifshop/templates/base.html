@@ -33,15 +33,15 @@
         <div class="container-footer">
             <header class="custom-header d-flex flex-wrap align-items-center justify-content-center justify-content-md-between">
                 <!-- logo/menu-lateral -->
-                <a  class="ms-4" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample"><img src="{% static 'img/logo.png' %}" alt="logo ifshop" class="rounded float-start" width="80" height="80"></a>
+                <a  class="ms-4 " data-bs-toggle="offcanvas" href="#offcanvas" role="button" aria-controls="offcanvas"><img src="{% static 'img/logo.png' %}" alt="logo ifshop" class="rounded float-start" width="80" height="80"></a>
                 <!-- logo -->
-                <div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+                <div class="offcanvas offcanvas-start bg-primary" tabindex="-1" id="offcanvas" aria-labelledby="offcanvasLabel">
                     <div class="offcanvas-header">
                         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                     </div>
                     <div class="offcanvas-body">
                         <div class="sidebar-header">
-                            <h2>IFSHOP</h2>
+                            <a href="{% url 'index' %}"><h2>IFSHOP</h2></a>
                         </div>
                         
                         <ul class="menu">
