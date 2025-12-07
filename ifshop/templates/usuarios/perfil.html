@@ -19,6 +19,10 @@
                     <div class="fw-bold">{{ user.nome }}</div>
                     <small class="text-muted">{{ user.email }}</small>
                 </div>
+                {% if is_vendedor %}
+                {% else %}
+                    <a href="{% url 'vendedor_crud' %}">Se tornar Vendedor</a>
+                {% endif %}
             </div>
         </div>
 
@@ -197,9 +201,7 @@
                     <h2 class="h4">Meus Produtos</h2>
                     {% if is_vendedor %}
                     <div>
-                        <a href="{% url 'criar_produto' %}" class="btn btn-primary btn-sm">
-                            <i class="fas fa-plus"></i> Adicionar Produto
-                        </a>
+                        <a href="{% url 'gerenciar_produtos' %}" class="btn btn-primary btn-sm">Gerencie seus Produtos</a>
                     </div>
                     {% endif %}
                 </div>
@@ -208,11 +210,11 @@
                 {% if produtos_com_imagens %}
                 <div class="card shadow-sm mb-4">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">Produtos Base</h5>
+                        <h5 class="card-title mb-0">Produtos</h5>
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            {% for item in produtos_com_imagens %}
+                            {% for item in produtos_com_imagens|slice:":3" %}
                             <div class="col-md-4 mb-3">
                                 <div class="card h-100">
                                     {% if item.imagem_principal %}
@@ -236,37 +238,7 @@
                 </div>
                 {% endif %}
                 
-                <!-- Camisetas -->
-                {% if camisetas_com_imagens %}
-                <div class="card shadow-sm">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Minhas Camisetas</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            {% for item in camisetas_com_imagens %}
-                            <div class="col-md-4 mb-3">
-                                <div class="card h-100">
-                                    {% if item.imagem_principal %}
-                                    <img src="{{ item.imagem_principal.imagem.url }}" class="card-img-top" alt="{{ item.camiseta.titulo }}" style="height: 200px; object-fit: cover;">
-                                    {% endif %}
-                                    <div class="card-body">
-                                        <h6 class="card-title">{{ item.camiseta.titulo }}</h6>
-                                        <p class="card-text text-muted small">R$ {{ item.camiseta.preco }}</p>
-                                        {% if is_vendedor %}
-                                        <div class="d-flex justify-content-between">
-                                            <a href="{% url 'edit_camiseta' item.camiseta.id %}" class="btn btn-outline-primary btn-sm">Editar</a>
-                                            <a href="{% url 'excluir_produto' item.camiseta.id %}" class="btn btn-outline-danger btn-sm">Excluir</a>
-                                        </div>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
+                
 
                 {% if not produtos_com_imagens and not camisetas_com_imagens and is_vendedor %}
                 <div class="text-center py-5">

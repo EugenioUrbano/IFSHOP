@@ -798,6 +798,30 @@ def gerenciar_vendedores(request):
         'usuarios': usuarios
     })
 
+@login_required
+def vendedor_crud(request):
+    usuarios = UsuarioCustomizado.objects.all().order_by('nome')
+    
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        acao = request.POST.get('acao')
+        
+        if user_id and acao:
+            usuario = get_object_or_404(UsuarioCustomizado, id=user_id)
+            
+            if acao == 'tornar_vendedor':
+                usuario.vendedor = True
+                usuario.save()
+            elif acao == 'remover_vendedor':
+                usuario.vendedor = False
+                usuario.save()
+                
+        return redirect('gerenciar_vendedores')
+    
+    return render(request, 'usuarios/vendedor_crud.html', {
+        'usuarios': usuarios
+    })
+
 # ---- produto ----- #
 
 @login_required

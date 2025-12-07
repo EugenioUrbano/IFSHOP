@@ -60,6 +60,7 @@ urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),
     path('gerenciar_vendedores/', views.gerenciar_vendedores, name='gerenciar_vendedores'),
+    path('vendedor_crud/', views.vendedor_crud, name='vendedor_crud'),
     
     # Avaliações
     path('avaliar/<int:pedido_id>/', views.criar_avaliacao, name='criar_avaliacao'),

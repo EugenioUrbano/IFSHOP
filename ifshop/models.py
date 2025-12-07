@@ -299,3 +299,6 @@ class Codigo2FA(models.Model):
         codigo = str(random.randint(100000, 999999))
         
         return cls.objects.create(usuario=usuario, codigo=codigo)
+    
+class VendeCrud(models.Model):
+    texto = models.TextField(max_length=500)
