@@ -2,7 +2,8 @@ import re
 from django import forms
 from django.forms import modelformset_factory
 from .models import Camiseta, ProdutoBase, PedidoBase, PedidoCamiseta, UsuarioCustomizado, ImagemProdutoBase, EstiloTamanho, Curso, Avaliacao, VendeCrud
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm
+
 
 
 ######################## login e cadastro de usuario  #############################       
@@ -35,11 +36,31 @@ class CadastroUsuarioForm(UserCreationForm):
         max_length=100,
         widget=forms.TextInput(attrs={'type': 'number', 'class': 'form-control rounded-3 ', 'placeholder': 'Ex.: 8499999999'}))
     
+    foto = forms.ImageField(
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
+    
     class Meta:
         model = UsuarioCustomizado
-        fields = ['nome', 'email', 'telefone', 'curso', 'password1', 'password2' ]
+        fields = ['nome', 'email', 'telefone', 'curso', 'password1', 'password2', 'foto' ]
         
+
+class UsuarioEditarForm(UserChangeForm):
+    # Remova os campos de senha do formulário de edição
+    password = None
     
+    class Meta:
+        model = UsuarioCustomizado
+        fields = ['nome', 'telefone', 'curso', 'foto']
+        widgets = {
+            'nome': forms.TextInput(attrs={'class': 'form-control'}),
+            'telefone': forms.TextInput(attrs={'class': 'form-control'}),
+            'curso': forms.Select(attrs={'type': 'number', 'class': 'form-control rounded-3 ', 'placeholder': 'Ex.: 8499999999'}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Remova o campo password completamente
+        self.fields.pop('password', None) 
         
 class LoginUsuarioForm(AuthenticationForm):
     username = forms.EmailField(label="Email",widget=forms.EmailInput(attrs={'class': 'form-control rounded-3 '}))

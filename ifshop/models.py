@@ -20,6 +20,7 @@ class UsuarioCustomizado(AbstractUser):
     curso = models.ForeignKey(Curso, on_delete=models.SET_NULL, null=True, blank=True)
     vendedor = models.BooleanField(default=False)
     nome = models.CharField(max_length=150)
+    foto = models.ImageField(default="", blank=False, null=True)
     
     def save(self, *args, **kwargs):
         if not self.username: 

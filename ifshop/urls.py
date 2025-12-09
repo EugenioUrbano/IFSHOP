@@ -21,6 +21,7 @@ urlpatterns = [
     
     # Usuário
     path('perfil/', views.perfil, name='perfil'),
+    path('editar_perfil/', views.editar_perfil, name='editar_perfil'),
     path('logout/', views.logout_usuario, name='logout'),
     path('2fa/verificar/', views_2fa.verificar_2fa, name='verificar_2fa'),
     path('2fa/reenviar/', views_2fa.reenviar_codigo_2fa, name='reenviar_codigo_2fa'),

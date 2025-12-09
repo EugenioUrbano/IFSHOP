@@ -1,6 +1,6 @@
 from datetime import timedelta
 from .forms import CamisetaForm, PedidoBaseForm, ProdutoBaseForm, PedidoCamisetaForm
-from.forms import AlterarStatusPedidoForm, FiltroProdutoForm, FiltroPedidosForm, CadastroUsuarioForm
+from.forms import AlterarStatusPedidoForm, FiltroProdutoForm, FiltroPedidosForm, CadastroUsuarioForm,UsuarioEditarForm
 from .forms import LoginUsuarioForm, ImagemProdutoBaseFormSet, AnexoComprovantesPedidoForm, AvaliacaoForm, VendForm
 from .models import Camiseta, ProdutoBase, PedidoBase, ImagemProdutoBase, EstiloTamanho, PedidoCamiseta, UsuarioCustomizado, Avaliacao, VendeCrud
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -16,6 +16,7 @@ from django.contrib import messages
 from django.db import transaction
 from django.utils import timezone
 import openpyxl, json, os
+from django.db.models import Q
 from datetime import timedelta
 
 
@@ -257,6 +258,24 @@ def cadastro_usuario(request):
     else:
         form = CadastroUsuarioForm()
     return render(request, 'registration/cadastro.html', {'form': form})
+
+# View para o usuário editar seu próprio perfil
+@login_required
+def editar_perfil(request):
+    if request.method == 'POST':
+        form = UsuarioEditarForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Perfil atualizado com sucesso!')
+            return redirect('perfil')
+    else:
+        form = UsuarioEditarForm(instance=request.user)
+    
+    # Remova o campo vendedor se o usuário não for admin
+    if not request.user.is_staff:
+        form.fields.pop('vendedor', None)
+    
+    return render(request, 'usuarios/editar_perfil.html', {'form': form})
 
 
 # ---- utilidades do site ----- #
