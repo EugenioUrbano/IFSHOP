@@ -1,8 +1,8 @@
 from datetime import timedelta
 from .forms import CamisetaForm, PedidoBaseForm, ProdutoBaseForm, PedidoCamisetaForm
 from.forms import AlterarStatusPedidoForm, FiltroProdutoForm, FiltroPedidosForm, CadastroUsuarioForm
-from .forms import LoginUsuarioForm, ImagemProdutoBaseFormSet, AnexoComprovantesPedidoForm, AvaliacaoForm
-from .models import Camiseta, ProdutoBase, PedidoBase, ImagemProdutoBase, EstiloTamanho, PedidoCamiseta, UsuarioCustomizado, Avaliacao
+from .forms import LoginUsuarioForm, ImagemProdutoBaseFormSet, AnexoComprovantesPedidoForm, AvaliacaoForm, VendForm
+from .models import Camiseta, ProdutoBase, PedidoBase, ImagemProdutoBase, EstiloTamanho, PedidoCamiseta, UsuarioCustomizado, Avaliacao, VendeCrud
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -776,6 +776,7 @@ def is_admin(user):
 @login_required
 @user_passes_test(is_admin)
 def gerenciar_vendedores(request):
+    pedidos_vender = VendeCrud.objects.all()
     usuarios = UsuarioCustomizado.objects.all().order_by('nome')
     
     if request.method == 'POST':
@@ -795,32 +796,28 @@ def gerenciar_vendedores(request):
         return redirect('gerenciar_vendedores')
     
     return render(request, 'gestao/gerenciar_vendedores.html', {
-        'usuarios': usuarios
+        'pedidos': pedidos_vender,
+        'usuarios': usuarios,
     })
 
 @login_required
 def vendedor_crud(request):
-    usuarios = UsuarioCustomizado.objects.all().order_by('nome')
-    
     if request.method == 'POST':
-        user_id = request.POST.get('user_id')
-        acao = request.POST.get('acao')
+        form = VendForm(request.POST, request.FILES)
         
-        if user_id and acao:
-            usuario = get_object_or_404(UsuarioCustomizado, id=user_id)
+        if form.is_valid():
+            # Salva o formulário sem commit para adicionar o usuário
+            vende_crud = form.save(commit=False)
+            # Associa ao usuário logado
+            vende_crud.usuario = request.user
+            # Agora salva no banco
+            vende_crud.save()
             
-            if acao == 'tornar_vendedor':
-                usuario.vendedor = True
-                usuario.save()
-            elif acao == 'remover_vendedor':
-                usuario.vendedor = False
-                usuario.save()
-                
-        return redirect('gerenciar_vendedores')
+            return redirect('perfil')
+    else:
+        form = VendForm()
     
-    return render(request, 'usuarios/vendedor_crud.html', {
-        'usuarios': usuarios
-    })
+    return render(request, 'usuarios/vendedor_crud.html', {'form': form})
 
 # ---- produto ----- #
 

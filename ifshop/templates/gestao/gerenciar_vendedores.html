@@ -5,58 +5,84 @@
 
 {% block content %}
 
-<div class="container mt-4">
-    <h1 class="mb-4">Gerenciar Vendedores</h1>
-    
-    <!-- Vendedores Ativos -->
-    <div class="card mb-4">
-        <div class="card-header bg-success text-white">
-            <h5 class="mb-0">Vendedores Ativos</h5>
-        </div>
-        <div class="card-body">
-            {% for usuario in usuarios %}
-                {% if usuario.vendedor %}
-                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
-                    <div>
-                        <strong>{{ usuario.username }}</strong> - {{ usuario.email }}
+<div class=" mt-4">
+    <h1 class="mb-4 text-center">Gerenciar Vendedores</h1>
+    <div class="row justify-content-center">
+        <!-- Vendedores Ativos -->
+        <div class="card m-1 col-5">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Pedidos para ser vendedor</h5>
+            </div>
+            <div class="card-body">
+                {% for pedido in pedidos %}
+                    {% if pedido.usuario.vendedor == True %}
+                    {% else %}
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                        <div>
+                            <strong>{{ pedido.usuario.username }}</strong> - {{ pedido.usuario.email }}
+                        </div>
+                        <form method="post" class="mb-0">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ pedido.usuario.id }}">
+                            <input type="hidden" name="acao" value="tornar_vendedor">
+                            <button type="submit" class="btn btn-sm btn-success">Tornar Vendedor</button>
+                        </form>
                     </div>
-                    <form method="post" class="mb-0">
-                        {% csrf_token %}
-                        <input type="hidden" name="user_id" value="{{ usuario.id }}">
-                        <input type="hidden" name="acao" value="remover_vendedor">
-                        <button type="submit" class="btn btn-sm btn-danger">Remover Permissão</button>
-                    </form>
-                </div>
-                {% endif %}
-            {% empty %}
-                <p class="text-muted">Nenhum vendedor ativo</p>
-            {% endfor %}
-        </div>
-    </div>
-
-    <!-- Usuários Comuns -->
-    <div class="card">
-        <div class="card-header bg-secondary text-white">
-            <h5 class="mb-0">Usuários Comuns</h5>
-        </div>
-        <div class="card-body">
-            {% for usuario in usuarios %}
-                {% if not usuario.vendedor %}
-                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
                     <div>
-                        <strong>{{ usuario.username }}</strong> - {{ usuario.email }}
+                        <strong>Mensagem:</strong> {{ pedido.texto }}
                     </div>
-                    <form method="post" class="mb-0">
-                        {% csrf_token %}
-                        <input type="hidden" name="user_id" value="{{ usuario.id }}">
-                        <input type="hidden" name="acao" value="tornar_vendedor">
-                        <button type="submit" class="btn btn-sm btn-success">Tornar Vendedor</button>
-                    </form>
-                </div>
-                {% endif %}
-            {% empty %}
-                <p class="text-muted">Nenhum usuário comum</p>
-            {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="card m-1 col-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Vendedores Ativos</h5>
+            </div>
+            <div class="card-body">
+                {% for usuario in usuarios %}
+                    {% if usuario.vendedor %}
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                        <div>
+                            <strong>{{ usuario.username }}</strong> - {{ usuario.email }}
+                        </div>
+                        <form method="post" class="mb-0">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ usuario.id }}">
+                            <input type="hidden" name="acao" value="remover_vendedor">
+                            <button type="submit" class="btn btn-sm btn-danger">Remover Permissão</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                {% empty %}
+                    <p class="text-muted">Nenhum vendedor ativo</p>
+                {% endfor %}
+            </div>
+        </div>
+        <!-- Usuários Comuns -->
+        <div class="card m-1 col-3">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">Usuários Comuns</h5>
+            </div>
+            <div class="card-body">
+                {% for usuario in usuarios %}
+                    {% if not usuario.vendedor %}
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                        <div>
+                            <strong>{{ usuario.username }}</strong> - {{ usuario.email }}
+                        </div>
+                        <form method="post" class="mb-0">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ usuario.id }}">
+                            <input type="hidden" name="acao" value="tornar_vendedor">
+                            <button type="submit" class="btn btn-sm btn-success">Tornar Vendedor</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                {% empty %}
+                    <p class="text-muted">Nenhum usuário comum</p>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div>

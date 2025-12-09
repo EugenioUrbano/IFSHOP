@@ -301,4 +301,8 @@ class Codigo2FA(models.Model):
         return cls.objects.create(usuario=usuario, codigo=codigo)
     
 class VendeCrud(models.Model):
-    texto = models.TextField(max_length=500)
+    usuario = models.ForeignKey(UsuarioCustomizado, on_delete=models.CASCADE)
+    texto = models.CharField(max_length=500)
+    
+    def __str__(self):
+        return f"{self.texto}"

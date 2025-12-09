@@ -4,59 +4,35 @@
 {% block title %}Quero Vender{% endblock %}
 
 {% block content %}
+<div class="card-body py-5 px-md-5">
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-8 border rounded-3 py-4 shadow mx-md-n5">
+            <div class="container">
 
-<div class="container mt-4">
-    <h1 class="mb-4">Faça seu pedido para vender</h1>
-    
-    <!-- Vendedores Ativos -->
-    <div class="card mb-4">
-        <div class="card-header bg-success text-white">
-            <h5 class="mb-0">Vendedores Ativos</h5>
-        </div>
-        <div class="card-body">
-            {% for usuario in usuarios %}
-                {% if usuario.vendedor %}
-                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
-                    <div>
-                        <strong>{{ usuario.username }}</strong> - {{ usuario.email }}
-                    </div>
-                    <form method="post" class="mb-0">
-                        {% csrf_token %}
-                        <input type="hidden" name="user_id" value="{{ usuario.id }}">
-                        <input type="hidden" name="acao" value="remover_vendedor">
-                        <button type="submit" class="btn btn-sm btn-danger">Remover Permissão</button>
-                    </form>
+                <!-- Voltar e Título -->
+                <div class="col-md-6 mb-4">
+                    <a href="{% url 'perfil' %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="" class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"></path>
+                        </svg>
+                    </a>
+                    <h2 class="fw-bold mb-5">Faça o pedido para ser um vendedor</h2>
                 </div>
-                {% endif %}
-            {% empty %}
-                <p class="text-muted">Nenhum vendedor ativo</p>
-            {% endfor %}
-        </div>
-    </div>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
 
-    <!-- Usuários Comuns -->
-    <div class="card">
-        <div class="card-header bg-secondary text-white">
-            <h5 class="mb-0">Usuários Comuns</h5>
-        </div>
-        <div class="card-body">
-            {% for usuario in usuarios %}
-                {% if not usuario.vendedor %}
-                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
-                    <div>
-                        <strong>{{ usuario.username }}</strong> - {{ usuario.email }}
+                    <!-- Informações Básicas -->
+                    <div class="border p-4 rounded-3 mb-4">
+                        
+                        {{ form.texto }}
+                        
                     </div>
-                    <form method="post" class="mb-0">
-                        {% csrf_token %}
-                        <input type="hidden" name="user_id" value="{{ usuario.id }}">
-                        <input type="hidden" name="acao" value="tornar_vendedor">
-                        <button type="submit" class="btn btn-sm btn-success">Tornar Vendedor</button>
-                    </form>
-                </div>
-                {% endif %}
-            {% empty %}
-                <p class="text-muted">Nenhum usuário comum</p>
-            {% endfor %}
+                    <!-- Botões de submit -->
+                    <div class="mt-4">
+                        <button type="submit" name="salvar" class="btn botoes shadow-lg rounded px-4 py-2">Salvar</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>

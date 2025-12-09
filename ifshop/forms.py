@@ -1,7 +1,7 @@
 import re
 from django import forms
 from django.forms import modelformset_factory
-from .models import Camiseta, ProdutoBase, PedidoBase, PedidoCamiseta, UsuarioCustomizado, ImagemProdutoBase, EstiloTamanho, Curso, Avaliacao
+from .models import Camiseta, ProdutoBase, PedidoBase, PedidoCamiseta, UsuarioCustomizado, ImagemProdutoBase, EstiloTamanho, Curso, Avaliacao, VendeCrud
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 
@@ -455,3 +455,13 @@ class AvaliacaoForm(forms.ModelForm):
                 "O comentário deve ter pelo menos 10 caracteres."
             )
         return comentario
+    
+class VendForm(forms.ModelForm):
+    texto = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control rounded-3', 'placeholder': 'Informe seu nome, turma, matricula e motivo para querer vender...'}), 
+        required=True
+    )
+    class Meta:
+        model = VendeCrud
+        fields = ['texto']
