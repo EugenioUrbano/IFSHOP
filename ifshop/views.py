@@ -776,14 +776,44 @@ def is_admin(user):
 @login_required
 @user_passes_test(is_admin)
 def gerenciar_vendedores(request):
-    pedidos_vender = VendeCrud.objects.all()
-    usuarios = UsuarioCustomizado.objects.all().order_by('nome')
+    # Sistema de pesquisa
+    query = request.GET.get('q', '')
     
+    # Filtrar pedidos baseados na pesquisa
+    if query:
+        pedidos_vender = VendeCrud.objects.filter(
+            Q(texto__icontains=query) |
+            Q(usuario__username__icontains=query) |
+            Q(usuario__email__icontains=query) |
+            Q(usuario__nome__icontains=query)
+        )
+    else:
+        pedidos_vender = VendeCrud.objects.all()
+    
+    # Filtrar usuários baseados na pesquisa
+    if query:
+        usuarios = UsuarioCustomizado.objects.filter(
+            Q(username__icontains=query) |
+            Q(email__icontains=query) |
+            Q(nome__icontains=query)
+        ).order_by('nome')
+    else:
+        usuarios = UsuarioCustomizado.objects.all().order_by('nome')
+    
+    # Lógica para ações POST (tornar/remover vendedor, excluir pedido)
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
         acao = request.POST.get('acao')
+        pedido_id = request.POST.get('pedido_id')
         
-        if user_id and acao:
+        # Excluir pedido
+        if pedido_id and acao == 'excluir_pedido':
+            pedido = get_object_or_404(VendeCrud, id=pedido_id)
+            pedido.delete()
+            return redirect('gerenciar_vendedores')
+        
+        # Tornar ou remover vendedor
+        elif user_id and acao:
             usuario = get_object_or_404(UsuarioCustomizado, id=user_id)
             
             if acao == 'tornar_vendedor':
@@ -795,9 +825,31 @@ def gerenciar_vendedores(request):
                 
         return redirect('gerenciar_vendedores')
     
+    # Configurar paginação
+    page_pedidos = request.GET.get('page_pedidos', 1)
+    page_vendedores = request.GET.get('page_vendedores', 1)
+    page_usuarios = request.GET.get('page_usuarios', 1)
+    
+    # Paginação para pedidos (apenas não aprovados)
+    pedidos_nao_aprovados = pedidos_vender.filter(usuario__vendedor=False)
+    paginator_pedidos = Paginator(pedidos_nao_aprovados, 10)  # 10 itens por página
+    pedidos_paginados = paginator_pedidos.get_page(page_pedidos)
+    
+    # Paginação para vendedores ativos
+    vendedores_ativos = usuarios.filter(vendedor=True)
+    paginator_vendedores = Paginator(vendedores_ativos, 10)
+    vendedores_paginados = paginator_vendedores.get_page(page_vendedores)
+    
+    # Paginação para usuários comuns
+    usuarios_comuns = usuarios.filter(vendedor=False)
+    paginator_usuarios = Paginator(usuarios_comuns, 10)
+    usuarios_paginados = paginator_usuarios.get_page(page_usuarios)
+    
     return render(request, 'gestao/gerenciar_vendedores.html', {
-        'pedidos': pedidos_vender,
-        'usuarios': usuarios,
+        'pedidos': pedidos_paginados,
+        'vendedores': vendedores_paginados,
+        'usuarios_comuns': usuarios_paginados,
+        'query': query,
     })
 
 @login_required
