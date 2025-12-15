@@ -192,7 +192,7 @@ def perfil(request):
                 produtos_destaque.append({
                     'nome': camiseta.titulo,
                     'total_vendido': camiseta.total_vendido,
-                    'estoque': 50,
+                    'estoque': camiseta.estoque,
                     'imagem': camiseta.imagens.first()
                 })
             
@@ -208,7 +208,7 @@ def perfil(request):
                 produtos_destaque.append({
                     'nome': produto.titulo,
                     'total_vendido': produto.total_vendido,
-                    'estoque': 30,
+                    'estoque': produto.estoque,
                     'imagem': produto.imagens.first()
                 })
             
@@ -491,6 +491,7 @@ def pedidos_produtos(request):
         'total_pedidos': pedidos_all.count(),
         'total_pagos': pedidos_all.filter(status='Pago Totalmente').count(),
         'total_pago_primeira': pedidos_all.filter(status='Pago 1° Parcela').count(),
+        'STATUS_OPCOES': PedidoBase.STATUS_OPCOES,
         'arrecadado': sum(
             p.produto.preco if p.status == "Pago Totalmente" else
             p.produto.preco_parcela if p.status == "Pago 1° Parcela" else 0

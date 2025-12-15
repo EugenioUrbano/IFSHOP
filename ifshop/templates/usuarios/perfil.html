@@ -14,7 +14,10 @@
             <div class="d-flex align-items-center w-100">
                 <!-- Avatar do usuário -->
                 {% if user.foto %}
-                <img src'{{ user.foto }}' alt="Usuário" class="rounded-circle me-3" width="180" height="180">
+                <img src="{{ user.foto.url }}"  
+                    alt="Foto de perfil" 
+                    class="rounded-circle img-fluid mb-3"
+                    style="width: 120px; height: 120px; object-fit: cover;">
                 {% else %}
                 <img src="https://ui-avatars.com/api/?name={{ user.nome|urlencode }}&background=2874a6&color=fff&size=80" 
                     alt="Usuário" class="rounded-circle me-3" width="180" height="180">
@@ -186,6 +189,7 @@
                                     <tr>
                                         <th>Produto</th>
                                         <th>Vendas</th>
+                                        <th>Estoque</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
@@ -194,25 +198,22 @@
                                     <tr>
                                         <td>
                                             <div class="d-flex align-items-center">
-                                                {% if produto.imagem %}
-                                                <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" 
-                                                     class="rounded me-2" width="30" height="30">
-                                                {% else %}
-                                                <img src="https://via.placeholder.com/30" alt="Produto" 
-                                                     class="rounded me-2" width="30" height="30">
-                                                {% endif %}
+                                                
                                                 <div class="small">{{ produto.nome }}</div>
                                             </div>
                                         </td>
                                         <td>{{ produto.total_vendido }}</td>
+                                        {% if produto.estoque > 0 %}
+                                        <td>{{ produto.estoque }}
+                                        {% else %}
+                                        <td>Sem Estoque</td>
+                                        {% endif %}
                                         <td>
                                             <span class="badge 
                                                 {% if produto.estoque > 10 %}bg-success
-                                                {% elif produto.estoque > 0 %}bg-warning
                                                 {% else %}bg-danger{% endif %}">
                                                 {% if produto.estoque > 10 %}Disponível
-                                                {% elif produto.estoque > 0 %}Baixo Estoque
-                                                {% else %}Esgotado{% endif %}
+                                                {% else %}Sem Estoque{% endif %}
                                             </span>
                                         </td>
                                     </tr>

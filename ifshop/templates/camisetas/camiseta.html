@@ -50,6 +50,11 @@
         <div class="col p-4 d-flex flex-column position-static">
             <strong class="d-inline-block mb-2 text-primary-emphasis">Data para Pedidos até {{ camiseta.data_limite_pedidos }}</strong>
                 <h3 class="mb-0">{{ camiseta.titulo }}</h3>
+                {% if produto.tem_estoque == True%}
+                <div class="mb-1 text-body-secondary">Estoque: {{ produto.estoque }}</div>
+                {% else %}
+                <div class="mb-1 text-body-secondary">Esse produto não é de estoque</div>
+                {% endif %}
                 <div class="mb-1 text-body-secondary">Preço: R$ {{ camiseta.preco }}</div>
                 <div class="mb-1 text-body-secondary">Preço das parcelas: R$ {{ camiseta.preco_parcela }}</div>
                 <form method="post" class="row g-3">

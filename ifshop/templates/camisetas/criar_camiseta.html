@@ -14,9 +14,9 @@
 
                 <!-- Voltar e Título -->
                 <div class="col-md-6 mb-4">
-                    <a href="{% url 'gerenciar_produtos' %}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="" class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"></path>
+                    <a href="{% url 'gerenciar_produtos' %}" class="text-decoration-none me-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
                         </svg>
                     </a>
                     <h2 class="fw-bold mb-5">Criar Camiseta</h2>
@@ -43,6 +43,16 @@
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 {{ form.titulo|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                {{ form.tem_estoque|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="row" id="campoDinamico">
+                            <div class="col-md-12 mb-3">
+                                {{ form.estoque|as_crispy_field }}
                             </div>
                         </div>
                     </div>
@@ -203,21 +213,27 @@
     </div>
 </div>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const estiloCheckboxes = document.querySelectorAll('.estilo-checkbox');
-    estiloCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', function () {
-            const estilo = checkbox.value;
-            const tamanhosDiv = document.querySelector(`.tamanhos-estilo[data-estilo="${estilo}"]`);
-            if (tamanhosDiv) tamanhosDiv.style.display = checkbox.checked ? 'block' : 'none';
+    document.addEventListener('DOMContentLoaded', function () {
+        const estiloCheckboxes = document.querySelectorAll('.estilo-checkbox');
+        estiloCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                const estilo = checkbox.value;
+                const tamanhosDiv = document.querySelector(`.tamanhos-estilo[data-estilo="${estilo}"]`);
+                if (tamanhosDiv) tamanhosDiv.style.display = checkbox.checked ? 'block' : 'none';
+            });
+            if (checkbox.checked) {
+                const estilo = checkbox.value;
+                const tamanhosDiv = document.querySelector(`.tamanhos-estilo[data-estilo="${estilo}"]`);
+                if (tamanhosDiv) tamanhosDiv.style.display = 'block';
+            }
         });
-        if (checkbox.checked) {
-            const estilo = checkbox.value;
-            const tamanhosDiv = document.querySelector(`.tamanhos-estilo[data-estilo="${estilo}"]`);
-            if (tamanhosDiv) tamanhosDiv.style.display = 'block';
-        }
     });
-});
+    const checkbox = document.getElementById('meuCheckbox');
+    const campoDiv = document.getElementById('campoDinamico');
+
+    checkbox.addEventListener('change', function() {
+        campoDiv.style.display = this.checked ? 'block' : 'none';
+    });
 </script>
 
 {% endblock %}

@@ -24,7 +24,7 @@ SECRET_KEY = 'django-insecure-qbv1*5j=rxzji_@%1ma_3d9&$fz$o315!xwv0g#x*9dob&nmgj
 DEBUG = True
 
 
-ALLOWED_HOSTS = ['ifshopweb.northeurope.cloudapp.azure.com', '52.158.32.93', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = [' IFSHOP.pythonanywhere.com', '127.0.0.1', 'localhost']
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
@@ -81,11 +81,7 @@ AUTHENTICATION_BACKENDS = [
 # Configurações do allauth
 SITE_ID = 1
 
-# Configurações de email (opcional)
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = 'optional'  # 'mandatory', 'optional', or 'none'
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
+
 
 ACCOUNT_LOGIN_METHODS = {'email'} 
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']

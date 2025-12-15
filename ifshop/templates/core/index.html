@@ -101,7 +101,15 @@
                             <div class="d-flex justify-content-between align-items-center mt-auto">
                                 <div class="btn-group">
                                     {% if item.disponivel %}
-                                        <small class=" btn-secondary" >Disponível</small>
+                                        {% if item.tem_estoque == True%}
+                                            {% if item.estoque > 0 %}
+                                                <small class=" btn-secondary" >Disponível</small>
+                                            {% else %}
+                                                <small class=" btn-secondary" >Indisponível</small>
+                                            {% endif %}
+                                        {% else %}
+                                            <small class=" btn-secondary" >Indisponível</small>
+                                        {% endif %}
                                     {% else %}
                                         <small class=" btn-secondary" >Indisponível</small>
                                     {% endif %}

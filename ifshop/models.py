@@ -62,6 +62,9 @@ class ProdutoBase(models.Model):
     preco_parcela = models.DecimalField(max_digits=10, decimal_places=2, null=True, default=0.00)
     forma_pag_op = models.CharField(max_length=200,null=True, blank=True)
     
+    tem_estoque = models.BooleanField(default=False)
+    estoque = models.IntegerField(default=0, null=True, blank=True, verbose_name="Quantidade em estoque")
+    
     data_limite_pedidos = models.DateField()
     data_pag1 = models.DateField(help_text="Total ou primeira parcela")
     data_pag2 = models.DateField(null=True, blank=True,help_text="Não precisa colocar")
@@ -190,6 +193,7 @@ class PedidoBase(models.Model):
     opcao_escolhida = models.CharField(max_length=50, null=True)
     
     data_pedido = models.DateTimeField(auto_now_add=True)
+    data_entrega = models.DateTimeField(null=True, blank=True)
     
     forma_pag = models.TextField(max_length=300,null=True)
     status = models.CharField(max_length=100, default="Pendente")
@@ -199,6 +203,37 @@ class PedidoBase(models.Model):
     comprovante_total = models.ImageField(upload_to='comprovante_total_produto/', null=True, blank=True, default="")
     comprovante_parcela1 = models.ImageField(upload_to='comprovante_parcela1_produto/', null=True, blank=True, default="")
     comprovante_parcela2 = models.ImageField(upload_to='comprovante_parcela2_produto/', null=True, blank=True, default="")
+    
+    def save(self, *args, **kwargs):
+        """Sobrescreve o save para atualizar estoque quando status muda para Entregue"""
+        # Verifica se é uma atualização (tem ID) e não uma criação
+        if self.pk:
+            try:
+                # Obtém o pedido antigo do banco
+                pedido_antigo = PedidoBase.objects.get(pk=self.pk)
+                status_antigo = pedido_antigo.status
+                
+                # Se o status mudou de qualquer coisa para "Entregue"
+                if status_antigo != 'Entregue' and self.status == 'Entregue':
+                    # Atualiza o estoque do produto
+                    produto = self.produto
+                    
+                    if produto.tem_estoque and produto.estoque is not None:
+                        if produto.estoque > 0:
+                            produto.estoque -= 1
+                            produto.save()
+                            print(f"Estoque atualizado para {produto.titulo}: {produto.estoque}")
+                        else:
+                            raise ValueError(f"Produto '{produto.titulo}' esgotado! Não é possível marcar como entregue.")
+                    
+                    # Atualiza a data de entrega
+                    self.data_entrega = timezone.now()
+                    
+            except PedidoBase.DoesNotExist:
+                pass  # É uma criação, não precisa fazer nada
+        
+        # Salva o pedido
+        super().save(*args, **kwargs)
     
     
 class PedidoCamiseta(models.Model):

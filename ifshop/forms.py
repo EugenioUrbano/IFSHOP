@@ -183,6 +183,19 @@ class ProdutoBaseForm(forms.ModelForm):
         required=True
     )
     
+    tem_estoque = forms.BooleanField(
+        label="Marque caso seu produto tenha estoque",
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input', 'id': 'meuCheckbox', }),
+        required=False
+    )
+    
+    
+    estoque = forms.IntegerField(
+        label='Estoque (caso tenha)',
+        widget=forms.NumberInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: 55'}), 
+        required=False
+    )
+    
     curso = forms.ModelChoiceField(
         queryset=Curso.objects.all(),
         widget=forms.Select(attrs={'class': 'form-select rounded-3'}),
@@ -229,7 +242,7 @@ class ProdutoBaseForm(forms.ModelForm):
         model = ProdutoBase
         fields = ['titulo', 'preco', 'preco_parcela', 'forma_pag_op', 'opcoes', 'data_limite_pedidos', 'curso', 
                   'turnos', "pix_qr_code_parcela", "pix_qr_code_total", "pix_chave_parcela", "pix_chave_total",
-                  "turma", "data_pag1", "data_pag2"]
+                  "turma", "data_pag1", "data_pag2", "estoque"]
         widgets = {
             'opcoes': forms.TextInput(attrs={'placeholder': 'Ex: azul, vermelho, verde'})
         }
