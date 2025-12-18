@@ -5,7 +5,6 @@ from django.contrib.messages import constants as messages
 from django.urls import reverse_lazy
 import dj_database_url
 
-
 LOGIN_URL = reverse_lazy('login')
 
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='teste@example.com')
@@ -19,13 +18,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-qbv1*5j=rxzji_@%1ma_3d9&$fz$o315!xwv0g#x*9dob&nmgj'
+SECRET_KEY = config('SECRET_KEY', 'django-insecure-qbv1*5j=rxzji_@%1ma_3d9&$fz$o315!xwv0g#x*9dob&nmgj')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 
-ALLOWED_HOSTS = [' IFSHOP.pythonanywhere.com','ifshop.onrender.com', '127.0.0.1', 'localhost']
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
@@ -136,6 +138,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -160,26 +163,20 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.mysql',  
-#        'NAME': config('NAME_BD'),              
-#        'USER': config('USER_BD'),                 
-#        'PASSWORD': config('PASSWORD_BD'),               
-#        'HOST': 'localhost',                   
-#        'PORT': '3306',    
-#    }
-#}
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default='sqlite:///db.sqlite3', # Fallback para desenvolvimento
+        conn_max_age=600
+    )
 }
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': BASE_DIR / 'db.sqlite3',
+#    }
+#}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -220,7 +217,8 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [BASE_DIR / "ifshop/static"]
 
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -229,33 +227,3 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
-if not DEBUG:
-    # Banco de dados PostgreSQL do Render
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=config('DATABASE_URL'),
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
-    }
-    
-    # Segurança
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_BROWSER_XSS_FILTER = True
-    SECURE_CONTENT_TYPE_NOSNIFF = True
-    
-    # Static files para produção
-    STATIC_URL = '/static/'
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-    
-    # Media files (imagens)
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-    
-    # WhiteNoise para arquivos estáticos
-    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
