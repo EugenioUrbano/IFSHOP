@@ -1,0 +1,32 @@
+# render.yaml
+services:
+  - type: web
+    name: ifshop
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn ifshop.wsgi:application"
+    envVars:
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+    
+    # Banco de dados PostgreSQL
+    envVars:
+      - fromDatabase:
+          name: ifshop-db
+          property: connectionString
+    
+    # Health check
+    healthCheckPath: /
+    autoDeploy: true
+
+databases:
+  - name: ifshop-db
+    databaseName: ifshopdb
+    user: ifshopuser
+    plan: free
