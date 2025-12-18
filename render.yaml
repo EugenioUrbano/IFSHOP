@@ -4,7 +4,7 @@ services:
     name: ifshop
     runtime: python
     buildCommand: "./build.sh"
-    startCommand: "gunicorn ifshop.wsgi:application"
+    startCommand: "gunicorn config.wsgi:application"
     envVars:
       - key: DEBUG
         value: "False"
