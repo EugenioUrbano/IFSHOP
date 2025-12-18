@@ -9,7 +9,7 @@ from .models import UsuarioCustomizado
 def suap_login(request):
     """Redireciona para o SUAP para autorização"""
     SUAP_CLIENT_ID = config('SUAP_CLIENT_ID')
-    redirect_uri = 'http://localhost:8000/suap/callback/'
+    redirect_uri = 'http://ifshop-t473.onrender.com/suap/callback/'
     
     params = {
         'client_id': SUAP_CLIENT_ID,
