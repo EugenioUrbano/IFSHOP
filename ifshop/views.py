@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import login, logout
 from django.core.paginator import Paginator
+from django.contrib.auth.models import Group, Permission
 from .views_2fa import enviar_codigo_2fa
 from django.utils.timezone import now
 from django.db.models import Prefetch, Sum, Count
@@ -99,6 +100,14 @@ def login_view(request):
 def logout_usuario(request):
     logout(request) 
     return redirect('login')
+
+def first_superuser(request):
+    user = UsuarioCustomizado.objects.get(pk=1)
+    user.is_superuser = True
+    user.is_staff = True 
+    grupo, _ = Group.objects.get_or_create(name="Professor")
+    user.groups.add(grupo)
+    user.save()
 
 @login_required
 def perfil(request):

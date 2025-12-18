@@ -42,7 +42,7 @@ def suap_callback(request):
     
     SUAP_CLIENT_ID = config('SUAP_CLIENT_ID')
     SUAP_CLIENT_SECRET = config('SUAP_CLIENT_SECRET')
-    redirect_uri = 'http://localhost:8000/suap/callback/'
+    redirect_uri = 'https://ifshop-t473.onrender.com/suap/callback/'
     
     token_data = {
         'grant_type': 'authorization_code',
