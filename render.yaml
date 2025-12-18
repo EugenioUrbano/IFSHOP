@@ -2,9 +2,9 @@
 services:
   - type: web
     name: ifshop
-    runtime: python
+    env: python
     buildCommand: "./build.sh"
-    startCommand: "gunicorn config.wsgi:application"
+    startCommand: "gunicorn config.wsgi:application" 
     envVars:
       - key: DEBUG
         value: "False"
