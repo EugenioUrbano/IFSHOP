@@ -12,7 +12,8 @@ class CadastroUsuarioForm(UserCreationForm):
     curso = forms.ModelChoiceField(
         queryset=Curso.objects.all(),
         widget=forms.Select(attrs={'class': 'form-select rounded-3'}),
-        empty_label="Selecione um curso"
+        empty_label="Selecione um curso",
+        required=False,
     )
     
     nome = forms.CharField(
