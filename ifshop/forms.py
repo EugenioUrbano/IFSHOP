@@ -38,6 +38,7 @@ class CadastroUsuarioForm(UserCreationForm):
         widget=forms.TextInput(attrs={'type': 'number', 'class': 'form-control rounded-3 ', 'placeholder': 'Ex.: 8499999999'}))
     
     foto = forms.ImageField(
+        required=False,
         widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
     
     class Meta:
