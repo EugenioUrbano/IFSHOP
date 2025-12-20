@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Editar Perfil{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <div class="d-flex align-items-center">
+                        <a href="{% url 'perfil' %}" class="text-decoration-none me-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                            </svg>
+                        </a>
+                        <h4 class="mb-0 fw-bold">Editar Perfil</h4>
+                    </div>
+                </div>
+                
+                <div class="card-body py-4">
+                    
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-3 text-center">
+                            {% if user.foto %}
+                                <img src="{{ user.foto.url }}" 
+                                     alt="Foto de perfil" 
+                                     class="rounded-circle img-fluid mb-3"
+                                     style="width: 120px; height: 120px; object-fit: cover;">
+                            {% else %}
+                                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mb-3 mx-auto"
+                                     style="width: 120px; height: 120px;">
+                                    <span class="text-white display-6">{{ user.nome|first|upper }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-9">
+                            <h5 class="fw-bold mb-1">{{ user.nome }}</h5>
+                            <p class="text-muted mb-3">{{ user.email }}</p>
+                            
+                            {% if user.vendedor %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle me-1"></i>Vendedor
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <form method="post" enctype="multipart/form-data" class="row g-3">
+                        {% csrf_token %}
+                        
+                        <div class="col-12">
+                            {{ form.nome|as_crispy_field }}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            {{ form.telefone|as_crispy_field }}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            {{ form.curso|as_crispy_field }}
+                            <small class="text-muted">(Caso não seja de nenhum, selecione "Outro")</small>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            {{ form.foto|as_crispy_field }}
+                            {% if user.foto %}
+                                <small class="text-muted">Foto atual: {{ user.foto.name }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-12 mt-4">
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'perfil' %}" class="btn btn-outline-secondary px-4">
+                                    Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary px-4">
+                                    <i class="bi bi-check-circle me-1"></i>
+                                    Salvar Alterações
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Seção para alterar senha (opcional) -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0 fw-bold">Alterar Senha</h5>
+                </div>
+                <div class="card-body py-4">
+                    <p class="text-muted mb-3">Para alterar sua senha, clique no botão abaixo.</p>
+                    <a href="{% url 'password_change' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-key me-1"></i>
+                        Alterar Senha
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    
+    .card {
+        border-radius: 12px;
+    }
+    
+    .btn-primary {
+        background-color: #2874a6;
+        border-color: #2874a6;
+    }
+    
+    .btn-primary:hover {
+        background-color: #1a5276;
+        border-color: #1a5276;
+    }
+</style>
+{% endblock %}

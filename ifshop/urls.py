@@ -21,6 +21,7 @@ urlpatterns = [
     
     # Usuário
     path('perfil/', views.perfil, name='perfil'),
+    path('editar_perfil/', views.editar_perfil, name='editar_perfil'),
     path('logout/', views.logout_usuario, name='logout'),
     path('2fa/verificar/', views_2fa.verificar_2fa, name='verificar_2fa'),
     path('2fa/reenviar/', views_2fa.reenviar_codigo_2fa, name='reenviar_codigo_2fa'),
@@ -58,8 +59,8 @@ urlpatterns = [
     path("marcar-pedidos-vistos/", views.marcar_pedidos_vistos, name="marcar_pedidos_vistos"),
     
     # Admin
-    path('admin/', admin.site.urls),
     path('gerenciar_vendedores/', views.gerenciar_vendedores, name='gerenciar_vendedores'),
+    path('vendedor_crud/', views.vendedor_crud, name='vendedor_crud'),
     
     # Avaliações
     path('avaliar/<int:pedido_id>/', views.criar_avaliacao, name='criar_avaliacao'),

@@ -1,8 +1,9 @@
 import re
 from django import forms
 from django.forms import modelformset_factory
-from .models import Camiseta, ProdutoBase, PedidoBase, PedidoCamiseta, UsuarioCustomizado, ImagemProdutoBase, EstiloTamanho, Curso, Avaliacao
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from .models import Camiseta, ProdutoBase, PedidoBase, PedidoCamiseta, UsuarioCustomizado, ImagemProdutoBase, EstiloTamanho, Curso, Avaliacao, VendeCrud
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm
+
 
 
 ######################## login e cadastro de usuario  #############################       
@@ -11,7 +12,8 @@ class CadastroUsuarioForm(UserCreationForm):
     curso = forms.ModelChoiceField(
         queryset=Curso.objects.all(),
         widget=forms.Select(attrs={'class': 'form-select rounded-3'}),
-        empty_label="Selecione um curso"
+        empty_label="Selecione um curso",
+        required=False,
     )
     
     nome = forms.CharField(
@@ -35,11 +37,32 @@ class CadastroUsuarioForm(UserCreationForm):
         max_length=100,
         widget=forms.TextInput(attrs={'type': 'number', 'class': 'form-control rounded-3 ', 'placeholder': 'Ex.: 8499999999'}))
     
+    foto = forms.ImageField(
+        required=False,
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
+    
     class Meta:
         model = UsuarioCustomizado
-        fields = ['nome', 'email', 'telefone', 'curso', 'password1', 'password2' ]
+        fields = ['nome', 'email', 'telefone', 'curso', 'password1', 'password2', 'foto' ]
         
+
+class UsuarioEditarForm(UserChangeForm):
+    # Remova os campos de senha do formulário de edição
+    password = None
     
+    class Meta:
+        model = UsuarioCustomizado
+        fields = ['nome', 'telefone', 'curso', 'foto']
+        widgets = {
+            'nome': forms.TextInput(attrs={'class': 'form-control'}),
+            'telefone': forms.TextInput(attrs={'class': 'form-control'}),
+            'curso': forms.Select(attrs={'type': 'number', 'class': 'form-control rounded-3 ', 'placeholder': 'Ex.: 8499999999'}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Remova o campo password completamente
+        self.fields.pop('password', None) 
         
 class LoginUsuarioForm(AuthenticationForm):
     username = forms.EmailField(label="Email",widget=forms.EmailInput(attrs={'class': 'form-control rounded-3 '}))
@@ -162,6 +185,19 @@ class ProdutoBaseForm(forms.ModelForm):
         required=True
     )
     
+    tem_estoque = forms.BooleanField(
+        label="Marque caso seu produto tenha estoque",
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input', 'id': 'meuCheckbox', }),
+        required=False
+    )
+    
+    
+    estoque = forms.IntegerField(
+        label='Estoque (caso tenha)',
+        widget=forms.NumberInput(attrs={'class': 'form-control rounded-3','placeholder': 'Ex.: 55'}), 
+        required=False
+    )
+    
     curso = forms.ModelChoiceField(
         queryset=Curso.objects.all(),
         widget=forms.Select(attrs={'class': 'form-select rounded-3'}),
@@ -208,7 +244,7 @@ class ProdutoBaseForm(forms.ModelForm):
         model = ProdutoBase
         fields = ['titulo', 'preco', 'preco_parcela', 'forma_pag_op', 'opcoes', 'data_limite_pedidos', 'curso', 
                   'turnos', "pix_qr_code_parcela", "pix_qr_code_total", "pix_chave_parcela", "pix_chave_total",
-                  "turma", "data_pag1", "data_pag2"]
+                  "turma", "data_pag1", "data_pag2", "estoque"]
         widgets = {
             'opcoes': forms.TextInput(attrs={'placeholder': 'Ex: azul, vermelho, verde'})
         }
@@ -455,3 +491,13 @@ class AvaliacaoForm(forms.ModelForm):
                 "O comentário deve ter pelo menos 10 caracteres."
             )
         return comentario
+    
+class VendForm(forms.ModelForm):
+    texto = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control rounded-3', 'placeholder': 'Informe seu nome, turma, matricula e motivo para querer vender...'}), 
+        required=True
+    )
+    class Meta:
+        model = VendeCrud
+        fields = ['texto']

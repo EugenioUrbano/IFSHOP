@@ -6,58 +6,346 @@
 {% block content %}
 
 <div class="container mt-4">
-    <h1 class="mb-4">Gerenciar Vendedores</h1>
-    
-    <!-- Vendedores Ativos -->
-    <div class="card mb-4">
-        <div class="card-header bg-success text-white">
-            <h5 class="mb-0">Vendedores Ativos</h5>
-        </div>
-        <div class="card-body">
-            {% for usuario in usuarios %}
-                {% if usuario.vendedor %}
-                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
-                    <div>
-                        <strong>{{ usuario.username }}</strong> - {{ usuario.email }}
-                    </div>
-                    <form method="post" class="mb-0">
-                        {% csrf_token %}
-                        <input type="hidden" name="user_id" value="{{ usuario.id }}">
-                        <input type="hidden" name="acao" value="remover_vendedor">
-                        <button type="submit" class="btn btn-sm btn-danger">Remover Permissão</button>
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="mb-4 text-center">Gerenciar Vendedores</h1>
+            
+            <!-- Barra de pesquisa -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input type="text" 
+                                       class="form-control" 
+                                       name="q" 
+                                       placeholder="Pesquisar por nome, email ou mensagem..." 
+                                       value="{{ query }}">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-search me-1"></i> Pesquisar
+                            </button>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="{% url 'gerenciar_vendedores' %}" class="btn btn-outline-secondary w-100">
+                                <i class="bi bi-x-circle me-1"></i> Limpar
+                            </a>
+                        </div>
                     </form>
                 </div>
-                {% endif %}
-            {% empty %}
-                <p class="text-muted">Nenhum vendedor ativo</p>
-            {% endfor %}
+            </div>
         </div>
     </div>
 
-    <!-- Usuários Comuns -->
-    <div class="card">
-        <div class="card-header bg-secondary text-white">
-            <h5 class="mb-0">Usuários Comuns</h5>
-        </div>
-        <div class="card-body">
-            {% for usuario in usuarios %}
-                {% if not usuario.vendedor %}
-                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
-                    <div>
-                        <strong>{{ usuario.username }}</strong> - {{ usuario.email }}
-                    </div>
-                    <form method="post" class="mb-0">
-                        {% csrf_token %}
-                        <input type="hidden" name="user_id" value="{{ usuario.id }}">
-                        <input type="hidden" name="acao" value="tornar_vendedor">
-                        <button type="submit" class="btn btn-sm btn-success">Tornar Vendedor</button>
-                    </form>
+    <div class="row justify-content-center">
+        <!-- Pedidos para ser vendedor -->
+        <div class="col-lg-5 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clock-history me-2"></i>
+                        Pedidos para ser vendedor
+                        <span class="badge bg-light text-primary ms-2">{{ pedidos.paginator.count }}</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if pedidos %}
+                        {% for pedido in pedidos %}
+                        <div class="card mb-3 border-start border-primary border-3">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div class="flex-grow-1">
+                                        <h6 class="card-title mb-1">
+                                            <i class="bi bi-person me-1"></i>
+                                            {{ pedido.usuario.get_full_name|default:pedido.usuario.username }}
+                                        </h6>
+                                        <p class="card-text text-muted small mb-1">
+                                            <i class="bi bi-envelope me-1"></i>{{ pedido.usuario.email }}
+                                        </p>
+                                        {% if pedido.usuario.matricula %}
+                                        <p class="card-text text-muted small mb-2">
+                                            <i class="bi bi-card-text me-1"></i>Matrícula: {{ pedido.usuario.matricula }}
+                                        </p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="btn-group">
+                                        <form method="post" class="d-inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="user_id" value="{{ pedido.usuario.id }}">
+                                            <input type="hidden" name="acao" value="tornar_vendedor">
+                                            <button type="submit" 
+                                                    class="btn btn-sm btn-success" 
+                                                    title="Aprovar como vendedor"
+                                                    onclick="return confirm('Deseja aprovar este usuário como vendedor?')">
+                                                <i class="bi bi-check-lg"></i>
+                                            </button>
+                                        </form>
+                                        <form method="post" class="d-inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="pedido_id" value="{{ pedido.id }}">
+                                            <input type="hidden" name="acao" value="excluir_pedido">
+                                            <button type="submit" 
+                                                    class="btn btn-sm btn-danger" 
+                                                    title="Excluir pedido"
+                                                    onclick="return confirm('Deseja excluir este pedido?')">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="alert alert-light mt-2 mb-0">
+                                    <small class="text-muted d-block mb-1">
+                                        <i class="bi bi-chat-left-text me-1"></i><strong>Mensagem:</strong>
+                                    </small>
+                                    <p class="mb-0">{{ pedido.texto }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-inbox display-5 text-muted"></i>
+                            <p class="text-muted mt-2">Nenhum pedido encontrado</p>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Paginação para pedidos -->
+                {% if pedidos.has_other_pages %}
+                <div class="card-footer">
+                    <nav aria-label="Navegação de pedidos">
+                        <ul class="pagination pagination-sm justify-content-center mb-0">
+                            {% if pedidos.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page_pedidos={{ pedidos.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            {% for num in pedidos.paginator.page_range %}
+                                {% if pedidos.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                                {% elif num > pedidos.number|add:'-3' and num < pedidos.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page_pedidos={{ num }}{% if query %}&q={{ query }}{% endif %}">{{ num }}</a>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if pedidos.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page_pedidos={{ pedidos.next_page_number }}{% if query %}&q={{ query }}{% endif %}">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
                 </div>
                 {% endif %}
-            {% empty %}
-                <p class="text-muted">Nenhum usuário comum</p>
-            {% endfor %}
+            </div>
+        </div>
+
+        <!-- Vendedores Ativos -->
+        <div class="col-lg-3 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-check me-2"></i>
+                        Vendedores Ativos
+                        <span class="badge bg-light text-success ms-2">{{ vendedores.paginator.count }}</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if vendedores %}
+                        {% for usuario in vendedores %}
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">
+                                    <i class="bi bi-person me-1"></i>
+                                    {{ usuario.get_full_name|default:usuario.username }}
+                                </h6>
+                                <small class="text-muted">
+                                    <i class="bi bi-envelope me-1"></i>{{ usuario.email }}
+                                </small>
+                            </div>
+                            <form method="post" class="mb-0">
+                                {% csrf_token %}
+                                <input type="hidden" name="user_id" value="{{ usuario.id }}">
+                                <input type="hidden" name="acao" value="remover_vendedor">
+                                <button type="submit" 
+                                        class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Deseja remover a permissão de vendedor deste usuário?')">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </form>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-people display-5 text-muted"></i>
+                            <p class="text-muted mt-2">Nenhum vendedor ativo</p>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Paginação para vendedores -->
+                {% if vendedores.has_other_pages %}
+                <div class="card-footer">
+                    <nav aria-label="Navegação de vendedores">
+                        <ul class="pagination pagination-sm justify-content-center mb-0">
+                            {% if vendedores.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page_vendedores={{ vendedores.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            {% for num in vendedores.paginator.page_range %}
+                                {% if vendedores.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                                {% elif num > vendedores.number|add:'-3' and num < vendedores.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page_vendedores={{ num }}{% if query %}&q={{ query }}{% endif %}">{{ num }}</a>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if vendedores.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page_vendedores={{ vendedores.next_page_number }}{% if query %}&q={{ query }}{% endif %}">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Usuários Comuns -->
+        <div class="col-lg-3 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-people me-2"></i>
+                        Usuários Comuns
+                        <span class="badge bg-light text-secondary ms-2">{{ usuarios_comuns.paginator.count }}</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if usuarios_comuns %}
+                        {% for usuario in usuarios_comuns %}
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">
+                                    <i class="bi bi-person me-1"></i>
+                                    {{ usuario.get_full_name|default:usuario.username }}
+                                </h6>
+                                <small class="text-muted">
+                                    <i class="bi bi-envelope me-1"></i>{{ usuario.email }}
+                                </small>
+                            </div>
+                            <form method="post" class="mb-0">
+                                {% csrf_token %}
+                                <input type="hidden" name="user_id" value="{{ usuario.id }}">
+                                <input type="hidden" name="acao" value="tornar_vendedor">
+                                <button type="submit" 
+                                        class="btn btn-sm btn-outline-success"
+                                        onclick="return confirm('Deseja tornar este usuário vendedor?')">
+                                    <i class="bi bi-check-lg"></i>
+                                </button>
+                            </form>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-person display-5 text-muted"></i>
+                            <p class="text-muted mt-2">Nenhum usuário comum</p>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Paginação para usuários comuns -->
+                {% if usuarios_comuns.has_other_pages %}
+                <div class="card-footer">
+                    <nav aria-label="Navegação de usuários comuns">
+                        <ul class="pagination pagination-sm justify-content-center mb-0">
+                            {% if usuarios_comuns.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page_usuarios={{ usuarios_comuns.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            {% for num in usuarios_comuns.paginator.page_range %}
+                                {% if usuarios_comuns.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                                {% elif num > usuarios_comuns.number|add:'-3' and num < usuarios_comuns.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page_usuarios={{ num }}{% if query %}&q={{ query }}{% endif %}">{{ num }}</a>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if usuarios_comuns.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page_usuarios={{ usuarios_comuns.next_page_number }}{% if query %}&q={{ query }}{% endif %}">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
+<style>
+    .card {
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border: none;
+    }
+    
+    .card-header {
+        border-bottom: none;
+    }
+    
+    .btn-group .btn {
+        border-radius: 0.375rem !important;
+        margin-left: 2px;
+    }
+    
+    .pagination .page-link {
+        color: #495057;
+    }
+    
+    .pagination .page-item.active .page-link {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    
+    .alert-light {
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+    }
+</style>
 {% endblock %}

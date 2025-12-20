@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Quero Vender{% endblock %}
+
+{% block content %}
+<div class="card-body py-5 px-md-5">
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-8 border rounded-3 py-4 shadow mx-md-n5">
+            <div class="container">
+
+                <!-- Voltar e Título -->
+                <div class="col-md-6 mb-4">
+                    <a href="{% url 'perfil' %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="" class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"></path>
+                        </svg>
+                    </a>
+                    <h2 class="fw-bold mb-5">Faça o pedido para ser um vendedor</h2>
+                </div>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <!-- Informações Básicas -->
+                    <div class="border p-4 rounded-3 mb-4">
+                        
+                        {{ form.texto }}
+                        
+                    </div>
+                    <!-- Botões de submit -->
+                    <div class="mt-4">
+                        <button type="submit" name="salvar" class="btn botoes shadow-lg rounded px-4 py-2">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -21,9 +21,9 @@
   margin-bottom: 20px;
   
 }
-.botoes {
+.botao {
   background-color: #45afe0;
-  color: white;
+  color: rgb(255, 255, 255);
   white-space: nowrap;
 }
 .filtros-fundo {

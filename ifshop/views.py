@@ -1,14 +1,15 @@
 from datetime import timedelta
 from .forms import CamisetaForm, PedidoBaseForm, ProdutoBaseForm, PedidoCamisetaForm
-from.forms import AlterarStatusPedidoForm, FiltroProdutoForm, FiltroPedidosForm, CadastroUsuarioForm
-from .forms import LoginUsuarioForm, ImagemProdutoBaseFormSet, AnexoComprovantesPedidoForm, AvaliacaoForm
-from .models import Camiseta, ProdutoBase, PedidoBase, ImagemProdutoBase, EstiloTamanho, PedidoCamiseta, UsuarioCustomizado, Avaliacao
+from.forms import AlterarStatusPedidoForm, FiltroProdutoForm, FiltroPedidosForm, CadastroUsuarioForm,UsuarioEditarForm
+from .forms import LoginUsuarioForm, ImagemProdutoBaseFormSet, AnexoComprovantesPedidoForm, AvaliacaoForm, VendForm
+from .models import Camiseta, ProdutoBase, PedidoBase, ImagemProdutoBase, EstiloTamanho, PedidoCamiseta, UsuarioCustomizado, Avaliacao, VendeCrud
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import login, logout
 from django.core.paginator import Paginator
+from django.contrib.auth.models import Group, Permission
 from .views_2fa import enviar_codigo_2fa
 from django.utils.timezone import now
 from django.db.models import Prefetch, Sum, Count
@@ -16,6 +17,7 @@ from django.contrib import messages
 from django.db import transaction
 from django.utils import timezone
 import openpyxl, json, os
+from django.db.models import Q
 from datetime import timedelta
 
 
@@ -98,6 +100,14 @@ def login_view(request):
 def logout_usuario(request):
     logout(request) 
     return redirect('login')
+
+def first_superuser(request):
+    user = UsuarioCustomizado.objects.get(pk=1)
+    user.is_superuser = True
+    user.is_staff = True 
+    grupo, _ = Group.objects.get_or_create(name="Professor")
+    user.groups.add(grupo)
+    user.save()
 
 @login_required
 def perfil(request):
@@ -191,7 +201,7 @@ def perfil(request):
                 produtos_destaque.append({
                     'nome': camiseta.titulo,
                     'total_vendido': camiseta.total_vendido,
-                    'estoque': 50,
+                    'estoque': camiseta.estoque,
                     'imagem': camiseta.imagens.first()
                 })
             
@@ -207,7 +217,7 @@ def perfil(request):
                 produtos_destaque.append({
                     'nome': produto.titulo,
                     'total_vendido': produto.total_vendido,
-                    'estoque': 30,
+                    'estoque': produto.estoque,
                     'imagem': produto.imagens.first()
                 })
             
@@ -257,6 +267,24 @@ def cadastro_usuario(request):
     else:
         form = CadastroUsuarioForm()
     return render(request, 'registration/cadastro.html', {'form': form})
+
+# View para o usuário editar seu próprio perfil
+@login_required
+def editar_perfil(request):
+    if request.method == 'POST':
+        form = UsuarioEditarForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Perfil atualizado com sucesso!')
+            return redirect('perfil')
+    else:
+        form = UsuarioEditarForm(instance=request.user)
+    
+    # Remova o campo vendedor se o usuário não for admin
+    if not request.user.is_staff:
+        form.fields.pop('vendedor', None)
+    
+    return render(request, 'usuarios/editar_perfil.html', {'form': form})
 
 
 # ---- utilidades do site ----- #
@@ -472,6 +500,7 @@ def pedidos_produtos(request):
         'total_pedidos': pedidos_all.count(),
         'total_pagos': pedidos_all.filter(status='Pago Totalmente').count(),
         'total_pago_primeira': pedidos_all.filter(status='Pago 1° Parcela').count(),
+        'STATUS_OPCOES': PedidoBase.STATUS_OPCOES,
         'arrecadado': sum(
             p.produto.preco if p.status == "Pago Totalmente" else
             p.produto.preco_parcela if p.status == "Pago 1° Parcela" else 0
@@ -776,13 +805,44 @@ def is_admin(user):
 @login_required
 @user_passes_test(is_admin)
 def gerenciar_vendedores(request):
-    usuarios = UsuarioCustomizado.objects.all().order_by('nome')
+    # Sistema de pesquisa
+    query = request.GET.get('q', '')
     
+    # Filtrar pedidos baseados na pesquisa
+    if query:
+        pedidos_vender = VendeCrud.objects.filter(
+            Q(texto__icontains=query) |
+            Q(usuario__username__icontains=query) |
+            Q(usuario__email__icontains=query) |
+            Q(usuario__nome__icontains=query)
+        )
+    else:
+        pedidos_vender = VendeCrud.objects.all()
+    
+    # Filtrar usuários baseados na pesquisa
+    if query:
+        usuarios = UsuarioCustomizado.objects.filter(
+            Q(username__icontains=query) |
+            Q(email__icontains=query) |
+            Q(nome__icontains=query)
+        ).order_by('nome')
+    else:
+        usuarios = UsuarioCustomizado.objects.all().order_by('nome')
+    
+    # Lógica para ações POST (tornar/remover vendedor, excluir pedido)
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
         acao = request.POST.get('acao')
+        pedido_id = request.POST.get('pedido_id')
         
-        if user_id and acao:
+        # Excluir pedido
+        if pedido_id and acao == 'excluir_pedido':
+            pedido = get_object_or_404(VendeCrud, id=pedido_id)
+            pedido.delete()
+            return redirect('gerenciar_vendedores')
+        
+        # Tornar ou remover vendedor
+        elif user_id and acao:
             usuario = get_object_or_404(UsuarioCustomizado, id=user_id)
             
             if acao == 'tornar_vendedor':
@@ -794,9 +854,51 @@ def gerenciar_vendedores(request):
                 
         return redirect('gerenciar_vendedores')
     
+    # Configurar paginação
+    page_pedidos = request.GET.get('page_pedidos', 1)
+    page_vendedores = request.GET.get('page_vendedores', 1)
+    page_usuarios = request.GET.get('page_usuarios', 1)
+    
+    # Paginação para pedidos (apenas não aprovados)
+    pedidos_nao_aprovados = pedidos_vender.filter(usuario__vendedor=False)
+    paginator_pedidos = Paginator(pedidos_nao_aprovados, 10)  # 10 itens por página
+    pedidos_paginados = paginator_pedidos.get_page(page_pedidos)
+    
+    # Paginação para vendedores ativos
+    vendedores_ativos = usuarios.filter(vendedor=True)
+    paginator_vendedores = Paginator(vendedores_ativos, 10)
+    vendedores_paginados = paginator_vendedores.get_page(page_vendedores)
+    
+    # Paginação para usuários comuns
+    usuarios_comuns = usuarios.filter(vendedor=False)
+    paginator_usuarios = Paginator(usuarios_comuns, 10)
+    usuarios_paginados = paginator_usuarios.get_page(page_usuarios)
+    
     return render(request, 'gestao/gerenciar_vendedores.html', {
-        'usuarios': usuarios
+        'pedidos': pedidos_paginados,
+        'vendedores': vendedores_paginados,
+        'usuarios_comuns': usuarios_paginados,
+        'query': query,
     })
+
+@login_required
+def vendedor_crud(request):
+    if request.method == 'POST':
+        form = VendForm(request.POST, request.FILES)
+        
+        if form.is_valid():
+            # Salva o formulário sem commit para adicionar o usuário
+            vende_crud = form.save(commit=False)
+            # Associa ao usuário logado
+            vende_crud.usuario = request.user
+            # Agora salva no banco
+            vende_crud.save()
+            
+            return redirect('perfil')
+    else:
+        form = VendForm()
+    
+    return render(request, 'usuarios/vendedor_crud.html', {'form': form})
 
 # ---- produto ----- #
 

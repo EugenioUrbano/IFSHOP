@@ -196,6 +196,13 @@
                                 </defs>
                             </svg>
                         </button>
+                        {% else %}
+                        <button type="button" class="btn botao shadow-lg rounded-pill px-3">
+                            <a href="{% url 'login' %}" class="nav-link">Login</a>
+                        </button>
+                        <button type="button" class="btn botao shadow-lg rounded-pill px-3">
+                            <a href="{% url 'cadastro' %}" class="nav-link">Cadastro</a>
+                        </button>
                         {% endif %}
 
                         <!-- Offcanvas do Carrinho -->
