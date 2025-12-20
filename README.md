@@ -112,12 +112,14 @@ planIQ/
 
 
 
+**Colaboradores:**
+Eugênio Urbano Medeiros Filho
 
-Maria Gabriely Souza de Moura
+Helloar Lavinia Silva Costa
 
-Sara Monalisa Carlos da Silva
+Milleny jamily Lima Vieira
 
-Orientadora
+Orientadora:
 Fernanda Lígia
 
 Licença
@@ -126,13 +128,6 @@ Este projeto está licenciado sob os termos da licença MIT. Consulte o arquivo 
 Status do Projeto
 ✅ Concluído - Todas as funcionalidades principais implementadas e testadas.
 
-Contribuições
-Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou enviar pull requests com melhorias, correções ou novas funcionalidades.
-
-Agradecimentos
-Agradecemos à professora orientadora e à instituição pelo suporte e oportunidade de desenvolver este projeto como parte da formação técnica.
-
-text
 
 Este README inclui:
 1. **Identificação clara** do projeto
@@ -143,5 +138,3 @@ Este README inclui:
 6. **Estrutura do projeto** visualmente organizada
 7. **Informações da equipe** e orientação
 8. **Elementos extras** como status, licença e agradecimentos
-
-O arquivo está pronto para ser usado como `README.md` no diretório raiz do seu repositório GitHub.
