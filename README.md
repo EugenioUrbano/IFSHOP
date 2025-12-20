@@ -90,29 +90,49 @@ bash
 python manage.py runserver
 Acesse a aplicação em: http://localhost:8000
 
-Estrutura do Projeto
-text
-planIQ/
-├── app/                    # Aplicação principal (tarefas, matérias, períodos)
-├── config/                 # Configurações do projeto Django
-├── docs/                   # Documentação (incluindo manual do usuário)
-├── scripts/                # Scripts utilitários (geração de .env)
-├── static/                 # Arquivos estáticos (CSS, JS, imagens)
-├── templates/              # Templates HTML organizados por funcionalidade
-├── usuarios/               # Aplicação de autenticação e perfis
-├── .env.example            # Exemplo de variáveis de ambiente
-├── .gitignore              # Arquivos ignorados pelo Git
-├── LICENSE                 # Licença do projeto
-├── manage.py               # Ponto de entrada do Django
-├── README.md               # Este arquivo
-└── requirements.txt        # Dependências do projeto
+IFshop/
+├── config/                         # Configurações do Django
+│   ├── __pycache__/
+│   ├── __init__.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── ifshop/                         # Aplicação principal
+│   ├── __pycache__/
+│   ├── migrations/
+│   ├── static/                     # Arquivos estáticos (CSS, JS, imagens)
+│   ├── templates/                  # Templates HTML organizados por funcionalidade
+│   ├── __init__.py
+│   ├── custom_filters.py
+│   ├── adapters.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── backends.py
+│   ├── context_processors.py
+│   ├── forms.py
+│   ├── models.py
+│   ├── swap_login.py
+│   ├── tests.py
+│   ├── urls.py
+│   ├── views_2fa.py
+│   └── views.py
+├── media/                          # Arquivos de mídia uploadados
+├── venv/                          # Ambiente virtual
+├── docs/                          # Documentação
+├── scripts/                       # Scripts utilitários
+├── .env.example                   # Exemplo de variáveis de ambiente
+├── .gitignore                     # Arquivos ignorados pelo Git
+├── LICENSE                        # Licença do projeto
+├── manage.py                      # Ponto de entrada do Django
+├── README.md                      # Documentação principal
+└── requirements.txt               # Dependências do projeto
 
 
 
 
 
 
-**Colaboradores:**
+Colaboradores:
 Eugênio Urbano Medeiros Filho
 
 Helloar Lavinia Silva Costa
@@ -125,16 +145,4 @@ Fernanda Lígia
 Licença
 Este projeto está licenciado sob os termos da licença MIT. Consulte o arquivo LICENSE para mais detalhes.
 
-Status do Projeto
-✅ Concluído - Todas as funcionalidades principais implementadas e testadas.
 
-
-Este README inclui:
-1. **Identificação clara** do projeto
-2. **Descrição objetiva** do propósito e contexto acadêmico
-3. **Funcionalidades** bem especificadas
-4. **Tecnologias** organizadas por categoria
-5. **Instruções de instalação** passo a passo
-6. **Estrutura do projeto** visualmente organizada
-7. **Informações da equipe** e orientação
-8. **Elementos extras** como status, licença e agradecimentos
