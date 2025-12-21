@@ -76,22 +76,34 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             
-            # ⬇️ VERIFICAÇÃO 2FA - Redireciona para verificação ⬇️
-            if hasattr(user, 'email'):  # Garante que é seu UsuarioCustomizado
-                # Envia código 2FA por email
-                enviar_codigo_2fa(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            # ⬇️ VERIFICAÇÃO 2FA CORRIGIDA ⬇️
+            if hasattr(user, 'email'):
+                print(f"🔐 Usuário {user.email} autenticado. Iniciando 2FA...")
                 
-                # Salva ID do usuário na sessão para verificação posterior
-                request.session['usuario_2fa_id'] = user.id
-                request.session['usuario_autenticado'] = True
+                # ⚠️ CHAMADA CORRIGIDA (sem parâmetro 'backend')
+                sucesso_envio = enviar_codigo_2fa(request, user)
                 
-                # Redireciona para página de verificação 2FA
-                return redirect('verificar_2fa')
+                if sucesso_envio:
+                    # Salva ID do usuário na sessão
+                    request.session['usuario_2fa_id'] = user.id
+                    print(f"✅ ID {user.id} salvo na sessão para 2FA")
+                    
+                    # Redireciona para verificação 2FA
+                    return redirect('verificar_2fa')
+                else:
+                    # Se falhar ao enviar email, mostra erro
+                    print(f"❌ Falha ao enviar email 2FA")
+                    return render(request, 'registration/login.html', {
+                        'form': form,
+                        'error': 'Erro ao enviar código de verificação. Tente novamente.'
+                    })
             
-            # ⬇️ FALLBACK - Se algo der errado, faz login normal ⬇️
+            # ⬇️ FALLBACK - Se algo der errado ⬇️
+            print(f"⚠️ 2FA não aplicável, fazendo login direto para {user.username}")
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect('index')
-            
+        else:
+            print(f"❌ Formulário inválido: {form.errors}")
     else:
         form = LoginUsuarioForm()
     

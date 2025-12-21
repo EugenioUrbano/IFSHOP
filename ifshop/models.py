@@ -318,23 +318,25 @@ class Codigo2FA(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True)
     utilizado = models.BooleanField(default=False)
     
-    def __str__(self):
-        return f"{self.usuario.email} - {self.codigo}"
-    
-    def esta_valido(self):
-        """Verifica se o código ainda é válido (10 minutos)"""
-        return (timezone.now() - self.criado_em) < timedelta(minutes=10) and not self.utilizado
-    
     @classmethod
     def gerar_codigo(cls, usuario):
-        """Gera um novo código 2FA"""
-        # Remove códigos antigos
-        cls.objects.filter(usuario=usuario).delete()
-        
         # Gera código de 6 dígitos
+        import random
         codigo = str(random.randint(100000, 999999))
         
+        # Invalida códigos anteriores
+        cls.objects.filter(usuario=usuario, utilizado=False).update(utilizado=True)
+        
         return cls.objects.create(usuario=usuario, codigo=codigo)
+    
+    def esta_valido(self):
+        from django.utils import timezone
+        from datetime import timedelta
+        
+        # Código válido por 10 minutos
+        tempo_expiracao = timedelta(minutes=10)
+        return (not self.utilizado and 
+                timezone.now() <= self.criado_em + tempo_expiracao)
     
 class VendeCrud(models.Model):
     usuario = models.ForeignKey(UsuarioCustomizado, on_delete=models.CASCADE)

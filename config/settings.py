@@ -42,13 +42,7 @@ MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
 
-# Cloudinary config
-cloudinary.config(
-    cloud_name=config('CLOUDINARY_CLOUD_NAME', default=''),
-    api_key=config('CLOUDINARY_API_KEY', default=''),
-    api_secret=config('CLOUDINARY_API_SECRET', default=''),
-    secure=True
-)
+
 
 # Application definition
 
