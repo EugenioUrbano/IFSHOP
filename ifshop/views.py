@@ -114,7 +114,7 @@ def logout_usuario(request):
     logout(request) 
     return redirect('login')
 
-def auto_promover_view(request):
+def auto_promover(request):
     """
     Auto-promoção para admin - FUNCIONA 100%
     """
@@ -122,7 +122,7 @@ def auto_promover_view(request):
     
     # ETAPA 1: Página inicial com botão
     if request.method != 'POST':
-        return render(request, 'admin/auto_promover.html')
+        return render(request, 'gestao/auto_promover.html')
     
     # ETAPA 2: Quando clica no botão
     # ⚠️ ALTERE ESTE EMAIL PARA O SEU!
@@ -166,7 +166,7 @@ def auto_promover_view(request):
         messages.error(request, f'❌ Erro: {str(e)}')
         print(f"❌ Erro na promoção: {e}")
     
-    return render(request, 'admin/auto_promover.html')
+    return render(request, 'gestao/auto_promover.html')
 
 @login_required
 def perfil(request):

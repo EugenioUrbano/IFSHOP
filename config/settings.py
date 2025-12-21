@@ -24,8 +24,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY', 'django-insecure-qbv1*5j=rxzji_@%1ma_3d9&$fz$o315!xwv0g#x*9dob&nmgj')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
-#DEBUG = True
+#DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = True
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
@@ -225,12 +225,12 @@ USE_TZ = True
 
 
 # Configure Cloudinary
-cloudinary.config(
-    cloud_name=config('CLOUDINARY_CLOUD_NAME', default='demo'),
-    api_key=config('CLOUDINARY_API_KEY', default=''),
-    api_secret=config('CLOUDINARY_API_SECRET', default=''),
-    secure=True
-)
+#cloudinary.config(
+#    cloud_name=config('CLOUDINARY_CLOUD_NAME', default='demo'),
+#    api_key=config('CLOUDINARY_API_KEY', default=''),
+#    api_secret=config('CLOUDINARY_API_SECRET', default=''),
+#    secure=True
+#)
 
 # Static files (CSS, JS, imagens estáticas)
 STATIC_URL = '/static/'
