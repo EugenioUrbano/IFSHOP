@@ -8,55 +8,33 @@ from django.contrib.auth import login
 from .models import Codigo2FA, UsuarioCustomizado
 
 def enviar_codigo_2fa(request, usuario):
-    """Envia código 2FA por email REAL"""
+    """Envia código 2FA por email (versão simples de texto)"""
     try:
-        print(f"📧 [2FA] Preparando email para {usuario.email}")
-        
-        # 1. Gera código
         from .models import Codigo2FA
         codigo_2fa = Codigo2FA.gerar_codigo(usuario)
         codigo = codigo_2fa.codigo
-        
-        # 2. Salva na sessão (backup)
+
         request.session['codigo_2fa'] = codigo
         request.session['codigo_2fa_user_id'] = usuario.id
-        
-        # 3. Prepara o email HTML
-        assunto = "Seu código de verificação - IFShop"
-        
-        # Contexto para o template
-        contexto = {
-            'usuario': usuario,
-            'codigo': codigo,
-            'site_url': 'https://ifshop-t473.onrender.com',
-            'validade_minutos': 10,
-        }
-        
-        # Renderiza template HTML
-        html_message = render_to_string('email/2fa_codigo.html', contexto)
-        plain_message = strip_tags(html_message)  # Versão texto simples
-        
-        # 4. Envia o email
+
+        from django.core.mail import send_mail
+        from django.conf import settings
+
         send_mail(
-            subject=assunto,
-            message=plain_message,
+            subject='IFShop - Seu Código de Verificação',
+            message=f'Olá! Seu código de verificação é: {codigo}. Válido por 10 minutos.',
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[usuario.email],
-            html_message=html_message,
-            fail_silently=False,  # ⚠️ MOSTRA ERRO se falhar
+            fail_silently=False,
         )
-        
-        print(f"✅ [2FA] Email enviado para {usuario.email}")
+        print(f"✅ Email de texto enviado para {usuario.email}")
         return True
-        
+
     except Exception as e:
-        print(f"❌ [2FA] ERRO ao enviar email: {e}")
-        import traceback
-        traceback.print_exc()
-        
-        # ⚠️ FALLBACK: Mostra no log se email falhar
-        print(f"⚠️ [2FA FALLBACK] Código para {usuario.email}: {codigo}")
-        return True  # Não quebra o fluxo
+        print(f"❌ ERRO ao enviar email: {e}")
+        # Fallback: mostra o código no log
+        print(f"⚠️ Código gerado (fallback): {codigo}")
+        return True  # Importante: não quebra o fluxo
 
 def verificar_2fa(request):  # ⚠️ ESTA FUNÇÃO DEVE EXISTIR!
     """Página para verificar código 2FA"""

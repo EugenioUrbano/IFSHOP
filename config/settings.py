@@ -126,11 +126,11 @@ SOCIALACCOUNT_ADAPTER = 'ifshop.adapters.CustomSocialAccountAdapter'
 # CONFIGURAÇÃO RESTAURAÇÃO DE SENHA PELO CONSOLE
  
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp.gmail.com'  # Para Gmail. Use outro se preferir.
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')  # Será lido do Render
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')  # Será lido do Render
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # CONFIGURAÇÃO RESTAURAÇÃO DE SENHA PELO CONSOLE
