@@ -117,8 +117,6 @@ def first_superuser(request):
     user = UsuarioCustomizado.objects.all
     user.is_superuser = True
     user.is_staff = True 
-    grupo, _ = Group.objects.get_or_create(name="Professor")
-    user.groups.add(grupo)
     user.save()
 
 @login_required
