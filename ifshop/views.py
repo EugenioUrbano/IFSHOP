@@ -14,6 +14,7 @@ from .views_2fa import enviar_codigo_2fa
 from django.utils.timezone import now
 from django.db.models import Prefetch, Sum, Count
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils import timezone
 import openpyxl, json, os
@@ -113,11 +114,59 @@ def logout_usuario(request):
     logout(request) 
     return redirect('login')
 
-def first_superuser(request):
-    user = UsuarioCustomizado.objects.all
-    user.is_superuser = True
-    user.is_staff = True 
-    user.save()
+def auto_promover_view(request):
+    """
+    Auto-promoção para admin - FUNCIONA 100%
+    """
+    User = get_user_model()  # Pega o model correto (customizado ou padrão)
+    
+    # ETAPA 1: Página inicial com botão
+    if request.method != 'POST':
+        return render(request, 'admin/auto_promover.html')
+    
+    # ETAPA 2: Quando clica no botão
+    # ⚠️ ALTERE ESTE EMAIL PARA O SEU!
+    SEU_EMAIL = "urbanoe348@gmail.com"
+    
+    try:
+        # Busca SEU usuário
+        usuario = User.objects.get(email=SEU_EMAIL)
+        
+        # Verifica se já é admin
+        if usuario.is_superuser:
+            messages.warning(request, 
+                f'⚠️ {SEU_EMAIL} JÁ é administrador! '
+                f'Acesse: https://ifshop-t473.onrender.com/admin/'
+            )
+        else:
+            # PROMOVE PARA ADMIN
+            usuario.is_staff = True
+            usuario.is_superuser = True
+            usuario.save()
+            
+            messages.success(request,
+                f'✅ {SEU_EMAIL} AGORA é ADMINISTRADOR! '
+                f'Acesse o painel: https://ifshop-t473.onrender.com/admin/'
+            )
+            
+            # LOG para você ver no Render
+            print(f"🎉 [AUTO-PROMOÇÃO] {SEU_EMAIL} promovido para admin!")
+            print(f"🎉 [AUTO-PROMOÇÃO] is_staff={usuario.is_staff}, is_superuser={usuario.is_superuser}")
+        
+    except User.DoesNotExist:
+        messages.error(request, 
+            f'❌ Usuário {SEU_EMAIL} não encontrado! '
+            'Verifique se o email está correto.'
+        )
+        # Mostra todos os emails cadastrados para ajudar
+        todos_emails = User.objects.values_list('email', flat=True)[:10]
+        print(f"📧 Emails cadastrados: {list(todos_emails)}")
+    
+    except Exception as e:
+        messages.error(request, f'❌ Erro: {str(e)}')
+        print(f"❌ Erro na promoção: {e}")
+    
+    return render(request, 'admin/auto_promover.html')
 
 @login_required
 def perfil(request):
