@@ -141,6 +141,12 @@ def perfil(request):
         } for c in camisetas
     ]
 
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        # ... lógica de promoção
+        messages.success(request, f'{email} agora é admin!')
+    
+    
     # Adicionar dados do dashboard apenas para vendedores
     dashboard_data = {}
     if request.user.vendedor:
