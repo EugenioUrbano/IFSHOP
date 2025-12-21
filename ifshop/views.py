@@ -79,7 +79,7 @@ def login_view(request):
             # ⬇️ VERIFICAÇÃO 2FA - Redireciona para verificação ⬇️
             if hasattr(user, 'email'):  # Garante que é seu UsuarioCustomizado
                 # Envia código 2FA por email
-                enviar_codigo_2fa(request, user)
+                enviar_codigo_2fa(request, user, backend='django.contrib.auth.backends.ModelBackend')
                 
                 # Salva ID do usuário na sessão para verificação posterior
                 request.session['usuario_2fa_id'] = user.id
@@ -89,7 +89,7 @@ def login_view(request):
                 return redirect('verificar_2fa')
             
             # ⬇️ FALLBACK - Se algo der errado, faz login normal ⬇️
-            login(request, user)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect('index')
             
     else:
