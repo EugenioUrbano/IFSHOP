@@ -141,11 +141,32 @@ def perfil(request):
         } for c in camisetas
     ]
 
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        # ... lógica de promoção
-        messages.success(request, f'{email} agora é admin!')
+    User = UsuarioCustomizado()
     
+    if request.method == 'POST' and 'promover' in request.POST:
+        # Pega seu usuário atual (logado)
+        if request.user.is_authenticated:
+            usuario = request.user
+        else:
+            # Se não está logado, usa email fixo (ALTERE PARA SEU EMAIL!)
+            seu_email = "urbanoe348@gmail.com"  # ⚠️ COLOQUE SEU EMAIL AQUI!
+            try:
+                usuario = User.objects.get(email=seu_email)
+            except User.DoesNotExist:
+                messages.error(request, f'Usuário {seu_email} não encontrado')
+                return render(request, 'admin/auto_promover.html', {'etapa': 'promover'})
+        
+        # PROMOVE PARA ADMIN
+        usuario.is_staff = True
+        usuario.is_superuser = True
+        usuario.save()
+        
+        messages.success(request, 
+            f'✅ {usuario.email} agora é ADMINISTRADOR! '
+            f'Acesse em: https://ifshop-t473.onrender.com/admin/'
+        )
+        
+        
     
     # Adicionar dados do dashboard apenas para vendedores
     dashboard_data = {}
@@ -272,7 +293,9 @@ def perfil(request):
         'produtos_com_imagens': produtos_com_imagens,
         'camisetas_com_imagens': camisetas_com_imagens,
         'pedidos_recebidos': pedidos_recebidos,
-        **dashboard_data  # Desempacota os dados do dashboard
+        'usuario': {'email': usuario.email,
+                    'admin_url': 'https://ifshop-t473.onrender.com/admin/',}
+        **dashboard_data
     })
 
 def cadastro_usuario(request):
