@@ -3,6 +3,9 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from .models import Codigo2FA, UsuarioCustomizado
 
 def enviar_codigo_2fa(request, usuario):
     """Envia código 2FA por email REAL"""
