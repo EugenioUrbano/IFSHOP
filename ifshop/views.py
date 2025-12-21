@@ -601,6 +601,7 @@ def edit_pedido_camiseta(request, pedido_id):
 
 def edit_pedido_produto(request, pedido_id):
     pedido = get_object_or_404(PedidoBase, id=pedido_id, cliente=request.user)
+    produto = pedido.produto
     
     forma_pag_opcoes = [f.strip() for f in produto.forma_pag_op.split(',')]
 
