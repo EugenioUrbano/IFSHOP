@@ -98,7 +98,7 @@ def auto_promover(request):
     
     # ETAPA 2: Quando clica no botão
     # ⚠️ ALTERE ESTE EMAIL PARA O SEU!
-    SEU_EMAIL = "urbanoe348@gmail.com"
+    SEU_EMAIL = "medeiros.eugenio@academico.ifrn.edu.br"
     
     try:
         # Busca SEU usuário
