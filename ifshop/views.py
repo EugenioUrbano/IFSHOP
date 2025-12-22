@@ -10,7 +10,6 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import login, logout
 from django.core.paginator import Paginator
 from django.contrib.auth.models import Group, Permission
-from .views_2fa import enviar_codigo_2fa, verificar_codigo_2fa
 from django.utils.timezone import now
 from django.db.models import Prefetch, Sum, Count
 from django.contrib import messages
