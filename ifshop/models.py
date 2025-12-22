@@ -4,7 +4,6 @@ from django.utils.timezone import now
 from django.utils import timezone
 from django.conf import settings
 from datetime import timedelta
-from cloudinary.models import CloudinaryField
 from django.db import models
 import random
 import os
@@ -21,19 +20,11 @@ class UsuarioCustomizado(AbstractUser):
     curso = models.ForeignKey(Curso, on_delete=models.SET_NULL, null=True, blank=True)
     vendedor = models.BooleanField(default=False)
     nome = models.CharField(max_length=150)
-    foto = CloudinaryField(
-        'foto_perfil',
-        default=None,  # Cloudinary usa None em vez de string vazia
-        null=True,
-        blank=True,
-        folder='ifshop/usuarios',
-        transformation={'quality': 'auto:good', 'width': 300, 'height': 300, 'crop': 'fill'},
-        help_text='Foto de perfil do usuário'
-    )
+    foto = models.ImageField(default="", blank=False, null=True)
     
     def save(self, *args, **kwargs):
         if not self.username: 
-            primeiro_nome = self.nome.split()[0] if self.nome else 'user'
+            primeiro_nome = self.nome.split()[0]  
             contador = 1
             username_base = primeiro_nome.lower()
             username_gerado = username_base
@@ -83,35 +74,14 @@ class ProdutoBase(models.Model):
     turnos = models.CharField(max_length=50)
     curso = models.ManyToManyField('Curso')
     
-    imagem = CloudinaryField(
-        'imagem_principal',
-        default=None,
-        null=True,
-        blank=True,
-        folder='ifshop/produtos',
-        transformation={'quality': 'auto:good', 'width': 800, 'height': 600, 'crop': 'fill'},
-        help_text='Imagem principal do produto'
-    )
-    pix_qr_code_parcela = CloudinaryField(
-        'qr_code_parcela',
-        default=None,
-        null=True,
-        blank=True,
-        folder='ifshop/produtos/qr_codes',
-        help_text='QR Code Pix para pagamento parcelado'
-    )
-    pix_qr_code_total = CloudinaryField(
-        'qr_code_total',
-        default=None,
-        null=True,
-        blank=True,
-        folder='ifshop/produtos/qr_codes',
-        help_text='QR Code Pix para pagamento total'
-    )
-    pix_chave_parcela = models.TextField(max_length=300, null=True, blank=True, default="")
-    pix_chave_total = models.TextField(max_length=300, null=True, blank=True, default="")
+    imagem = models.ImageField(blank=True, null=True)
+    pix_qr_code_parcela = models.ImageField(upload_to='qrcode_parcela_produtos/', null=False, default="")
+    pix_qr_code_total = models.ImageField(upload_to='qrcode_total_produtos/', null=False, default="")
+    pix_chave_parcela = models.TextField(max_length=300, null=False, default="")
+    pix_chave_total = models.TextField(max_length=300, null=False, default="")
     
-    opcoes = models.TextField(null=True, help_text="Digite as opções separadas por vírgula. Ex: azul, vermelho, verde")
+    opcoes = models.TextField( null=True, help_text="Digite as opções separadas por vírgula. Ex: azul, vermelho, verde")
+    
     
     vendedor = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE, related_name="produtos")
     
@@ -154,16 +124,13 @@ class ProdutoBase(models.Model):
 
 class ImagemProdutoBase(models.Model):
     produto = models.ForeignKey(ProdutoBase, related_name='imagens', on_delete=models.CASCADE)
-    imagem = CloudinaryField(
-        'imagem_produto',
-        default=None,
-        null=True,
-        blank=True,
-        folder='ifshop/produtos/galeria',
-        transformation={'quality': 'auto:good', 'width': 800, 'height': 600, 'crop': 'fill'},
-        help_text='Imagem adicional do produto'
-    )
-    principal = models.BooleanField(default=False)
+    imagem = models.ImageField(upload_to='imagens_produtos/', null=True)
+    principal = models.BooleanField(default=False) 
+
+    def delete(self, *args, **kwargs):
+        if self.imagem and os.path.isfile(self.imagem.path):
+            os.remove(self.imagem.path)  
+        super().delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         if self.principal:
@@ -171,9 +138,6 @@ class ImagemProdutoBase(models.Model):
             ImagemProdutoBase.objects.filter(produto=self.produto, principal=True).update(principal=False)
         super().save(*args, **kwargs)
         
-    def delete(self, *args, **kwargs):
-        # Cloudinary gerencia automaticamente a exclusão de arquivos
-        super().delete(*args, **kwargs)
     
     def __str__(self):
         return f"Imagem de {self.produto.titulo}"
@@ -235,43 +199,20 @@ class PedidoBase(models.Model):
     produto = models.ForeignKey(ProdutoBase, null=True, on_delete=models.CASCADE, related_name="pedidos_base")
     cliente = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE, related_name="pedidos")
     
-    opcao_escolhida = models.CharField(max_length=50, null=True, blank=True)
+    opcao_escolhida = models.CharField(max_length=50, null=True)
     
     data_pedido = models.DateTimeField(auto_now_add=True)
     data_entrega = models.DateTimeField(null=True, blank=True)
     
-    forma_pag = models.TextField(max_length=300, null=True, blank=True)
-    status = models.CharField(max_length=100, choices=STATUS_OPCOES, default="Pendente")
+    forma_pag = models.TextField(max_length=300,null=True)
+    status = models.CharField(max_length=100, default="Pendente")
     revisado = models.BooleanField(default=True)
     visto = models.BooleanField(default=False)
     
-    comprovante_total = CloudinaryField(
-        'comprovante_total',
-        default=None,
-        null=True,
-        blank=True,
-        folder='ifshop/comprovantes/total',
-        resource_type='auto',
-        help_text='Comprovante de pagamento total'
-    )
-    comprovante_parcela1 = CloudinaryField(
-        'comprovante_parcela1',
-        default=None,
-        null=True,
-        blank=True,
-        folder='ifshop/comprovantes/parcela1',
-        resource_type='auto',
-        help_text='Comprovante da primeira parcela'
-    )
-    comprovante_parcela2 = CloudinaryField(
-        'comprovante_parcela2',
-        default=None,
-        null=True,
-        blank=True,
-        folder='ifshop/comprovantes/parcela2',
-        resource_type='auto',
-        help_text='Comprovante da segunda parcela'
-    )
+    comprovante_total = models.ImageField(upload_to='comprovante_total_produto/', null=True, blank=True, default="")
+    comprovante_parcela1 = models.ImageField(upload_to='comprovante_parcela1_produto/', null=True, blank=True, default="")
+    comprovante_parcela2 = models.ImageField(upload_to='comprovante_parcela2_produto/', null=True, blank=True, default="")
+    
     
     def save(self, *args, **kwargs):
         """Sobrescreve o save para atualizar estoque quando status muda para Entregue"""
@@ -324,12 +265,11 @@ class PedidoCamiseta(models.Model):
     @property
     def pode_ser_avaliado(self):
         """Verifica se o pedido pode ser avaliado"""
-        return self.pedido.status == 'Entregue'
+        return self.status == 'Entregue'
     
     def get_avaliacao_cliente(self):
         """Retorna a avaliação do cliente para este pedido"""
-        from .models import Avaliacao
-        return Avaliacao.objects.filter(pedido=self.pedido, cliente=self.pedido.cliente).first()
+        return self.avaliacoes.filter(cliente=self.cliente).first()
 
 
 ####################################################################################################
@@ -385,34 +325,7 @@ class Avaliacao(models.Model):
         return '⭐' * self.estrelas
     
     
-class Codigo2FA(models.Model):
-    usuario = models.ForeignKey(UsuarioCustomizado, on_delete=models.CASCADE)
-    codigo = models.CharField(max_length=6)
-    criado_em = models.DateTimeField(auto_now_add=True)
-    utilizado = models.BooleanField(default=False)
-    
-    @classmethod
-    def gerar_codigo(cls, usuario):
-        # Gera código de 6 dígitos
-        import random
-        codigo = str(random.randint(100000, 999999))
-        
-        # Invalida códigos anteriores
-        cls.objects.filter(usuario=usuario, utilizado=False).update(utilizado=True)
-        
-        return cls.objects.create(usuario=usuario, codigo=codigo)
-    
-    def esta_valido(self):
-        from django.utils import timezone
-        from datetime import timedelta
-        
-        # Código válido por 10 minutos
-        tempo_expiracao = timedelta(minutes=10)
-        return (not self.utilizado and 
-                timezone.now() <= self.criado_em + tempo_expiracao)
-    
-    def __str__(self):
-        return f"Código 2FA para {self.usuario.email} - {self.codigo}"
+
 
 
 class VendeCrud(models.Model):
