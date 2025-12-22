@@ -7,16 +7,6 @@
 {% block filtro %}{% endblock %}
 
 {% block content %}
-{% if messages %}
-  <div class="container mt-3">
-    {% for message in messages %}
-      <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
-      </div>
-    {% endfor %}
-  </div>
-{% endif %}
 
 <div class="container text-center my-4">
     <h1>Gerencie Pedidos das suas Camisetas</h1>
