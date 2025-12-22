@@ -80,42 +80,7 @@ def login_view(request):
     
     return render(request, 'registration/login.html', {'form': form})
 
-def verificar_2fa_view(request):
-    """
-    View para o usuário digitar o código 2FA
-    """
-    # Verifica se há um usuário aguardando verificação
-    user_id = request.session.get('user_id_2fa')
-    if not user_id:
-        messages.error(request, 'Sessão expirada. Faça login novamente.')
-        return redirect('login')
-    
-    if request.method == 'POST':
-        codigo = request.POST.get('codigo', '').strip()
-        
-        if not codigo or len(codigo) != 6 or not codigo.isdigit():
-            messages.error(request, 'Digite um código válido de 6 dígitos')
-            return render(request, 'registration/verify_2fa.html')
-        
-        # Verifica o código
-        if verificar_codigo_2fa(request, codigo):
-            # Código correto - faz login
-            try:
-                user = UsuarioCustomizado.objects.get(id=user_id)
-                login(request, user)
-                messages.success(request, 'Login realizado com sucesso!')
-                
-                # Log de acesso
-                print(f"✅ [LOGIN] Usuário {user.email} autenticado via 2FA")
-                
-                return redirect('dashboard')  # Ou a página inicial
-            except UsuarioCustomizado.DoesNotExist:
-                messages.error(request, 'Usuário não encontrado')
-                return redirect('login')
-        else:
-            messages.error(request, 'Código inválido')
-    
-    return render(request, 'registration/verify_2fa.html')
+
 
 def logout_usuario(request):
     logout(request) 
