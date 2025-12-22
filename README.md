@@ -22,7 +22,7 @@ Este projeto foi desenvolvido como parte da disciplina de **Programação e Dese
     - Histórico completo de compras para o usuário.
 - **Interface responsiva e intuitiva**, adaptada para uso em desktop e dispositivos móveis.
 
-> Para instruções detalhadas sobre o uso do sistema, consulte o **[Manual do Usuário](docs/manual/index.html)**.
+> Para instruções detalhadas sobre o uso do sistema, consulte o **[Manual do Usuário](https://tarefaiu.netlify.app/)**.
 
 ## Tecnologias Utilizadas
 ### Backend
