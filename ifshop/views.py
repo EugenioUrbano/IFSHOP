@@ -76,39 +76,58 @@ def login_view(request):
         form = LoginUsuarioForm(data=request.POST)
         if form.is_valid():
             user = form.get_user()
+         
+        if user is not None:
+            # 🔐 CHAMADA 2FA - Modificada
+            sucesso_envio = enviar_codigo_2fa(request, user)
             
-            # ⬇️ VERIFICAÇÃO 2FA CORRIGIDA ⬇️
-            if hasattr(user, 'email'):
-                print(f"🔐 Usuário {user.email} autenticado. Iniciando 2FA...")
-                
-                # ⚠️ CHAMADA CORRIGIDA (sem parâmetro 'backend')
-                sucesso_envio = enviar_codigo_2fa(request, user)
-                
-                if sucesso_envio:
-                    # Salva ID do usuário na sessão
-                    request.session['usuario_2fa_id'] = user.id
-                    print(f"✅ ID {user.id} salvo na sessão para 2FA")
-                    
-                    # Redireciona para verificação 2FA
-                    return redirect('verificar_2fa')
-                else:
-                    # Se falhar ao enviar email, mostra erro
-                    print(f"❌ Falha ao enviar email 2FA")
-                    return render(request, 'registration/login.html', {
-                        'form': form,
-                        'error': 'Erro ao enviar código de verificação. Tente novamente.'
-                    })
-            
-            # ⬇️ FALLBACK - Se algo der errado ⬇️
-            print(f"⚠️ 2FA não aplicável, fazendo login direto para {user.username}")
-            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-            return redirect('index')
-        else:
-            print(f"❌ Formulário inválido: {form.errors}")
+            if sucesso_envio:
+                # Redireciona para página de verificação 2FA
+                return redirect('verificar_2fa')
+            else:
+                messages.error(request, 'Erro ao gerar código de verificação')
+                return render(request, 'registration/login.html')
     else:
         form = LoginUsuarioForm()
     
     return render(request, 'registration/login.html', {'form': form})
+
+def verificar_2fa_view(request):
+    """
+    View para o usuário digitar o código 2FA
+    """
+    # Verifica se há um usuário aguardando verificação
+    user_id = request.session.get('user_id_2fa')
+    if not user_id:
+        messages.error(request, 'Sessão expirada. Faça login novamente.')
+        return redirect('login')
+    
+    if request.method == 'POST':
+        codigo = request.POST.get('codigo', '').strip()
+        
+        if not codigo or len(codigo) != 6 or not codigo.isdigit():
+            messages.error(request, 'Digite um código válido de 6 dígitos')
+            return render(request, 'registration/verify_2fa.html')
+        
+        # Verifica o código
+        if verificar_codigo_2fa(request, codigo):
+            # Código correto - faz login
+            try:
+                user = UsuarioCustomizado.objects.get(id=user_id)
+                login(request, user)
+                messages.success(request, 'Login realizado com sucesso!')
+                
+                # Log de acesso
+                print(f"✅ [LOGIN] Usuário {user.email} autenticado via 2FA")
+                
+                return redirect('dashboard')  # Ou a página inicial
+            except UsuarioCustomizado.DoesNotExist:
+                messages.error(request, 'Usuário não encontrado')
+                return redirect('login')
+        else:
+            messages.error(request, 'Código inválido')
+    
+    return render(request, 'registration/verify_2fa.html')
 
 def logout_usuario(request):
     logout(request) 

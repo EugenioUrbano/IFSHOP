@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">🔐 Verificação em Duas Etapas</h4>
+                </div>
+                
+                <div class="card-body">
+                    {% if messages %}
+                    <div class="mb-3">
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="alert alert-info">
+                        <h5>Como obter seu código:</h5>
+                        <ol class="mb-0">
+                            <li>Verifique o <strong>console/log</strong> do servidor</li>
+                            <li>Procure por: <code>"🔐 [2FA] Código gerado"</code></li>
+                            <li>Use os 6 dígitos exibidos</li>
+                        </ol>
+                        {% if debug %}
+                        <hr>
+                        <p class="mb-0">
+                            <strong>Modo desenvolvimento:</strong> 
+                            O código também pode aparecer acima.
+                        </p>
+                        {% endif %}
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="codigo" class="form-label">
+                                <strong>Código de 6 dígitos:</strong>
+                            </label>
+                            <input type="text" 
+                                   id="codigo" 
+                                   name="codigo" 
+                                   class="form-control form-control-lg text-center" 
+                                   maxlength="6" 
+                                   pattern="\d{6}" 
+                                   placeholder="123456" 
+                                   required
+                                   style="font-size: 1.5rem; letter-spacing: 5px;">
+                            <div class="form-text">
+                                Digite o código de 6 dígitos exibido no log
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                Verificar Código
+                            </button>
+                            <a href="{% url 'login' %}" class="btn btn-outline-secondary">
+                                Voltar para Login
+                            </a>
+                        </div>
+                    </form>
+                    
+                    <div class="mt-4 text-muted small">
+                        <p><strong>Dúvidas?</strong></p>
+                        <ul class="mb-0">
+                            <li>O código é válido por 10 minutos</li>
+                            <li>Você tem até 3 tentativas</li>
+                            <li>O código é gerado aleatoriamente a cada login</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Foco automático no campo de código
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('codigo').focus();
+    
+    // Aceita apenas números
+    document.getElementById('codigo').addEventListener('input', function(e) {
+        this.value = this.value.replace(/\D/g, '');
+    });
+});
+</script>
+{% endblock %}
