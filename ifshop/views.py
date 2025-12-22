@@ -74,13 +74,13 @@ def vendedor(user):
 def login_view(request):
     if request.method == 'POST':
         form = LoginUsuarioForm(data=request.POST)
-        
+        if form.is_valid():
+            user = form.get_user()  # Obtém o usuário autenticado
+            login(request, user)
+            return redirect('perfil')  # Redireciona para a página inicial
     else:
         form = LoginUsuarioForm()
-    
-    return render(request, 'registration/login.html', {'form': form})
-
-
+    return render(request, 'login.html', {'form': form})
 
 def logout_usuario(request):
     logout(request) 
