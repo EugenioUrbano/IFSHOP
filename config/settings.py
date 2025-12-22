@@ -44,6 +44,14 @@ MESSAGE_TAGS = {
 }
 
 
+# Cloudinary config
+cloudinary.config(
+    cloud_name=config('CLOUDINARY_CLOUD_NAME', default=''),
+    api_key=config('CLOUDINARY_API_KEY', default=''),
+    api_secret=config('CLOUDINARY_API_SECRET', default=''),
+    secure=True
+)
+
 
 # Application definition
 
@@ -239,22 +247,26 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Configuração do Cloudinary
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
-    'API_KEY': os.environ.get('CLOUDINARY_API_KEY', ''),
-    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', ''),
-    'SECURE': True,  # Opcional, para HTTPS
-}
+# Media files (uploads dos usuários)
+MEDIA_URL = '/media/'
 
-# Define o Cloudinary como armazenamento padrão para arquivos de mídia
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-# Opcional: Se quiser estáticos também no Cloudinary
-# STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
-
-# URLs (IMPORTANTE!)
-MEDIA_URL = '/media/'  # Cloudinary vai servir em /media/
+if DEBUG:
+    # Desenvolvimento local
+    MEDIA_ROOT = BASE_DIR / 'media'
+    os.makedirs(MEDIA_ROOT, exist_ok=True)  # Cria pasta se não existir
+else:
+    # Produção - Cloudinary
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    
+    # Opções avançadas do Cloudinary
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
+        'API_KEY': config('CLOUDINARY_API_KEY'),
+        'API_SECRET': config('CLOUDINARY_API_SECRET'),
+        'SECURE': True,
+        'QUALITY': 'auto:good',  # Otimização automática
+        'FORMAT': 'auto',        # Formato automático (webp, jpg, etc)
+    }
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 

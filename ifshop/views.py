@@ -75,7 +75,7 @@ def login_view(request):
         form = LoginUsuarioForm(data=request.POST)
         if form.is_valid():
             user = form.get_user()  # Obtém o usuário autenticado
-            login(request, user)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect('index')  # Redireciona para a página inicial
     else:
         form = LoginUsuarioForm()
