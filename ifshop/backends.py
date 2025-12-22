@@ -6,13 +6,6 @@ class EmailBackend(BaseBackend):
         try:
             user = UsuarioCustomizado.objects.get(email=username)
             if user.check_password(password):
-                # ⬇️ VERIFICAÇÃO 2FA - Redireciona para 2FA em vez de logar direto ⬇️
-                if request and hasattr(request, 'session'):
-                    from .views_2fa import enviar_codigo_2fa
-                    enviar_codigo_2fa(request, user)
-                    request.session['usuario_2fa_id'] = user.id
-                    request.session['usuario_autenticado'] = True
-                    return None  # Não loga ainda - vai para 2FA
                 return user
         except UsuarioCustomizado.DoesNotExist:
             return None
