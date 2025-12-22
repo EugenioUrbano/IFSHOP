@@ -74,19 +74,7 @@ def vendedor(user):
 def login_view(request):
     if request.method == 'POST':
         form = LoginUsuarioForm(data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-         
-        if user is not None:
-            # 🔐 CHAMADA 2FA - Modificada
-            sucesso_envio = enviar_codigo_2fa(request, user)
-            
-            if sucesso_envio:
-                # Redireciona para página de verificação 2FA
-                return redirect('verificar_2fa')
-            else:
-                messages.error(request, 'Erro ao gerar código de verificação')
-                return render(request, 'registration/login.html')
+        
     else:
         form = LoginUsuarioForm()
     
