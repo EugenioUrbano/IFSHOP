@@ -79,7 +79,7 @@ def login_view(request):
             return redirect('index')  # Redireciona para a página inicial
     else:
         form = LoginUsuarioForm()
-    return render(request, 'regitration/login.html', {'form': form})
+    return render(request, 'registration/login.html', {'form': form})
 
 def logout_usuario(request):
     logout(request) 
