@@ -143,6 +143,6 @@ Orientadora:
 Fernanda Lígia
 
 Licença
-Este projeto está licenciado sob os termos da licença MIT. Consulte o arquivo LICENSE para mais detalhes.
+Este projeto está licenciado sob os termos da licença MIT. Consulte o arquivo LICENSE para detalhes.
 
 
